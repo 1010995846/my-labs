@@ -1,0 +1,28 @@
+package com.charlotte.core.service.enums;
+
+import com.charlotte.core.service.exception.BusinessException;
+
+public interface Assert {
+
+    /**
+     * 创建异常
+     * @param args
+     * @return
+     */
+    RuntimeException newException(String... args);
+
+
+    /**
+     * <p>断言对象<code>obj</code>非空。如果对象<code>obj</code>为空，则抛出异常
+     * <p>异常信息<code>message</code>支持传递参数方式，避免在判断之前进行字符串拼接操作
+     *
+     * @param obj 待判断对象
+     * @param args message占位符对应的参数列表
+     */
+    default Assert assertNotNull(Object obj, String... args) {
+        if (obj == null) {
+            throw newException(args);
+        }
+        return this;
+    }
+}
