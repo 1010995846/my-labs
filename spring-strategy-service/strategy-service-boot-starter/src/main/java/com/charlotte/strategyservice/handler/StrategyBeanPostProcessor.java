@@ -15,6 +15,9 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cglib.core.SpringNamingPolicy;
 import org.springframework.cglib.proxy.Enhancer;
 
+/**
+ * @author Charlotte
+ */
 @Slf4j
 public class StrategyBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
@@ -23,7 +26,7 @@ public class StrategyBeanPostProcessor implements BeanPostProcessor, BeanFactory
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         try {
-            if (StrategyRouteHelper.isTarget(bean) && !AbstractStrategyProxy.isProxy(bean, beanName)) {
+            if (StrategyRouteHelper.isMain(bean) && !StrategyRouteHelper.isBranch(bean)) {
                 return createProxy(bean);
             }
         } catch (Exception e) {
@@ -35,8 +38,9 @@ public class StrategyBeanPostProcessor implements BeanPostProcessor, BeanFactory
     public Object createProxy(Object bean) {
         Class<?> realClass = AopUtils.getTargetClass(bean);
         Class proxyInterface = ClassHelper.getFirstInterface(bean);
-        StrategyMain strategyMain = realClass.getAnnotation(StrategyMain.class);
-        ObjectProvider<? extends AbstractStrategyProxy> beanProvider = beanFactory.getBeanProvider(strategyMain.proxy());
+//        StrategyMain strategyMain = realClass.getAnnotation(StrategyMain.class);
+//        ObjectProvider<? extends AbstractStrategyProxy> beanProvider = beanFactory.getBeanProvider(strategyMain.proxy());
+        ObjectProvider<? extends AbstractStrategyProxy> beanProvider = beanFactory.getBeanProvider(AbstractStrategyProxy.class);
         AbstractStrategyProxy proxy = beanProvider.getIfAvailable();
         proxy.setBean(bean);
         proxy.setBeanFactory(beanFactory);
@@ -58,8 +62,4 @@ public class StrategyBeanPostProcessor implements BeanPostProcessor, BeanFactory
         this.beanFactory = (DefaultListableBeanFactory) beanFactory;
     }
 
-    public AbstractStrategyProxy createProxyInstance() {
-        ObjectProvider<AbstractStrategyProxy> beanProvider = beanFactory.getBeanProvider(AbstractStrategyProxy.class);
-        return beanProvider.getIfAvailable();
-    }
 }

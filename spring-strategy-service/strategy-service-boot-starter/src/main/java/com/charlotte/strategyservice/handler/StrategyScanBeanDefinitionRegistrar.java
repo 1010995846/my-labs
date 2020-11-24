@@ -21,13 +21,15 @@ import org.springframework.util.ClassUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 策略扫描器
  * 当基类实现了多个接口时,切记将实际的业务接口放在第一个
  *
- * @create 2017-12-22 23:16
+ * @author Charlotte
  */
 @Slf4j
 public class StrategyScanBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
@@ -71,7 +73,7 @@ public class StrategyScanBeanDefinitionRegistrar implements ImportBeanDefinition
         });
         List<TypeFilter> excludeFilters = new ArrayList<>();
 
-        List<Class<?>> candidates = scanPackages(basePackages, includeFilters, excludeFilters);
+        Set<Class<?>> candidates = scanPackages(basePackages, includeFilters, excludeFilters);
         if (candidates.isEmpty()) {
             log.info("扫描指定包[{}]时未发现符合条件的分支类", basePackages.toString());
             return;
@@ -88,8 +90,8 @@ public class StrategyScanBeanDefinitionRegistrar implements ImportBeanDefinition
      * @param excludeFilters
      * @return
      */
-    private List<Class<?>> scanPackages(String[] basePackages, List<TypeFilter> includeFilters, List<TypeFilter> excludeFilters) {
-        List<Class<?>> candidates = new ArrayList<>();
+    private Set<Class<?>> scanPackages(String[] basePackages, List<TypeFilter> includeFilters, List<TypeFilter> excludeFilters) {
+        Set<Class<?>> candidates = new HashSet<>();
         for (String pkg : basePackages) {
             if (StringUtils.isBlank(pkg)) {
                 continue;

@@ -19,6 +19,6 @@ import java.lang.annotation.*;
 @Component
 public @interface StrategyMain {
 
-    Class<? extends AbstractStrategyProxy> proxy() default AbstractStrategyProxy.class;
+//    Class<? extends AbstractStrategyProxy> proxy() default AbstractStrategyProxy.class;
 
 }

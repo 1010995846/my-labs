@@ -2,7 +2,6 @@ package com.charlotte.strategyservice.proxy;
 
 import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.charlotte.strategyservice.annotation.StrategyMain;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 
@@ -95,7 +94,7 @@ public class StrategyRouteHelper {
         Class sup = clazz;
         Class strategyMainClassToUse = null;
         while (sup != null) {
-            if (isTarget(sup)) {
+            if (isMain(sup)) {
                 strategyMainClassToUse = sup;
                 break;
             }
@@ -124,13 +123,18 @@ public class StrategyRouteHelper {
         return classMap.get(routeKey);
     }
 
-    public static boolean isTarget(Object bean) {
+    public static boolean isMain(Object bean) {
         Class realClass = AopUtils.getTargetClass(bean);
-        return isTarget(realClass);
+        return isMain(realClass);
     }
 
-    public static boolean isTarget(Class clazz){
+    public static boolean isMain(Class clazz){
         return clazz.getAnnotation(StrategyMain.class) != null;
+    }
+
+    public static boolean isBranch(Object bean){
+        Class realClass = AopUtils.getTargetClass(bean);
+        return isBranch(realClass);
     }
 
     public static boolean isBranch(Class clazz){

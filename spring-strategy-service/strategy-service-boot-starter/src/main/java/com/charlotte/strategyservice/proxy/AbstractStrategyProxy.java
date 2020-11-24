@@ -34,56 +34,49 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
      */
     @Override
     public final Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        log.debug("调用{}#{}({})", obj.getClass(), method.getName(), Arrays.toString(args));
-        String routeKey = getRouteKey(obj, method, args, methodProxy);
-        log.debug("route routeKey = {}", routeKey);
-        StrategyRouteHelper.Invocation invocationToUse = null;
-        Object result;
-        if ((invocationToUse = StrategyRouteHelper.getCache(routeKey, method)) != null) {
+        log.debug("调用{}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
+        String key = getRouteKey(obj, method, args, methodProxy);
+        log.debug("key = {}", key);
+        StrategyRouteHelper.Invocation invocationToUse;
+        if ((invocationToUse = StrategyRouteHelper.getCache(key, method)) != null) {
             // 命中缓存
-            result = invocationToUse.invoke(args);
-        } else {
-            Object beanToUse;
-            Method methodToUse;
-            Class serviceClassToUse = StrategyRouteHelper.getBranchClass(obj.getClass(), routeKey);
-            if (serviceClassToUse == null) {
-                // 使用主类的作为默认
-                beanToUse = getDefaultBeanToUse(obj, method, args, methodProxy, routeKey);
-                methodToUse = getDefaultMethodToUse(obj, method, args, methodProxy, routeKey);
-            } else {
-                String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName());
-
-                log.debug("serviceToUse = {}", serviceClassToUse);
-                serviceNameToUse = serviceNameToUse + STRATEGY_ROUTE_SERVICE_SUFFIX;
-
-                synchronized (serviceClassToUse) {
-                    if (!beanFactory.containsBean(serviceNameToUse)) {
-                        // 注册依赖
-                        RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
-                        beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
-                    }
-                    beanToUse = beanFactory.getBean(serviceNameToUse);
-                    beanFactory.removeBeanDefinition(serviceNameToUse);
-                }
-
-                methodToUse = MethodUtils.getMatchingMethod(serviceClassToUse, method.getName(), method.getParameterTypes());
-            }
+            return invocationToUse.invoke(args);
+        }
+        Class serviceClassToUse = StrategyRouteHelper.getBranchClass(obj.getClass(), key);
+        Object result;
+        if (serviceClassToUse == null) {
+            // 使用主类的作为默认
+            log.debug("调用默认类。");
+            Object beanToUse = getDefaultBeanToUse(obj, method, args, methodProxy, key);
+            Method methodToUse = getDefaultMethodToUse(obj, method, args, methodProxy, key);
             invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
             result = invocationToUse.invoke(args);
-            StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
-        }
-        log.debug("调用完成。。。");
-        return result;
-    }
+        } else {
+            String serviceNameToUse =
+                    CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName());
 
-    /**
-     * 是否已代理
-     * @param bean
-     * @param beanName
-     * @return
-     */
-    public static final boolean isProxy(Object bean, String beanName) {
-        return beanName.contains(STRATEGY_ROUTE_SERVICE_SUFFIX);
+            log.debug("serviceClassToUse = {}", serviceClassToUse);
+            serviceNameToUse = serviceNameToUse + STRATEGY_ROUTE_SERVICE_SUFFIX;
+
+            synchronized (serviceClassToUse) {
+                if (!beanFactory.containsBean(serviceNameToUse)) {
+                    // 注册依赖
+                    RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
+                    beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+                }
+
+                Object beanToUse = beanFactory.getBean(serviceNameToUse);
+                beanFactory.removeBeanDefinition(serviceNameToUse);
+
+                Method methodToUse = MethodUtils.getMatchingMethod(
+                        serviceClassToUse, method.getName(), method.getParameterTypes());
+                invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
+                result = invocationToUse.invoke(args);
+            }
+        }
+        log.debug("调用完成。");
+        StrategyRouteHelper.cacheBean(key, method, invocationToUse);
+        return result;
     }
 
     public final void setBeanFactory(DefaultListableBeanFactory beanFactory) {

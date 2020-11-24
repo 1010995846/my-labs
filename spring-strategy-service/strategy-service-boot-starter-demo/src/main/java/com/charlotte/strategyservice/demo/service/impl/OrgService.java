@@ -7,7 +7,7 @@ import com.charlotte.strategyservice.demo.service.IOrgService;
 /**
  * @author Charlotte
  */
-@StrategyMain(proxy = OrgStrategyProxyConfig.OrgStrategyProxy.class)
+@StrategyMain
 public class OrgService implements IOrgService {
     @Override
     public String getName() {
