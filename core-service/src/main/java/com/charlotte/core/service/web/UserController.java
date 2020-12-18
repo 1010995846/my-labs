@@ -2,7 +2,7 @@ package com.charlotte.core.service.web;
 
 
 import com.charlotte.core.service.entity.User;
-import com.charlotte.core.service.impl.IUserService;
+import com.charlotte.core.service.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class UserController implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    @Autowired
+//    @Autowired
     private IUserService userSevice;
 //    @Qualifier("IUserService")
 //    private IUserService userSeviceProxy;

@@ -3,13 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.5.RELEASE</version>
+        <groupId>com.charlotte</groupId>
+        <artifactId>my-labs</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>com.charlotte</groupId>
     <artifactId>labs</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>labs</name>
     <description>Demo project for Spring Boot</description>
 
@@ -45,4 +43,14 @@
         </plugins>
     </build>
 
+    <modules>
+        <module>lab-jvm</module>
+        <module>lab-lambda</module>
+        <module>lab-leetcode</module>
+        <module>lab-mq</module>
+        <module>lab-proxy</module>
+        <module>lab-rpc</module>
+        <module>lab-thread</module>
+        <module>lab-util</module>
+    </modules>
 </project>
