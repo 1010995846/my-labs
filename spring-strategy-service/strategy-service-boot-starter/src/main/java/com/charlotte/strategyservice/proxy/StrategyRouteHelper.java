@@ -12,25 +12,35 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 负责检测、路由
+ * 路由工具类，负责路由映射、缓存
  * @author Charlotte
  */
 @Slf4j
 public class StrategyRouteHelper {
 
     /**
-     * 接口/基类和分支类（不包含主类）
+     * 路由映射配置
+     * (mainClass/implClass, routeKey): branchClass
      */
     private static final Map<Class, Map<String, Class>> serviceClassMap = new HashMap<>(32);
+
+    /**
+     * 当routeKey为空时，默认的key
+     */
     private static final String NULL_KEY = "null";
 
-    private static boolean enableCache = true;
     /**
-     * 缓存，key-调用方法: 实际执行的封装对象
+     * 是否允许缓存，默认开启，调试时可关闭
+     * @see #setEnableCache(boolean)
+     */
+    private static boolean enableCache = false;
+
+    /**
+     * 缓存，(routeKey, 代理的method): 执行bean和执行method的封装对象
      */
     private static Map<String, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
 
-    public static void addServiceClass(Class clazz) {
+    public static void addBranchClass(Class clazz) {
         StrategyBranch strategyBranch = (StrategyBranch) clazz.getDeclaredAnnotation(StrategyBranch.class);
         if (strategyBranch == null) {
             return;
@@ -90,30 +100,53 @@ public class StrategyRouteHelper {
      * @return
      */
     public static Class getUpperClass(Class clazz) {
-        // 确定主类
-        Class sup = clazz;
+//        // 确定主类
+//        Class upper = clazz;
+//        Class strategyMainClassToUse = null;
+//        while (upper != null) {
+//            if (isMain(upper)) {
+//                strategyMainClassToUse = upper;
+//                break;
+//            }
+//            upper = upper.getSuperclass();
+//        }
+//
+//        if (strategyMainClassToUse == null) {
+//            return null;
+//        }
+//        // 返回主类的第一个接口或直接返回主类
+//        Class[] interfaces = strategyMainClassToUse.getInterfaces();
+//        if (interfaces.length != 0) {
+//            return interfaces[0];
+//        } else {
+//            return strategyMainClassToUse;
+//        }
+        Class upper = clazz;
         Class strategyMainClassToUse = null;
-        while (sup != null) {
-            if (isMain(sup)) {
-                strategyMainClassToUse = sup;
-                break;
+        while (upper != null){
+            if (isMain(upper)) {
+                strategyMainClassToUse = upper;
             }
-            sup = sup.getSuperclass();
+            if(upper.getInterfaces().length != 0){
+                // 优先返回接口
+                return upper.getInterfaces()[0];
+            }
+            upper = upper.getSuperclass();
         }
-
-        if (strategyMainClassToUse == null) {
-            return null;
-        }
-        // 返回主类的第一个接口或直接返回主类
-        Class[] interfaces = strategyMainClassToUse.getInterfaces();
-        if (interfaces.length != 0) {
-            return interfaces[0];
-        } else {
+        if(strategyMainClassToUse != null){
+            // 无接口时优先返回main注解的上级类
             return strategyMainClassToUse;
         }
+        return clazz;
     }
 
-
+    /**
+     * 根据clazz从serviceClassMap中获取main所在的branch域，并根据routeKey获取branch
+     * @see #addBranchClass(Class) 方法添加branch时进行解析并加入serviceClassMap
+     * @param clazz
+     * @param routeKey
+     * @return
+     */
     public static Class getBranchClass(Class clazz, String routeKey) {
         Class upperClass = StrategyRouteHelper.getUpperClass(clazz);
         Map<String, Class> classMap = serviceClassMap.get(upperClass);
@@ -151,16 +184,9 @@ public class StrategyRouteHelper {
 
         private final Object target;
 
-        private final Object[] args;
-
-        public Invocation(Method method, Object target, Object... args) {
+        public Invocation(Method method, Object target) {
             this.method = method;
             this.target = target;
-            this.args = args;
-        }
-
-        public Object invoke() throws Throwable {
-            return invoke(args);
         }
 
         public Object invoke(Object... args) throws Throwable {

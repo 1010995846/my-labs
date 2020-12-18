@@ -6,6 +6,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.context.annotation.Configuration;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -21,12 +22,14 @@ public class OrgStrategyProxyConfig extends DefaultStrategyProxyAutoConfig {
 
     public static class OrgStrategyProxy extends AbstractStrategyProxy {
 
-        private int i = 0;
+        private AtomicInteger i = new AtomicInteger(0);
 
         @Override
         protected String getRouteKey(Object obj, Method method, Object[] args, MethodProxy methodProxy) {
             // 轮询调用
-            switch (i++%3){
+            switch (i.getAndIncrement()%3){
+                case 0:
+                    return "ext";
                 case 1:
                     return "school";
                 case 2:

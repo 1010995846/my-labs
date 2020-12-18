@@ -37,5 +37,6 @@ bean初始化时可以根据自定义注解set策略代理，解决自动注入�
 在spring bean的初始化前后会调用接口的所有实现，对bean进行处理。一般代理如AOP也是在此进行处理。
 示例中定义的`StrategyBeanPostProcessor`类，用来创建初始化并返回策略代理类。
 ####代理类
-`DefaultStrategyProxyAutoConfig`是一个注入原型策略代理示例的默认配置。通过重写`#getStrategyProxy()`方法，返回自定义的抽象类`AbstractStrategyProxy`实现类。
-抽象类`AbstractStrategyProxy`提供了`#getRouteKey(...)`方法进行重写。
+`DefaultStrategyProxyAutoConfig`是一个注入原型策略代理示例的默认配置。通过重写`#getStrategyProxy()`方法，返回抽象类`AbstractStrategyProxy`的实现类。
+`AbstractStrategyProxy`实现了接口`MethodInterceptor`，接口方法`intercept(...)`提供代理的实现。`#String getRouteKey(...)`抽象方法是抽象类`AbstractStrategyProxy`提供的，用于使用者自定义重写，获取路由的key值，key值对应branch类型或者branch的注解值。
+参照demo的`OrgStrategyProxyConfig`，策略调用为半轮询模式。

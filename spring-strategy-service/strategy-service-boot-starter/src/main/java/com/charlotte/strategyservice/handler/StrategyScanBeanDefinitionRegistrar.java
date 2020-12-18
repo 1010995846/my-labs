@@ -80,7 +80,7 @@ public class StrategyScanBeanDefinitionRegistrar implements ImportBeanDefinition
         }
 
         for (Class<?> candidate : candidates) {
-            StrategyRouteHelper.addServiceClass(candidate);
+            StrategyRouteHelper.addBranchClass(candidate);
         }
     }
 
