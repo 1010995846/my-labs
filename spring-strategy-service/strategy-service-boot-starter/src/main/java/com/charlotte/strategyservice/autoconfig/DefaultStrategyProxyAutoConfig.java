@@ -22,10 +22,10 @@ public class DefaultStrategyProxyAutoConfig {
     @Bean
     @Scope("prototype")
     public AbstractStrategyProxy getStrategyProxy() {
-        log.debug("使用默认的代理类。");
+        log.debug("use default proxy.");
         return new AbstractStrategyProxy() {
             @Override
-            protected String getRouteKey(Object obj, Method method, Object[] args, MethodProxy methodProxy) {
+            protected String[] getRouteKeys(Object obj, Method method, Object[] args, MethodProxy methodProxy) {
                 return null;
             }
         };

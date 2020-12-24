@@ -38,7 +38,7 @@ public class StrategyRouteHelper {
     /**
      * 缓存，(routeKey, 代理的method): 执行bean和执行method的封装对象
      */
-    private static Map<String, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
+    private static Map<Object, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
 
     public static void addBranchClass(Class clazz) {
         StrategyBranch strategyBranch = (StrategyBranch) clazz.getDeclaredAnnotation(StrategyBranch.class);
@@ -61,10 +61,17 @@ public class StrategyRouteHelper {
         }
     }
 
-    public static void cacheBean(String key, Method method, Invocation invocation) {
+    public static void cacheBean(String[] keys, Method method, Invocation invocation) {
         if(!enableCache){
             return;
         }
+        cacheBean((Object) keys, method, invocation);
+        for (String key : keys) {
+            cacheBean(key, method, invocation);
+        }
+    }
+
+    private static void cacheBean(Object key, Method method, Invocation invocation) {
         if(key == null){
             key = NULL_KEY;
         }
@@ -80,7 +87,7 @@ public class StrategyRouteHelper {
         beanCache.clear();
     }
 
-    public static Invocation getCache(String key, Method method) {
+    public static Invocation getCache(Object key, Method method) {
         if(!enableCache){
             return null;
         }
@@ -100,27 +107,6 @@ public class StrategyRouteHelper {
      * @return
      */
     public static Class getUpperClass(Class clazz) {
-//        // 确定主类
-//        Class upper = clazz;
-//        Class strategyMainClassToUse = null;
-//        while (upper != null) {
-//            if (isMain(upper)) {
-//                strategyMainClassToUse = upper;
-//                break;
-//            }
-//            upper = upper.getSuperclass();
-//        }
-//
-//        if (strategyMainClassToUse == null) {
-//            return null;
-//        }
-//        // 返回主类的第一个接口或直接返回主类
-//        Class[] interfaces = strategyMainClassToUse.getInterfaces();
-//        if (interfaces.length != 0) {
-//            return interfaces[0];
-//        } else {
-//            return strategyMainClassToUse;
-//        }
         Class upper = clazz;
         Class strategyMainClassToUse = null;
         while (upper != null){
@@ -134,7 +120,7 @@ public class StrategyRouteHelper {
             upper = upper.getSuperclass();
         }
         if(strategyMainClassToUse != null){
-            // 无接口时优先返回main注解的上级类
+            // 无接口时返回main注解的上级类
             return strategyMainClassToUse;
         }
         return clazz;

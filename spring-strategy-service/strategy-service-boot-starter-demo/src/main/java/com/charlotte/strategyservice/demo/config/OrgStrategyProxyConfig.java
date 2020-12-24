@@ -25,15 +25,15 @@ public class OrgStrategyProxyConfig extends DefaultStrategyProxyAutoConfig {
         private AtomicInteger i = new AtomicInteger(0);
 
         @Override
-        protected String getRouteKey(Object obj, Method method, Object[] args, MethodProxy methodProxy) {
+        protected String[] getRouteKeys(Object obj, Method method, Object[] args, MethodProxy methodProxy) {
             // 轮询调用
             switch (i.getAndIncrement()%3){
                 case 0:
-                    return "ext";
+                    return new String[]{"ext"};
                 case 1:
-                    return "school";
+                    return new String[]{"school"};
                 case 2:
-                    return "hosp";
+                    return new String[]{"hosp"};
                 default:
                     return null;
             }

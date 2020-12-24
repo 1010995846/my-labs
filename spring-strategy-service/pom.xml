@@ -4,19 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.charlotte</groupId>
-        <artifactId>spring-boot-demo</artifactId>
+        <artifactId>my-labs</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>com.charlotte</groupId>
     <artifactId>spring-strategy-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>spring-strategy-service</name>
-    <description>Demo project for Spring Boot</description>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -36,15 +28,6 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
     <modules>
         <module>strategy-service-boot-starter</module>

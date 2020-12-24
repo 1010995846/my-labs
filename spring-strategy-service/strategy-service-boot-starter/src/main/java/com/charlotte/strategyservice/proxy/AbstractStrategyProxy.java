@@ -1,5 +1,6 @@
 package com.charlotte.strategyservice.proxy;
 
+import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -36,29 +37,25 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
      */
     @Override
     public final Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        log.debug("调用{}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
+        log.debug("call {}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
         // 获取routeKey。getRouteKey()是抽象方法，用于重写，提供自定义的获取方案
-        String routeKey = getRouteKey(obj, method, args, methodProxy);
-        log.debug("routeKey = {}", routeKey);
+        String[] routeKeys = getRouteKeys(obj, method, args, methodProxy);
+        log.debug("routeKeys = {}", Arrays.toString(routeKeys));
         StrategyRouteHelper.Invocation invocationToUse;
         // 尝试获取缓存
-        if ((invocationToUse = StrategyRouteHelper.getCache(routeKey, method)) != null) {
+        if ((invocationToUse = StrategyRouteHelper.getCache(routeKeys, method)) != null) {
             // 命中缓存
             return invocationToUse.invoke(args);
         }
         // 无缓存，开始解析
         // 尝试映射到对应的branchClass
-        Class serviceClassToUse = StrategyRouteHelper.getBranchClass(ClassUtils.getUserClass(obj.getClass()), routeKey);
+        Class serviceClassToUse;
         Object result;
-        if (serviceClassToUse == null) {
-            // 映射不存在对应的branchClass
-            log.debug("调用默认类。");
-            // 调用获取默认bean和method的方法，默认为代理的mainBean和method，可重写修改
-            Object beanToUse = getDefaultBeanToUse(obj, method, args, methodProxy, routeKey);
-            Method methodToUse = getDefaultMethodToUse(obj, method, args, methodProxy, routeKey);
-            invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
-            result = invocationToUse.invoke(args);
-        } else {
+        for (String routeKey : routeKeys) {
+            serviceClassToUse = StrategyRouteHelper.getBranchClass(ClassUtils.getUserClass(obj.getClass()), routeKey);
+            if(serviceClassToUse == null){
+                continue;
+            }
             // 映射到了branchClass，进行初始化
             log.debug("serviceClassToUse = {}", serviceClassToUse);
             String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
@@ -77,13 +74,21 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
                 Method methodToUse = MethodUtils.getMatchingMethod(
                         serviceClassToUse, method.getName(), method.getParameterTypes());
                 invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
-                // TODO Charlotte: 2020/11/25  执行时需保证bean依旧在spring容器中，否则概率在解析依赖时会抛出noSuchBean
                 result = invocationToUse.invoke(args);
+                StrategyRouteHelper.cacheBean(routeKeys, method, invocationToUse);
+                return result;
             }
         }
-        log.debug("调用完成。");
+        // 映射不存在对应的branchClass
+        log.debug("call main service。");
+        // 调用获取默认bean和method的方法，默认为代理的mainBean和method，可重写修改
+        Object beanToUse = getDefaultBeanToUse(obj, method, args, methodProxy, routeKeys);
+        Method methodToUse = getDefaultMethodToUse(obj, method, args, methodProxy, routeKeys);
+        invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
+        result = invocationToUse.invoke(args);
         // 缓存
-        StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
+        StrategyRouteHelper.cacheBean(routeKeys, method, invocationToUse);
+        log.debug("method invoke。");
         return result;
     }
 
@@ -95,15 +100,21 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         this.bean = bean;
     }
 
-    protected Method getDefaultMethodToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String routeKey) {
+    protected Method getDefaultMethodToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKey) {
         return method;
     }
 
-    protected Object getDefaultBeanToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String routeKey) {
+    protected Object getDefaultBeanToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKey) {
         return bean;
     }
 
-    ;
-
-    protected abstract String getRouteKey(Object obj, Method method, Object[] args, MethodProxy methodProxy);
+    /**
+     * 路由key，匹配对应接口/父类下属的分支{@link StrategyBranch#value()}
+     * @param obj
+     * @param method
+     * @param args
+     * @param methodProxy
+     * @return
+     */
+    protected abstract String[] getRouteKeys(Object obj, Method method, Object[] args, MethodProxy methodProxy);
 }

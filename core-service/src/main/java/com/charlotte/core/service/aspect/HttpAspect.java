@@ -17,8 +17,8 @@ public class HttpAspect {
     private final static Logger logger = LoggerFactory.getLogger(HttpAspect.class);
 
 //    @Pointcut("execution(public * com.charlotte.core.service.controller.*Controller.*(..)))")
-    @Pointcut("(execution(public * com.charlotte.demo.modules..*.web.*Controller.*(..)))" +
-            "|| execution(public * com.charlotte.demo.modules..*.controller.*Controller.*(..))))" +
+    @Pointcut("(execution(public * com.charlotte.core.service.web.*Controller.*(..)))" +
+            "|| execution(public * com.charlotte.core.service.controller.*Controller.*(..))))" +
             "&& @target(com.charlotte.demo.proxy.scan2.HsfComponent)")
 //            "&& @annotation(com.charlotte.demo.proxy.scan2.HsfComponent)")
 //            "&& @args(com.charlotte.demo.proxy.scan2.HsfComponent)")
