@@ -30,6 +30,7 @@
     </dependencies>
 
     <modules>
+        <module>lab-base</module>
         <module>lab-jvm</module>
         <module>lab-lambda</module>
         <module>lab-leetcode</module>

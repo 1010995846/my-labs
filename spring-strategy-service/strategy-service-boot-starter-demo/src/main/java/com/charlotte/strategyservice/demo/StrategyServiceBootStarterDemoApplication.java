@@ -27,12 +27,16 @@ public class StrategyServiceBootStarterDemoApplication {
         /**
          * 调用无接口实例，需要main为branch的父类之一
          */
-//        OrgFacade noImplBean = context.getBean(OrgFacade.class);
-//        noImplBean.print();
-//        noImplBean.print();
-//        noImplBean.print();
-//        noImplBean.print();
-//        noImplBean.print();
+//        Object rootFacade = context.getBean("rootFacade");
+//        System.out.println();
+        // TODO Charlotte: 2020/12/24 当未实现接口时若同时存在spring注解注入的分支，context.getBean(...)的所有重载方法均获取不到主类，疑似与被代理，getClass()不同有关
+        Object orgFacade = context.getBean("orgFacade");
+        OrgFacade noImplBean = context.getBean(OrgFacade.class);
+        noImplBean.print();
+        noImplBean.print();
+        noImplBean.print();
+        noImplBean.print();
+        noImplBean.print();
     }
 
 }

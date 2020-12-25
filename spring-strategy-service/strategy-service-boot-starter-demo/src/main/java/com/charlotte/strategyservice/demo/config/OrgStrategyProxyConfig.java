@@ -27,7 +27,7 @@ public class OrgStrategyProxyConfig extends DefaultStrategyProxyAutoConfig {
         @Override
         protected String[] getRouteKeys(Object obj, Method method, Object[] args, MethodProxy methodProxy) {
             // 轮询调用
-            switch (i.getAndIncrement()%3){
+            switch (i.getAndIncrement() % 3){
                 case 0:
                     return new String[]{"ext"};
                 case 1:

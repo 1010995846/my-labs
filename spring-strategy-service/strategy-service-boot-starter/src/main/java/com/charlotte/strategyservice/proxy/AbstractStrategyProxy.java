@@ -4,6 +4,7 @@ import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.cglib.proxy.MethodInterceptor;
@@ -27,6 +28,10 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
 
     protected DefaultListableBeanFactory beanFactory;
 
+    public void init() {
+//        beanFactory.getBeansWithAnnotation(StrategyBranch.class);
+    }
+
     /**
      * @param obj         执行类
      * @param method      执行方法
@@ -38,7 +43,7 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
     @Override
     public final Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         log.debug("call {}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
-        // 获取routeKey。getRouteKey()是抽象方法，用于重写，提供自定义的获取方案
+        // 获取routeKey。getRouteKeys()是抽象方法，用于重写，提供自定义的获取方案
         String[] routeKeys = getRouteKeys(obj, method, args, methodProxy);
         log.debug("routeKeys = {}", Arrays.toString(routeKeys));
         StrategyRouteHelper.Invocation invocationToUse;
@@ -49,46 +54,49 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         }
         // 无缓存，开始解析
         // 尝试映射到对应的branchClass
-        Class serviceClassToUse;
+        Class serviceClassToUse = null;
         Object result;
         for (String routeKey : routeKeys) {
             serviceClassToUse = StrategyRouteHelper.getBranchClass(ClassUtils.getUserClass(obj.getClass()), routeKey);
-            if(serviceClassToUse == null){
-                continue;
-            }
-            // 映射到了branchClass，进行初始化
-            log.debug("serviceClassToUse = {}", serviceClassToUse);
-            String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
-
-            // 避免并发时branch重复注入spring
-            synchronized (serviceClassToUse) {
-                if (!beanFactory.containsBean(serviceNameToUse)) {
-                    // branch未注册时，注入spring，完成依赖
-                    RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
-                    beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
-                }
-                Object beanToUse = beanFactory.getBean(serviceNameToUse);
-                // 移除，防止spring容器中存在多个实例
-                beanFactory.removeBeanDefinition(serviceNameToUse);
-
-                Method methodToUse = MethodUtils.getMatchingMethod(
-                        serviceClassToUse, method.getName(), method.getParameterTypes());
-                invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
-                result = invocationToUse.invoke(args);
-                StrategyRouteHelper.cacheBean(routeKeys, method, invocationToUse);
-                return result;
+            if (serviceClassToUse != null) {
+                // 命中branch
+                break;
             }
         }
-        // 映射不存在对应的branchClass
-        log.debug("call main service。");
-        // 调用获取默认bean和method的方法，默认为代理的mainBean和method，可重写修改
-        Object beanToUse = getDefaultBeanToUse(obj, method, args, methodProxy, routeKeys);
-        Method methodToUse = getDefaultMethodToUse(obj, method, args, methodProxy, routeKeys);
+        log.debug("serviceClassToUse = {}", serviceClassToUse);
+        // 映射到了branchClass
+        Object beanToUse = null;
+        Method methodToUse = null;
+        if (serviceClassToUse != null) {
+            try {
+                beanToUse = beanFactory.getBean(serviceClassToUse);
+            } catch (BeansException e) {
+                log.debug("no bean, to inject.");
+                // 未注入容器中，进行懒注入
+                String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
+                // 避免并发时branch重复注入spring
+                synchronized (serviceClassToUse) {
+                    if (!beanFactory.containsBean(serviceNameToUse)) {
+                        // branch未注册时，注入spring，完成依赖
+                        RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
+                        beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+                    }
+                    beanToUse = beanFactory.getBean(serviceNameToUse);
+                }
+            }
+            methodToUse = MethodUtils.getMatchingMethod(serviceClassToUse, method.getName(), method.getParameterTypes());
+        }
+        if (beanToUse == null) {
+            // 映射不存在对应的branchClass
+            // 调用获取默认bean和method的方法，默认为代理的mainBean和method，可重写修改
+            log.debug("call main service。");
+            beanToUse = getDefaultBeanToUse(obj, method, args, methodProxy, routeKeys);
+            methodToUse = getDefaultMethodToUse(obj, method, args, methodProxy, routeKeys);
+        }
         invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
         result = invocationToUse.invoke(args);
-        // 缓存
-        StrategyRouteHelper.cacheBean(routeKeys, method, invocationToUse);
         log.debug("method invoke。");
+        StrategyRouteHelper.cacheBean(routeKeys, method, invocationToUse);
         return result;
     }
 
@@ -100,16 +108,17 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         this.bean = bean;
     }
 
-    protected Method getDefaultMethodToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKey) {
+    protected Method getDefaultMethodToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKeys) {
         return method;
     }
 
-    protected Object getDefaultBeanToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKey) {
-        return bean;
+    protected Object getDefaultBeanToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKeys) {
+        return obj;
     }
 
     /**
      * 路由key，匹配对应接口/父类下属的分支{@link StrategyBranch#value()}
+     *
      * @param obj
      * @param method
      * @param args
