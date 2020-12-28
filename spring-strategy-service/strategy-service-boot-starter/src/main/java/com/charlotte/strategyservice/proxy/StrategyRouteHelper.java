@@ -4,6 +4,7 @@ import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.charlotte.strategyservice.annotation.StrategyMain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,7 +42,7 @@ public class StrategyRouteHelper {
     private static Map<Object, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
 
     public static void addBranchClass(Class clazz) {
-        StrategyBranch strategyBranch = (StrategyBranch) clazz.getDeclaredAnnotation(StrategyBranch.class);
+        StrategyBranch strategyBranch = AnnotationUtils.findAnnotation(clazz, StrategyBranch.class);
         if (strategyBranch == null) {
             return;
         }
@@ -157,7 +158,7 @@ public class StrategyRouteHelper {
     }
 
     public static boolean isBranch(Class clazz){
-        return clazz.getAnnotation(StrategyBranch.class) != null;
+        return AnnotationUtils.findAnnotation(clazz, StrategyBranch.class) != null;
     }
 
     public static void setEnableCache(boolean enableCache) {
