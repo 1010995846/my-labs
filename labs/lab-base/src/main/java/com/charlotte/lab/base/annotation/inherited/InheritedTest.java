@@ -21,6 +21,8 @@ public class InheritedTest {
         /**
          * 总结，@Inherited注解的继承关系只对实现类、实现方法生效，对接口、接口方法、注解均不生效
          */
+
+        annotations = SInheritedAnnotationService.class.getAnnotations();
         return;
     }
 
