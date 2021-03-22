@@ -8,21 +8,24 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * @author Charlotte
+ */
 @SpringBootApplication
 public class StrategyServiceBootStarterDemoApplication {
 
-    public static void main(String[] args) throws IllegalAccessException, InstantiationException {
+    public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(StrategyServiceBootStarterDemoApplication.class, args);
 
         /**
          * 调用接口实例
          */
         IOrgService implBean = context.getBean(IOrgService.class);
-        System.out.println(implBean.getName());
-        System.out.println(implBean.getName());
-        System.out.println(implBean.getName());
-        System.out.println(implBean.getName());
-        System.out.println(implBean.getName());
+        System.out.println("name = " + implBean.getName());
+        System.out.println("name = " + implBean.getName());
+        System.out.println("name = " + implBean.getName());
+        System.out.println("name = " + implBean.getName());
+        System.out.println("name = " + implBean.getName());
 
         /**
          * 调用无接口实例，需要main为branch的父类之一

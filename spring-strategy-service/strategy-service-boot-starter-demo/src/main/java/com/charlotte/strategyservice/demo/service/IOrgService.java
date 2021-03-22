@@ -5,6 +5,6 @@ package com.charlotte.strategyservice.demo.service;
  */
 public interface IOrgService {
 
-    public String getName();
+    String getName();
 
 }

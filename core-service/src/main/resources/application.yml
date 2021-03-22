@@ -1,6 +1,10 @@
 spring:
   datasource:
-    url: jdbc:mysql://192.168.44.90:3306/ihp?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: ihp
-    password: ihp
-    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mylabs?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

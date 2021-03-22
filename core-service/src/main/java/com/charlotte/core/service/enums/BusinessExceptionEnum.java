@@ -3,12 +3,16 @@ package com.charlotte.core.service.enums;
 
 import com.charlotte.core.service.exception.BusinessException;
 
+/**
+ * 异常定义
+ * @author Charlotte
+ */
 public enum BusinessExceptionEnum implements IBaseException, Assert {
 
     SUCCESS("0000", "成功"),
-    SERVER_ERROR("0201", "服务器错误"),
-    SYSTEM_ERROR("0400", "系统错误"),
-    PARAM_ERROR("0601", "参数错误"),
+    SERVER_ERROR("0500", "服务器错误"),
+    BUSINESS_ERROR("0600", "业务异常"),
+    PARAM_ERROR("0601", "参数为空"),
     VALID_ERROR("0602", "校验失败"),
     UNKNOW_ERROR("9999", "未知错误"),
     ;

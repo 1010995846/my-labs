@@ -10,7 +10,7 @@ public class DogService extends AbstractAniService {
     private String name = "二哈";
 
     @Override
-    public void run(){
+    public void run() {
         System.out.println("Dog is running.");
     }
 

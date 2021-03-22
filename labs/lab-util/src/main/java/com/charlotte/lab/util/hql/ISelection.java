@@ -5,5 +5,6 @@ public interface ISelection extends ISql {
     public StringBuilder generate();
 
     public ISelection alias(String alias);
+
     public String getAlias();
 }

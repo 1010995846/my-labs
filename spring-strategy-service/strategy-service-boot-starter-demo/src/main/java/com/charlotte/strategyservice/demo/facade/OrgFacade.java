@@ -1,10 +1,10 @@
 package com.charlotte.strategyservice.demo.facade;
 
-import com.charlotte.strategyservice.annotation.StrategyMain;
+import com.charlotte.strategyservice.annotation.StrategyMaster;
 import org.springframework.context.annotation.Primary;
 
 @Primary
-@StrategyMain
+@StrategyMaster
 public class OrgFacade {
 
     public void print(){

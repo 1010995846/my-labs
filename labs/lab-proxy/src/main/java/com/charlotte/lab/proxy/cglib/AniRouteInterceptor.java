@@ -21,11 +21,10 @@ public class AniRouteInterceptor implements MethodInterceptor {
     private Class interfaceClass;
 
     /**
-     *
-     * @param obj 执行类
-     * @param method    执行方法
-     * @param args   参数
-     * @param methodProxy   代理方法
+     * @param obj         执行类
+     * @param method      执行方法
+     * @param args        参数
+     * @param methodProxy 代理方法
      * @return
      * @throws Throwable
      */
@@ -36,7 +35,7 @@ public class AniRouteInterceptor implements MethodInterceptor {
         Class<?> instanceClass = classMap.get(interfaceClass).get(0);
         String beanName = "cat";
         Object instance = null;
-        if(!beanFactory.containsBean(beanName)) {
+        if (!beanFactory.containsBean(beanName)) {
             RootBeanDefinition beanDefinition = new RootBeanDefinition(instanceClass);
             beanFactory.registerBeanDefinition(beanName, beanDefinition);
         }

@@ -1,4 +1,11 @@
+# 效果
+
+
+
+
+
 # 使用说明
+
 ## 配置类
 继承`DefaultStrategyProxyAutoConfig`配置类并重写`#getStrategyProxy()`方法。
 `#getStrategyProxy()`方法返回一个`AbstractStrategyProxy`对象，以原型模式注入到spring beanFactory中。

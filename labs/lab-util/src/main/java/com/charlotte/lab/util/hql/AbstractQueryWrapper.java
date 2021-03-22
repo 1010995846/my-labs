@@ -21,18 +21,20 @@ public class AbstractQueryWrapper<T, R, Children extends AbstractQueryWrapper<T,
 
     @Override
     public Children eq(boolean condition, R column, Object val) {
-        if(condition){
+        if (condition) {
 //            expressList.add(Express.equals(column, val));
             return doIt(condition, () -> columnToString(column), SqlKeyword.EQ, () -> formatSql("{0}", val));
         }
         return typedThis;
     }
+
     protected Children doIt(boolean condition, Supplier... sqlSegments) {
         if (condition) {
             expressList.add(sqlSegments);
         }
         return typedThis;
     }
+
     protected String columnToString(R column) {
         if (column instanceof String) {
             return (String) column;
@@ -44,6 +46,7 @@ public class AbstractQueryWrapper<T, R, Children extends AbstractQueryWrapper<T,
     protected final String formatSql(String sqlStr, Object... params) {
         return "sql";
     }
+
     @Override
     public Children ne(boolean condition, R column, Object val) {
         return typedThis;

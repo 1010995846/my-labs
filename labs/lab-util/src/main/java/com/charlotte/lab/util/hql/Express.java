@@ -20,6 +20,7 @@ public abstract class Express implements IExpress {
             return new StringBuilder(left).append(" ").append(opt).append(right).append(" ");
         }
     }
+
     static class IsNullExpress extends Express {
 
         private IsNullExpress(String left) {
@@ -31,6 +32,7 @@ public abstract class Express implements IExpress {
             return new StringBuilder(left).append(" IS NULL ");
         }
     }
+
     static class InExpress extends Express {
         protected String[] right;
 
@@ -44,6 +46,7 @@ public abstract class Express implements IExpress {
             return new StringBuilder(left).append(" IN (").append(StringUtils.join(right, ",")).append(") ");
         }
     }
+
     static class LogicExpress extends Express {
         protected IExpress left;
         protected String opt;
@@ -59,11 +62,11 @@ public abstract class Express implements IExpress {
         @Override
         public StringBuilder generateExpress() {
             StringBuilder builder = new StringBuilder(left.generate()).append(" ").append(opt).append(" ");
-            if(!prior){
+            if (!prior) {
                 builder.append("(");
             }
             builder.append(right.generate());
-            if(!prior){
+            if (!prior) {
                 builder.append(")");
             }
             builder.append(" ");
@@ -71,46 +74,49 @@ public abstract class Express implements IExpress {
         }
     }
 
-    public static Express equals(String name, String value){
+    public static Express equals(String name, String value) {
         return new DefaultExpress(name, "=", value);
     }
 
-    public static Express notEquals(String name, String value){
+    public static Express notEquals(String name, String value) {
         return new DefaultExpress(name, "!=", value);
     }
 
-    public static Express in(String name, String... value){
-        return new InExpress(name,  value);
+    public static Express in(String name, String... value) {
+        return new InExpress(name, value);
     }
 
-    public static Express isNull(String name){
+    public static Express isNull(String name) {
         return new IsNullExpress(name);
     }
 
-    public Express and(IExpress express){
+    public Express and(IExpress express) {
         return new LogicExpress(this, "AND", express);
     }
 
     /**
      * 优先and
+     *
      * @param express
      * @return
      */
-    public Express andPrior(IExpress express){
+    public Express andPrior(IExpress express) {
         LogicExpress and = new LogicExpress(this, "AND", express);
         and.prior = true;
         return and;
     }
-    public Express or(IExpress express){
+
+    public Express or(IExpress express) {
         return new LogicExpress(this, "OR", express);
     }
 
     /**
      * 优先or
+     *
      * @param express
      * @return
      */
-    public Express orPrior(IExpress express){
+    public Express orPrior(IExpress express) {
         LogicExpress or = new LogicExpress(this, "OR", express);
         or.prior = true;
         return or;

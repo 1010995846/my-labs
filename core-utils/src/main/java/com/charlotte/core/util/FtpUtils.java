@@ -1,11 +1,10 @@
 package com.charlotte.core.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.SocketException;
@@ -19,9 +18,9 @@ import java.util.List;
  * @author funcas
  * @since 2016.7.20
  */
+@Slf4j
 public class FtpUtils {
 
-    private static Logger log = LoggerFactory.getLogger(FtpUtils.class);
     private FTPClient ftp;
 
     public FtpUtils() {

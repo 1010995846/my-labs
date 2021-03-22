@@ -10,16 +10,17 @@ public class CallService {
     @Autowired
     private IAniService ani;
 
-    public void call(){
+    public void call() {
         System.out.println("call");
         ani.run();
 //        od(null, null);
     }
 
-    public void od(DogService dog1, DogService dog2){
+    public void od(DogService dog1, DogService dog2) {
 
     }
-    public void od(DogService dog1, CatService catService1){
+
+    public void od(DogService dog1, CatService catService1) {
 
     }
 }

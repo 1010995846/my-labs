@@ -1,7 +1,7 @@
 package com.charlotte.strategyservice.proxy;
 
 import com.charlotte.strategyservice.annotation.StrategyBranch;
-import com.charlotte.strategyservice.annotation.StrategyMain;
+import com.charlotte.strategyservice.annotation.StrategyMaster;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -34,12 +34,12 @@ public class StrategyRouteHelper {
      * 是否允许缓存，默认开启，调试时可关闭
      * @see #setEnableCache(boolean)
      */
-    private static boolean enableCache = false;
+    private static boolean enableCache = true;
 
     /**
      * 缓存，(routeKey, 代理的method): 执行bean和执行method的封装对象
      */
-    private static Map<Object, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
+    private static Map<String, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
 
     public static void addBranchClass(Class clazz) {
         StrategyBranch strategyBranch = AnnotationUtils.findAnnotation(clazz, StrategyBranch.class);
@@ -62,17 +62,10 @@ public class StrategyRouteHelper {
         }
     }
 
-    public static void cacheBean(String[] keys, Method method, Invocation invocation) {
+    public static void cacheBean(String key, Method method, Invocation invocation) {
         if(!enableCache){
             return;
         }
-        cacheBean((Object) keys, method, invocation);
-        for (String key : keys) {
-            cacheBean(key, method, invocation);
-        }
-    }
-
-    private static void cacheBean(Object key, Method method, Invocation invocation) {
         if(key == null){
             key = NULL_KEY;
         }
@@ -88,7 +81,20 @@ public class StrategyRouteHelper {
         beanCache.clear();
     }
 
-    public static Invocation getCache(Object key, Method method) {
+    public static Invocation getCache(String[] keys, Method method) {
+        if(!enableCache){
+            return null;
+        }
+        Invocation invocation;
+        for (String key : keys) {
+            if((invocation = getCache(key, method)) != null){
+                return invocation;
+            }
+        }
+        return null;
+    }
+
+    public static Invocation getCache(String key, Method method) {
         if(!enableCache){
             return null;
         }
@@ -111,7 +117,7 @@ public class StrategyRouteHelper {
         Class upper = clazz;
         Class strategyMainClassToUse = null;
         while (upper != null){
-            if (isMain(upper)) {
+            if (isMaster(upper)) {
                 strategyMainClassToUse = upper;
             }
             if(upper.getInterfaces().length != 0){
@@ -121,7 +127,7 @@ public class StrategyRouteHelper {
             upper = upper.getSuperclass();
         }
         if(strategyMainClassToUse != null){
-            // 无接口时返回main注解的上级类
+            // 无接口时优先返回main注解的上级类
             return strategyMainClassToUse;
         }
         return clazz;
@@ -143,13 +149,13 @@ public class StrategyRouteHelper {
         return classMap.get(routeKey);
     }
 
-    public static boolean isMain(Object bean) {
+    public static boolean isMaster(Object bean) {
         Class realClass = AopUtils.getTargetClass(bean);
-        return isMain(realClass);
+        return isMaster(realClass);
     }
 
-    public static boolean isMain(Class clazz){
-        return clazz.getAnnotation(StrategyMain.class) != null;
+    public static boolean isMaster(Class clazz){
+        return clazz.getAnnotation(StrategyMaster.class) != null;
     }
 
     public static boolean isBranch(Object bean){

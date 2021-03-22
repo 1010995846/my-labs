@@ -1,6 +1,5 @@
 package com.charlotte.strategyservice.handler;
 
-import com.charlotte.strategyservice.annotation.StrategyMain;
 import com.charlotte.strategyservice.utils.ClassHelper;
 import com.charlotte.strategyservice.proxy.AbstractStrategyProxy;
 import com.charlotte.strategyservice.proxy.StrategyRouteHelper;
@@ -26,7 +25,7 @@ public class StrategyBeanPostProcessor implements BeanPostProcessor, BeanFactory
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         try {
-            if (StrategyRouteHelper.isMain(bean) && !StrategyRouteHelper.isBranch(bean)) {
+            if (StrategyRouteHelper.isMaster(bean) && !StrategyRouteHelper.isBranch(bean)) {
                 return createProxy(bean);
             }
         } catch (Exception e) {

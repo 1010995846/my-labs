@@ -4,7 +4,6 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.springframework.util.StopWatch;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

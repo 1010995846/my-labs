@@ -1,43 +1,30 @@
 package com.charlotte.core.service.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
 
-import java.text.ParseException;
 
+/**
+ * @author Charlotte
+ */
 @Data
 @EqualsAndHashCode
-public class User /*implements UserDetails*/ {
+@TableName("sys_user")
+public class User extends Model<User> {
 
-    private String id;
+    @TableId(value = "ID", type = IdType.AUTO)
+    private Integer id;
+
     private String name;
 
     public User() {
     }
-
-    public User(String id) {
-        this.id = id;
-    }
-
-    public static void main(String[] args) throws ParseException {
-
-//        Calendar calendar = Calendar.getInstance();
-//        System.out.println(calendar.getTime());
-//        Date date = new SimpleDateFormat("yyyy/mm/dd").parse("2019/04/15");
-//        System.out.println(new SimpleDateFormat("yyyy/mm/dd").format(date));
-
-        Thread thread;
-
-        User u1 = new User("111");
-        User u2 = new User("111");
-        System.out.println("u1.toString() = " + u1.toString() + ", u1.hashCode() = " + u1.hashCode());
-        System.out.println("u2.toString() = " + u2.toString() + ", u2.hashCode() = " + u2.hashCode());
-        System.out.println(u1.canEqual(u2));
-        System.out.println(u1.equals(u2));
-    }
-
 
 //    @Override
 //    public Collection<? extends GrantedAuthority> getAuthorities() {

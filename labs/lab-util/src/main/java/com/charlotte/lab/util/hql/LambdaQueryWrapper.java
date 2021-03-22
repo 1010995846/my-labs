@@ -19,7 +19,7 @@ public class LambdaQueryWrapper<T> extends AbstractQueryWrapper<T, SFunction<T, 
         return typedThis;
     }
 
-    private <F> LambdaQueryWrapper<T> left(SFunction<T, ?> leftWhere, SFunction<F, ?> rightWhere, SFunction<LambdaQueryWrapper<F>, ?> fun){
+    private <F> LambdaQueryWrapper<T> left(SFunction<T, ?> leftWhere, SFunction<F, ?> rightWhere, SFunction<LambdaQueryWrapper<F>, ?> fun) {
 
         return typedThis;
     }
@@ -31,7 +31,7 @@ public class LambdaQueryWrapper<T> extends AbstractQueryWrapper<T, SFunction<T, 
                 .left(User::getDeptId, Dept::getId,
                         deptLambdaQueryWrapper -> deptLambdaQueryWrapper
                                 .select(Dept::getName).eq(Dept::getDeleted, "0"))
-                ;
+        ;
     }
 
 }

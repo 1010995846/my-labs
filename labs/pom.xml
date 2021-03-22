@@ -39,5 +39,6 @@
         <module>lab-rpc</module>
         <module>lab-thread</module>
         <module>lab-util</module>
+        <module>lab-spring</module>
     </modules>
 </project>

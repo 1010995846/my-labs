@@ -11,7 +11,7 @@ import java.net.Socket;
 public class RpcFramework {
     public static void export(Object service, int port) throws Exception {
         ServerSocket server = new ServerSocket(port);
-        while(true) {
+        while (true) {
             Socket socket = server.accept();
             new Thread(new Runnable() {
                 @SneakyThrows
@@ -32,8 +32,9 @@ public class RpcFramework {
             }).start();
         }
     }
-    public static <T> T refer (Class<T> interfaceClass, String host, int port) throws Exception {
-        return  (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] {interfaceClass},
+
+    public static <T> T refer(Class<T> interfaceClass, String host, int port) throws Exception {
+        return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass},
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {

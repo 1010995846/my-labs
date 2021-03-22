@@ -21,10 +21,10 @@ public class CglibProxy implements MethodInterceptor {
     }
 
     /**
-     * @param obj 执行类
-     * @param method    执行方法
-     * @param args   参数
-     * @param methodProxy   代理方法
+     * @param obj         执行类
+     * @param method      执行方法
+     * @param args        参数
+     * @param methodProxy 代理方法
      * @return
      * @throws Throwable
      */
@@ -54,7 +54,7 @@ public class CglibProxy implements MethodInterceptor {
         // Callbacks有且仅有一个且未设置此项时，默认对象返回0
         // Callbacks为复数时，必须设置此项
         enhancer.setCallbackFilter(method -> {
-            if("run".equals(method.getName())){
+            if ("run".equals(method.getName())) {
                 // 执行2号Callback
                 return 1;
             }
