@@ -1,15 +1,9 @@
 package com.charlotte.strategyservice.annotation;
 
-import com.charlotte.strategyservice.autoconfig.DefaultStrategyProxyAutoConfig;
-import com.charlotte.strategyservice.handler.StrategyBeanPostProcessor;
-import com.charlotte.strategyservice.handler.StrategyScanBeanDefinitionRegistrar;
-import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Service;
+import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.annotation.*;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.reflect.Method;
 
 /**
  * @author Charlotte
@@ -17,8 +11,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({StrategyScanBeanDefinitionRegistrar.class, StrategyBeanPostProcessor.class, DefaultStrategyProxyAutoConfig.class})
 public @interface StrategyBranch {
 
-    String[] value() default {};
+    /**
+     * 路由映射值
+     * 对应{@link com.charlotte.strategyservice.proxy.AbstractStrategyProxy#getRouteKeys(Object, Method, Object[], MethodProxy)}的返回值
+     */
+    String[] value();
+
 }

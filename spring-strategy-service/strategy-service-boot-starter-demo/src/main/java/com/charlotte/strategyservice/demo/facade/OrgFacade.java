@@ -3,7 +3,9 @@ package com.charlotte.strategyservice.demo.facade;
 import com.charlotte.strategyservice.annotation.StrategyMaster;
 import org.springframework.context.annotation.Primary;
 
-@Primary
+/**
+ * @author Charlotte
+ */
 @StrategyMaster
 public class OrgFacade {
 

@@ -1,11 +1,14 @@
-package com.charlotte.strategyservice.demo.facade;
+package com.charlotte.strategyservice.demo.facade.org;
 
 import com.charlotte.strategyservice.annotation.StrategyBranch;
+import com.charlotte.strategyservice.demo.facade.OrgFacade;
 import org.springframework.stereotype.Service;
 
-//@Service
+/**
+ * @author Charlotte
+ */
 @StrategyBranch("hosp")
-public class HospFacade extends OrgFacade{
+public class HospFacade extends OrgFacade {
 
     @Override
     public void print() {

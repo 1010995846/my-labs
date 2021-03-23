@@ -1,8 +1,9 @@
-package com.charlotte.strategyservice.demo.service.impl;
+package com.charlotte.strategyservice.demo.service.impl.org;
 
 import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.charlotte.strategyservice.demo.annotation.HospBranch;
 import com.charlotte.strategyservice.demo.service.IOrgService;
+import com.charlotte.strategyservice.demo.service.impl.OrgService;
 
 /**
  * @author Charlotte

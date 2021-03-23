@@ -8,8 +8,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -46,13 +45,13 @@ public class StrategyRouteHelper {
         if (strategyBranch == null) {
             return;
         }
-        Class upperClassToUse = getUpperClass(clazz);
 
+        Class port = getPortClass(clazz);
         // 分支路由配置
-        Map<String, Class> branchClassMap = serviceClassMap.get(upperClassToUse);
+        Map<String, Class> branchClassMap = serviceClassMap.get(port);
         if (branchClassMap == null) {
             branchClassMap = new HashMap<>();
-            serviceClassMap.put(upperClassToUse, branchClassMap);
+            serviceClassMap.put(port, branchClassMap);
         }
         // 默认路由key：类名
         branchClassMap.put(clazz.getSimpleName(), clazz);
@@ -113,7 +112,7 @@ public class StrategyRouteHelper {
      * @param clazz
      * @return
      */
-    public static Class getUpperClass(Class clazz) {
+    public static Class getPortClass(Class clazz) {
         Class upper = clazz;
         Class strategyMainClassToUse = null;
         while (upper != null){
@@ -141,12 +140,12 @@ public class StrategyRouteHelper {
      * @return
      */
     public static Class getBranchClass(Class clazz, String routeKey) {
-        Class upperClass = StrategyRouteHelper.getUpperClass(clazz);
-        Map<String, Class> classMap = serviceClassMap.get(upperClass);
-        if (classMap == null) {
+        Class portClass = getPortClass(clazz);
+        Map<String, Class> branchClassMap = serviceClassMap.get(portClass);
+        if (branchClassMap == null) {
             return null;
         }
-        return classMap.get(routeKey);
+        return branchClassMap.get(routeKey);
     }
 
     public static boolean isMaster(Object bean) {

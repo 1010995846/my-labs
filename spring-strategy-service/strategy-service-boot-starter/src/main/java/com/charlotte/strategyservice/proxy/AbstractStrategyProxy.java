@@ -1,5 +1,6 @@
 package com.charlotte.strategyservice.proxy;
 
+import com.charlotte.strategyservice.annotation.StategyRoute;
 import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         log.debug("call: {}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
         // 获取routeKey。getRouteKeys()是抽象方法，用于重写，提供自定义的获取方案
         String[] routeKeys = getRouteKeys(obj, method, args, methodProxy);
+        if(routeKeys == null){
+            routeKeys = new String[0];
+        }
         log.debug("routeKeys = {}", Arrays.toString(routeKeys));
         StrategyRouteHelper.Invocation invocationToUse;
         // 尝试获取缓存
@@ -53,10 +57,11 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         Class serviceClassToUse;
         Object result;
         for (String routeKey : routeKeys) {
-            serviceClassToUse = StrategyRouteHelper.getBranchClass(ClassUtils.getUserClass(obj.getClass()), routeKey);
+            serviceClassToUse = StrategyRouteHelper.getBranchClass(bean.getClass(), routeKey);
             if(serviceClassToUse == null){
                 continue;
             }
+
             // 映射到了branchClass，进行初始化
             log.debug("branchClassToUse = {}", serviceClassToUse);
             String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
@@ -109,7 +114,7 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
     }
 
     protected Object getDefaultBeanToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKeys) {
-        return obj;
+        return bean;
     }
 
     /**

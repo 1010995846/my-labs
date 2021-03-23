@@ -1,6 +1,7 @@
-package com.charlotte.strategyservice.demo.service.impl;
+package com.charlotte.strategyservice.demo.service.impl.org;
 
 import com.charlotte.strategyservice.annotation.StrategyBranch;
+import com.charlotte.strategyservice.demo.service.impl.OrgService;
 import org.springframework.stereotype.Service;
 
 /**
