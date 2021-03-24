@@ -32,7 +32,7 @@ import java.util.Set;
  * @author Charlotte
  */
 @Slf4j
-public class StrategyScanBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+public class StrategyBranchDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
     private static final String RESOURCE_PATTERN = "**/*.class";
 
@@ -44,8 +44,7 @@ public class StrategyScanBeanDefinitionRegistrar implements ImportBeanDefinition
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         // 扫描路径
         String[] basePackages = new String[2];
-
-        // 扫描基类
+        // 扫描主分支类的包
         String className = importingClassMetadata.getClassName();
         basePackages[0] = className.substring(0, className.lastIndexOf('.'));
         if (importingClassMetadata.getInterfaceNames().length != 0) {

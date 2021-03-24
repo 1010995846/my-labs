@@ -1,7 +1,7 @@
 package com.charlotte.strategyservice.annotation;
 
 import com.charlotte.strategyservice.handler.StrategyBeanPostProcessor;
-import com.charlotte.strategyservice.handler.StrategyScanBeanDefinitionRegistrar;
+import com.charlotte.strategyservice.handler.StrategyBranchDefinitionRegistrar;
 import com.charlotte.strategyservice.proxy.AbstractStrategyProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Primary
 @Service
-@Import({StrategyScanBeanDefinitionRegistrar.class, StrategyBeanPostProcessor.class})
+@Import({StrategyBranchDefinitionRegistrar.class, StrategyBeanPostProcessor.class})
 public @interface StrategyMaster {
 
     /**

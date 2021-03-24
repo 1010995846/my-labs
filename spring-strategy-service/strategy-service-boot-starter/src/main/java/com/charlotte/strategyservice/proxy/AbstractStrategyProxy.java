@@ -25,7 +25,9 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
 
     private static final String STRATEGY_ROUTE_SERVICE_SUFFIX = "@Strategy";
 
-    private Object bean;
+    private static final String[] NULL_KEYS = new String[]{null};
+
+    protected Object bean;
 
     protected DefaultListableBeanFactory beanFactory;
 
@@ -43,9 +45,10 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         // 获取routeKey。getRouteKeys()是抽象方法，用于重写，提供自定义的获取方案
         String[] routeKeys = getRouteKeys(obj, method, args, methodProxy);
         if(routeKeys == null){
-            routeKeys = new String[0];
+            routeKeys = NULL_KEYS;
         }
         log.debug("routeKeys = {}", Arrays.toString(routeKeys));
+        // 待执行bean和method的封装对象
         StrategyRouteHelper.Invocation invocationToUse;
         // 尝试获取缓存
         if ((invocationToUse = StrategyRouteHelper.getCache(routeKeys, method)) != null) {
@@ -54,10 +57,8 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         }
         // 无缓存，开始解析
         // 尝试映射到对应的branchClass
-        Class serviceClassToUse;
-        Object result;
         for (String routeKey : routeKeys) {
-            serviceClassToUse = StrategyRouteHelper.getBranchClass(bean.getClass(), routeKey);
+            Class serviceClassToUse = StrategyRouteHelper.getBranchClass(bean.getClass(), routeKey);
             if(serviceClassToUse == null){
                 continue;
             }
@@ -68,16 +69,16 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
 
             // 避免并发时branch重复注入spring
             Object beanToUse;
-            synchronized (serviceClassToUse) {
-                if (!beanFactory.containsBean(serviceNameToUse)) {
-                    // branch未注册时，注入spring，完成依赖
-                    RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
-                    beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+            if (!beanFactory.containsBean(serviceNameToUse)) {
+                synchronized (serviceClassToUse) {
+                    if (!beanFactory.containsBean(serviceNameToUse)) {
+                        // branch未注册时，注入spring，完成依赖
+                        RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
+                        beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+                    }
                 }
-                beanToUse = beanFactory.getBean(serviceNameToUse);
-                // 移除，防止spring容器中存在多个实例，由于@Primy注解，不再需要保证接口的唯一实现
-                // beanFactory.removeBeanDefinition(serviceNameToUse);
             }
+            beanToUse = beanFactory.getBean(serviceNameToUse);
 
             Method methodToUse = MethodUtils.getMatchingMethod(
                     serviceClassToUse, method.getName(), method.getParameterTypes());
@@ -95,8 +96,8 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
                 StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
             }
         }
-        // invoke()时不可锁class
-        result = invocationToUse.invoke(args);
+        // invoke()时不可锁class，防止二次代理调用锁死
+        Object result = invocationToUse.invoke(args);
         log.debug("strategy proxy finished。");
         return result;
     }
