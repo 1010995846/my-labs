@@ -20,7 +20,7 @@ public class RabbitRouteConfig {
 
     @Bean(RabbitConstant.TOPIC_EXCHANGE_1)
     public Exchange topicExchange(){
-        // direct规则匹配routeKey
+        // topic规则匹配routeKey
         // `.`分割区段；`*`匹配一个单词；`#`用于匹配0...n个单词
         return ExchangeBuilder.topicExchange(RabbitConstant.TOPIC_EXCHANGE_1).durable(true).build();
     }
@@ -48,7 +48,8 @@ public class RabbitRouteConfig {
     }
 
     /**
-     * 指定 Exchange + routing key ，有且仅会路由到至多一个 Queue 中。未匹配则丢失
+     * 指定 Exchange + routing key。
+     * 规则匹配时，有且仅会路由到至多一个 Queue 中。未匹配则丢失
      */
     @Bean
     public Binding binding1(@Qualifier(RabbitConstant.TOPIC_EXCHANGE_1) Exchange exchange, @Qualifier(RabbitConstant.queue_1) Queue queue){
@@ -57,6 +58,6 @@ public class RabbitRouteConfig {
 
     @Bean
     public Binding binding2(@Qualifier(RabbitConstant.TOPIC_EXCHANGE_1) Exchange exchange, @Qualifier(RabbitConstant.queue_2) Queue queue){
-        return BindingBuilder.bind(queue).to(exchange).with(RabbitConstant.route_1).noargs();
+        return BindingBuilder.bind(queue).to(exchange).with(RabbitConstant.route_topic).noargs();
     }
 }

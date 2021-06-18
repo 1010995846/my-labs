@@ -62,7 +62,7 @@ public interface Assert {
      * @return
      */
     default Assert isTrue(boolean b, String... args){
-        if(b){
+        if(!b){
             throw newException(args);
         }
         return this;

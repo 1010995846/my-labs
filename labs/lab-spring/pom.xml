@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.charlotte</groupId>
-        <artifactId>my-labs</artifactId>
+        <artifactId>labs</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>lab-spring</artifactId>

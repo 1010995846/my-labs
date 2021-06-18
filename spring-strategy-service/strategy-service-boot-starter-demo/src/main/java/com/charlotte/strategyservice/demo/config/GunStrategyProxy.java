@@ -1,6 +1,6 @@
 package com.charlotte.strategyservice.demo.config;
 
-import com.charlotte.strategyservice.annotation.StategyRoute;
+import com.charlotte.strategyservice.annotation.StrategyRoute;
 import com.charlotte.strategyservice.proxy.AbstractStrategyProxy;
 import org.springframework.cglib.proxy.MethodProxy;
 
@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Charlotte
  */
-@StategyRoute
+@StrategyRoute
 public class GunStrategyProxy extends AbstractStrategyProxy {
 
     public AtomicInteger i = new AtomicInteger(0);

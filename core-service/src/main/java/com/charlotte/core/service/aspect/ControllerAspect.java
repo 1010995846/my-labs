@@ -15,15 +15,15 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Deprecated
 @Aspect
-@Component
+//@Component
 public class ControllerAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(ControllerAspect.class);
 
-//    @Pointcut("execution(public * com.charlotte.core.service.controller.*Controller.*(..)))")
-    @Pointcut("(execution(public * com.charlotte.core.service.web.*Controller.*(..)))" +
-            "|| execution(public * com.charlotte.core.service.controller.*Controller.*(..))))" +
-            "&& @target(com.charlotte.demo.proxy.scan2.HsfComponent)")
+    @Pointcut("execution(public * com.charlotte.core.service.controller.*Controller.*(..)))")
+//    @Pointcut("(execution(public * com.charlotte.core.service.controller.*Controller.*(..)))" +
+//            "|| execution(public * com.charlotte.core.service.controller.*Controller.*(..))))" +
+//            "&& @target(com.charlotte.demo.proxy.scan2.HsfComponent)")
 //            "&& @annotation(com.charlotte.demo.proxy.scan2.HsfComponent)")
 //            "&& @args(com.charlotte.demo.proxy.scan2.HsfComponent)")
     public void controller(){

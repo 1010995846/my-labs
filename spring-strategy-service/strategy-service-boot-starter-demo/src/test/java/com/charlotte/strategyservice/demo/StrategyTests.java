@@ -10,9 +10,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = StrategyServiceBootStarterDemoApplication.class)
 class StrategyTests implements BeanFactoryAware {
 
@@ -63,12 +63,15 @@ class StrategyTests implements BeanFactoryAware {
     void noInterface(){
         System.out.println("期望：路由");
         OrgFacade facade = beanFactory.getBean(OrgFacade.class);
+        System.out.println("default=============");
         facade.print();
         facade.print();
         OrgStrategyProxy.routeKey.set("school");
+        System.out.println("school==============");
         facade.print();
         facade.print();
         OrgStrategyProxy.routeKey.set("hosp");
+        System.out.println("hosp================");
         facade.print();
     }
 

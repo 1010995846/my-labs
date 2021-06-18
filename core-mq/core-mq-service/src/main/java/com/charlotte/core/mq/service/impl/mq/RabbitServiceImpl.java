@@ -27,6 +27,7 @@ public class RabbitServiceImpl implements IMqService {
     @Override
     @Transactional(readOnly = true)
     public void sendMq(SysMessageDto messageDto) {
+//        rabbitTemplate.convertAndSend(RabbitConstant.TOPIC_EXCHANGE_1, RabbitConstant.route_1, messageDto);
         rabbitTemplate.convertAndSend(RabbitConstant.TOPIC_EXCHANGE_1, RabbitConstant.route_1, messageDto);
         log.info("rabbit发送完毕");
     }

@@ -21,7 +21,7 @@ public class ReferenceCountingGC {
         objA = null;
         objB = null;
         // 假设在这行发生GC， objA和objB是否能被回收？
-        // 若gc使用的是引用计数算法，则不会回收
+        // 若gc使用的是引用计数算法，因为互相引用，则不会回收
         System.gc();
     }
 

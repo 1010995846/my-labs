@@ -1,10 +1,10 @@
-package com.charlotte.lab.jvm;
+package com.charlotte.lab.mybatis;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class LabJvmApplicationTests {
+class LabMybatisApplicationTests {
 
     @Test
     void contextLoads() {

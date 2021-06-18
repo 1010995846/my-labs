@@ -1,6 +1,6 @@
 package com.charlotte.strategyservice.demo.config;
 
-import com.charlotte.strategyservice.annotation.StategyRoute;
+import com.charlotte.strategyservice.annotation.StrategyRoute;
 import com.charlotte.strategyservice.proxy.AbstractStrategyProxy;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.context.annotation.Primary;
@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * @author Charlotte
  */
 @Primary
-@StategyRoute
+@StrategyRoute
 public class OrgStrategyProxy extends AbstractStrategyProxy {
 
     public static ThreadLocal<String> routeKey = new ThreadLocal<>();

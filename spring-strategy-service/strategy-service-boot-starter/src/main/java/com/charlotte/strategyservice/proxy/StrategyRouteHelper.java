@@ -1,10 +1,16 @@
 package com.charlotte.strategyservice.proxy;
 
+import com.charlotte.strategyservice.utils.PackageUtils;
 import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.charlotte.strategyservice.annotation.StrategyMaster;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.type.ClassMetadata;
+import org.springframework.core.type.filter.AbstractClassTestingTypeFilter;
+import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 路由工具类，负责路由映射、缓存
+ * 路由工具类，分支类的扫描、注册，路由的映射、缓存
  * @author Charlotte
  */
 @Slf4j
@@ -20,7 +26,7 @@ public class StrategyRouteHelper {
 
     /**
      * 路由映射配置
-     * (mainClass/implClass, routeKey): branchClass
+     * (port, routeKey): branchClass
      */
     private static final Map<Class, Map<String, Class>> serviceClassMap = new HashMap<>(32);
 
@@ -74,10 +80,6 @@ public class StrategyRouteHelper {
             beanCache.put(key, methodInvocationMap);
         }
         methodInvocationMap.put(method, invocation);
-    }
-
-    public static void clearCache() {
-        beanCache.clear();
     }
 
     public static Invocation getCache(String[] keys, Method method) {
@@ -168,22 +170,62 @@ public class StrategyRouteHelper {
 
     public static void setEnableCache(boolean enableCache) {
         StrategyRouteHelper.enableCache = enableCache;
+        clearCache();
+    }
+
+    public static void clearCache() {
+        beanCache.clear();
+    }
+
+    public static void registerBranch(Class<?> masterClass) {
+        // 获取策略的端口
+        Class portClass = getPortClass(masterClass);
+        String className = portClass.getName();
+        // 根据端口获取包路径，也是上文使用说明中，分支类要在接口包下的原因
+        String[] basePackages = new String[]{className.substring(0, className.lastIndexOf('.'))};
+
+        // 过滤器匹配Branch
+        List<TypeFilter> includeFilters = new ArrayList<>();
+        includeFilters.add(new AbstractClassTestingTypeFilter() {
+            @Override
+            public boolean match(ClassMetadata metadataReader) {
+                try {
+                    Class clazz = ClassUtils.forName(metadataReader.getClassName(), portClass.getClassLoader());
+                    return isBranch(clazz);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
+        List<TypeFilter> excludeFilters = new ArrayList<>();
+
+        // 包工具类，扫描包并返回符合条件的Class，具体实现请查阅源码
+        Set<Class<?>> candidates = PackageUtils.scanPackages(basePackages, portClass.getClassLoader(), includeFilters, excludeFilters);
+        if (candidates.isEmpty()) {
+            log.info("扫描指定包[{}]时未发现符合条件的分支类", basePackages.toString());
+            return;
+        }
+
+        for (Class<?> candidate : candidates) {
+            addBranchClass(candidate);
+        }
     }
 
     public static class Invocation {
 
+        private final Object bean;
+
         private final Method method;
 
-        private final Object target;
-
-        public Invocation(Method method, Object target) {
+        public Invocation(Method method, Object bean) {
             this.method = method;
-            this.target = target;
+            this.bean = bean;
         }
 
         public Object invoke(Object... args) throws Throwable {
             try {
-                return method.invoke(target, args);
+                return method.invoke(bean, args);
             } catch (InvocationTargetException ite) {
                 throw ite.getTargetException();
             } catch (Exception e) {

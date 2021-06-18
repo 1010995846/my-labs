@@ -1,16 +1,18 @@
 package com.charlotte.strategyservice.proxy;
 
-import com.charlotte.strategyservice.annotation.StategyRoute;
 import com.charlotte.strategyservice.annotation.StrategyBranch;
+import com.charlotte.strategyservice.annotation.StrategyRoute;
 import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
-import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -21,7 +23,7 @@ import java.util.Arrays;
  * @author Charlotte
  */
 @Slf4j
-public abstract class AbstractStrategyProxy implements MethodInterceptor {
+public abstract class AbstractStrategyProxy implements MethodInterceptor, BeanFactoryAware {
 
     private static final String STRATEGY_ROUTE_SERVICE_SUFFIX = "@Strategy";
 
@@ -51,42 +53,42 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
         // 待执行bean和method的封装对象
         StrategyRouteHelper.Invocation invocationToUse;
         // 尝试获取缓存
-        if ((invocationToUse = StrategyRouteHelper.getCache(routeKeys, method)) != null) {
-            // 命中缓存
-            return invocationToUse.invoke(args);
-        }
-        // 无缓存，开始解析
-        // 尝试映射到对应的branchClass
-        for (String routeKey : routeKeys) {
-            Class serviceClassToUse = StrategyRouteHelper.getBranchClass(bean.getClass(), routeKey);
-            if(serviceClassToUse == null){
-                continue;
-            }
+        if ((invocationToUse = StrategyRouteHelper.getCache(routeKeys, method)) == null) {
+            // 无缓存，开始解析
+            // 尝试映射到对应的branchClass
+            Class<?> targetClass = AopUtils.getTargetClass(bean);
+            for (String routeKey : routeKeys) {
+                Class serviceClassToUse = StrategyRouteHelper.getBranchClass(targetClass, routeKey);
+                if(serviceClassToUse == null){
+                    continue;
+                }
 
-            // 映射到了branchClass，进行初始化
-            log.debug("branchClassToUse = {}", serviceClassToUse);
-            String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
+                // 映射到了branchClass，进行初始化
+                log.debug("branchClassToUse = {}", serviceClassToUse);
+                String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
 
-            // 避免并发时branch重复注入spring
-            Object beanToUse;
-            if (!beanFactory.containsBean(serviceNameToUse)) {
-                synchronized (serviceClassToUse) {
-                    if (!beanFactory.containsBean(serviceNameToUse)) {
-                        // branch未注册时，注入spring，完成依赖
-                        RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
-                        beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+                // 避免并发时branch重复注入spring
+                Object beanToUse;
+                if (!beanFactory.containsBean(serviceNameToUse)) {
+                    synchronized (serviceClassToUse) {
+                        if (!beanFactory.containsBean(serviceNameToUse)) {
+                            // branch未注册时，注入spring，完成依赖
+                            RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
+                            beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+                        }
                     }
                 }
-            }
-            beanToUse = beanFactory.getBean(serviceNameToUse);
+                beanToUse = beanFactory.getBean(serviceNameToUse);
 
-            Method methodToUse = MethodUtils.getMatchingMethod(
-                    serviceClassToUse, method.getName(), method.getParameterTypes());
-            invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
-            StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
+                Method methodToUse = MethodUtils.getMatchingMethod(
+                        serviceClassToUse, method.getName(), method.getParameterTypes());
+                invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
+                StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
+                break;
+            }
         }
         if (invocationToUse == null){
-            // 路由不存在对应的branchClass
+            // 兜底的默认操作，路由不存在对应的branchClass
             log.debug("call master service。");
             // 调用获取默认bean和method的方法，默认为代理的mainBean和method，可重写修改
             Object beanToUse = getDefaultBeanToUse(obj, method, args, methodProxy, routeKeys);
@@ -96,18 +98,19 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
                 StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
             }
         }
-        // invoke()时不可锁class，防止二次代理调用锁死
+        // invoke()时不可锁class，防止循环调用锁死
         Object result = invocationToUse.invoke(args);
         log.debug("strategy proxy finished。");
         return result;
     }
 
-    public final void setBeanFactory(DefaultListableBeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-    }
-
     public final void setBean(Object bean) {
         this.bean = bean;
+    }
+
+    @Override
+    public final void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = (DefaultListableBeanFactory) beanFactory;
     }
 
     protected Method getDefaultMethodToUse(Object obj, Method method, Object[] args, MethodProxy methodProxy, String[] routeKeys) {
@@ -119,8 +122,7 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
     }
 
     /**
-     * 路由key，匹配对应接口/父类下属的分支{@link StrategyBranch#value()}
-     *
+     * 路由key，由用户重写自定义路由策略规则，匹配对应接口/父类下属的分支{@link StrategyBranch#value()}
      * @param obj
      * @param method
      * @param args
@@ -128,4 +130,5 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor {
      * @return
      */
     protected abstract String[] getRouteKeys(Object obj, Method method, Object[] args, MethodProxy methodProxy);
+
 }

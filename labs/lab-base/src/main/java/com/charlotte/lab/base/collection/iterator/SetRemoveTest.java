@@ -2,10 +2,7 @@ package com.charlotte.lab.base.collection.iterator;
 
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -14,11 +11,13 @@ import java.util.Set;
 public class SetRemoveTest {
 
 
-    public static Set<String> collector = new HashSet<>();
+    public static Set<Map<String, Object>> collector = new HashSet<>();
 
     static {
         for (int i = 0; i < 10; i++) {
-            collector.add(String.valueOf(i));
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", i);
+            collector.add(map);
         }
     }
 
@@ -37,8 +36,8 @@ public class SetRemoveTest {
 
     public static void removeWithIterator() {
         // throw java.util.ConcurrentModificationException
-        for (String str : collector) {
-            collector.remove(str);
+        for (Map<String, Object> map : collector) {
+            collector.remove(map);
         }
     }
 

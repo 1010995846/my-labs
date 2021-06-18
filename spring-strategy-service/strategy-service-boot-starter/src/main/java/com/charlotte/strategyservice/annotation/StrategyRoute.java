@@ -14,5 +14,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Service
 @Scope("prototype")
-public @interface StategyRoute {
+public @interface StrategyRoute {
 }
