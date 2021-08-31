@@ -32,14 +32,18 @@ class StrategyTests implements BeanFactoryAware {
         System.out.println("期望：路由");
         IOrgService implBean = beanFactory.getBean(IOrgService.class);
         OrgStrategyProxy.routeKey.set("school");
-        System.out.println("name = " + implBean.getName());// 打印school
+        System.out.println("name = " + implBean.getName("1"));// 打印school
         OrgStrategyProxy.routeKey.set("hosp");
-        System.out.println("name = " + implBean.getName());// 打印hosp
-        System.out.println("name = " + implBean.getName());// 打印hosp
+        System.out.println("name = " + implBean.getName("1"));// 打印hosp
+        System.out.println("name = " + implBean.getName("1"));// 打印hosp
         OrgStrategyProxy.routeKey.set("ext");
-        System.out.println("name = " + implBean.getName());// 打印ext
+        System.out.println("name = " + implBean.getName("1"));// 打印ext
         OrgStrategyProxy.routeKey.remove();
-        System.out.println("name = " + implBean.getName());// 打印defaultOrg
+        System.out.println("name = " + implBean.getName("1"));// 打印defaultOrg
+        OrgStrategyProxy.routeKey.set("p1");
+        System.out.println("name = " + implBean.getName("1"));// 打印ext
+        OrgStrategyProxy.routeKey.set("p2");
+        System.out.println("name = " + implBean.getName("1"));// 打印ext
     }
 
     @Test
@@ -48,8 +52,8 @@ class StrategyTests implements BeanFactoryAware {
         System.out.println("期望：路由");
         IOrgService implBean = beanFactory.getBean(IOrgService.class);
         OrgStrategyProxy.routeKey.set("school");
-        System.out.println("name = " + implBean.getName());// 打印school
-        System.out.println("name = " + implBean.getName());// 打印school
+        System.out.println("name = " + implBean.getName(null));// 打印school
+        System.out.println("name = " + implBean.getName(null));// 打印school
 
         // 代理二，轮询
         System.out.println("期望：轮询");

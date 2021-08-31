@@ -1,9 +1,11 @@
 package com.charlotte.strategyservice.proxy;
 
+import com.charlotte.strategyservice.annotation.StrategyBranches;
 import com.charlotte.strategyservice.utils.PackageUtils;
 import com.charlotte.strategyservice.annotation.StrategyBranch;
 import com.charlotte.strategyservice.annotation.StrategyMaster;
 import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.intercept.Invocation;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.ClassMetadata;
@@ -11,7 +13,9 @@ import org.springframework.core.type.filter.AbstractClassTestingTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -47,8 +51,8 @@ public class StrategyRouteHelper {
     private static Map<String, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
 
     public static void addBranchClass(Class clazz) {
-        StrategyBranch strategyBranch = AnnotationUtils.findAnnotation(clazz, StrategyBranch.class);
-        if (strategyBranch == null) {
+        List<StrategyBranch> strategyBranchList = getStrategyBranches(clazz.getAnnotations());
+        if (CollectionUtils.isEmpty(strategyBranchList)) {
             return;
         }
 
@@ -62,9 +66,27 @@ public class StrategyRouteHelper {
         // 默认路由key：类名
         branchClassMap.put(clazz.getSimpleName(), clazz);
         // 注解配置的路由key
-        for (String key : strategyBranch.value()) {
-            branchClassMap.put(key, clazz);
+        for (StrategyBranch strategyBranch : strategyBranchList) {
+            for (String key : strategyBranch.value()) {
+                branchClassMap.put(key, clazz);
+            }
         }
+    }
+
+    private static List<StrategyBranch> getStrategyBranches(Annotation[] annotations) {
+        List<StrategyBranch> strategyBranchList = new ArrayList<>();
+        for (Annotation annotation : annotations) {
+            if(annotation.annotationType().getName().contains("java.lang")){
+                continue;
+            } else if(annotation instanceof StrategyBranch){
+                strategyBranchList.add((StrategyBranch) annotation);
+            } else if(annotation instanceof StrategyBranches){
+                strategyBranchList.addAll(Arrays.asList(((StrategyBranches) annotation).value()));
+            } else {
+                strategyBranchList.addAll(getStrategyBranches(annotation.annotationType().getAnnotations()));
+            }
+        }
+        return strategyBranchList;
     }
 
     public static void cacheBean(String key, Method method, Invocation invocation) {
@@ -165,7 +187,8 @@ public class StrategyRouteHelper {
     }
 
     public static boolean isBranch(Class clazz){
-        return AnnotationUtils.findAnnotation(clazz, StrategyBranch.class) != null;
+        return AnnotationUtils.findAnnotation(clazz, StrategyBranch.class) != null
+                || AnnotationUtils.findAnnotation(clazz, StrategyBranches.class) != null;
     }
 
     public static void setEnableCache(boolean enableCache) {

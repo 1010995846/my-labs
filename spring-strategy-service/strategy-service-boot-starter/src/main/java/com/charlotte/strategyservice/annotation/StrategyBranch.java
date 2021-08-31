@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Repeatable(StrategyBranches.class)
 public @interface StrategyBranch {
 
     /**

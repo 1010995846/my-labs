@@ -6,7 +6,7 @@ import com.charlotte.strategyservice.demo.service.IOrgService;
 @StrategyBranch("ext")
 public class ExtService implements IOrgService {
     @Override
-    public String getName() {
+    public String getName(String id) {
         return "ext";
     }
 }

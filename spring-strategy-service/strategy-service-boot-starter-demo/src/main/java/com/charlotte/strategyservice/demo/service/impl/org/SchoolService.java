@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class SchoolService extends OrgService {
 
     @Override
-    public String getName() {
+    public String getName(String id) {
         return "school";
     }
 }
