@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.cidea</groupId>
+        <artifactId>my-labs</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>components</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>cidea-server</module>
+        <module>common-utils</module>
+        <module>common-ext-utils</module>
+        <module>cidea-spring-boot-starter-mq</module>
+        <module>cidea-spring-boot-starter-redis</module>
+        <module>cidea-spring-boot-starter-web</module>
+
+        <module>component-mq</module>
+        <module>spring-chain-service</module>
+        <module>spring-strategy-service</module>
+    </modules>
+</project>

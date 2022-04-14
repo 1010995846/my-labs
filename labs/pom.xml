@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.charlotte</groupId>
+        <groupId>cn.cidea</groupId>
         <artifactId>my-labs</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -21,7 +21,10 @@
         <module>lab-thread</module>
         <module>lab-util</module>
         <module>lab-spring</module>
-        <module>lab-file</module>
+        <module>lab-spring-security</module>
         <module>lab-mybatis</module>
+        <module>lab-mysql</module>
+        <module>lab-nginx</module>
+        <module>lab-kafka</module>
     </modules>
 </project>

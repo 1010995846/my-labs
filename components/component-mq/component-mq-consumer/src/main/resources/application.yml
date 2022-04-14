@@ -1,0 +1,13 @@
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+#    listener:
+#      simple:
+#        acknowledge-mode: manual # 手动ack模式，默认是auto
+#        concurrency: 1 # 最少消费者数量
+#        max-concurrency: 10 # 最大消费者数量
+server:
+  port: 8180

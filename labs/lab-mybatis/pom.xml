@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.charlotte</groupId>
+        <groupId>cn.cidea</groupId>
         <artifactId>labs</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -11,19 +11,23 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.charlotte</groupId>
-            <artifactId>core-service</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.charlotte</groupId>
-            <artifactId>core-utils</artifactId>
+            <groupId>cn.cidea</groupId>
+            <artifactId>cidea-server</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.cidea</groupId>
+            <artifactId>common-utils</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 

@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  cn.cidea.framework.mq.redis.core.config.CIdeaRedisMQAutoConfiguration
