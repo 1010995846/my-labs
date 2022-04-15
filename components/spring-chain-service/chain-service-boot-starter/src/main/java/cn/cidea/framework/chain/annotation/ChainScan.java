@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import java.lang.annotation.*;
 
 /**
+ * 手动扫描链路接口
  * @author Charlotte
  */
 @Retention(RetentionPolicy.RUNTIME)

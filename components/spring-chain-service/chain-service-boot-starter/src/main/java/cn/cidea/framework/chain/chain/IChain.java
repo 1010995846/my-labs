@@ -1,8 +1,8 @@
 package cn.cidea.framework.chain.chain;
 
 /**
+ * （可选）添加链路节点实现是否启用的配置
  * @author Charlotte
- * （可选）链路节点实现，是否启用该节点
  */
 public interface IChain {
 
