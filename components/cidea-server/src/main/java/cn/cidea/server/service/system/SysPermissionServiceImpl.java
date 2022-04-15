@@ -1,26 +1,31 @@
 package cn.cidea.server.service.system;
 
+import cn.cidea.framework.common.utils.CollectionSteamUtils;
 import cn.cidea.server.dal.mysql.ISysUserMapper;
-import cn.cidea.server.dal.mysql.ISysUserRoleMapper;
 import cn.cidea.server.dataobject.dto.LoginUserDTO;
+import cn.cidea.server.dataobject.entity.SysResource;
+import cn.cidea.server.dataobject.entity.SysRoleResource;
 import cn.cidea.server.dataobject.entity.SysUser;
 import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
 import cn.cidea.server.mq.producer.permission.PermissionProducer;
+import cn.cidea.server.mybatis.CacheServiceImpl;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.cidea.server.dal.mysql.ISysRoleResourceMapper;
 import cn.cidea.server.dataobject.entity.pool.SysRolePool;
 import cn.cidea.server.dataobject.entity.pool.SysUserPool;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,11 +33,27 @@ import java.util.stream.Collectors;
  */
 @Service("ps")
 @Slf4j
-public class SysPermissionServiceImpl implements ISysPermissionService {
+public class SysPermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceMapper, SysRoleResource> implements ISysPermissionService {
+
+    private static final long SCHEDULER_PERIOD = 5 * 60 * 1000L;
+
+    /**
+     * 角色编号与资源编号的缓存映射
+     * key：角色编号
+     * value：菜单编号的数组
+     */
+    private volatile Multimap<Long, Long> roleResourceCache;
+    /**
+     * 资源编号与角色编号的缓存映射
+     * key：菜单编号
+     * value：角色编号的数组
+     */
+    private volatile Multimap<Long, Long> resourceRoleCache;
 
     @Resource
     private ISysUserMapper userMapper;
     @Resource
+    @Lazy
     private ISysRoleService roleService;
     @Resource
     private ISysRoleResourceMapper roleResourceMapper;
@@ -48,6 +69,30 @@ public class SysPermissionServiceImpl implements ISysPermissionService {
 
     @Resource
     private PermissionProducer producer;
+
+    @Override
+    public void initLocalCache() {
+        List<SysRoleResource> list = loadIfUpdate();
+        if(CollectionUtils.isEmpty(list)){
+            return;
+        }
+
+        ImmutableMultimap.Builder<Long, Long> roleResourceCacheBuilder = ImmutableMultimap.builder();
+        ImmutableMultimap.Builder<Long, Long> resourceRoleCacheBuilder = ImmutableMultimap.builder();
+        list.forEach(roleMenuDO -> {
+            roleResourceCacheBuilder.put(roleMenuDO.getRoleId(), roleMenuDO.getResourceId());
+            resourceRoleCacheBuilder.put(roleMenuDO.getResourceId(), roleMenuDO.getRoleId());
+        });
+        roleResourceCache = roleResourceCacheBuilder.build();
+        resourceRoleCache = resourceRoleCacheBuilder.build();
+        maxUpdateTime = CollectionSteamUtils.getMaxValue(list, SysRoleResource::getUpdateTime);
+        log.info("[initLocalCache][{}][初始化角色与资源的关联数量为 {}]", this.getClass().getSimpleName(), list.size());
+    }
+
+    @Scheduled(fixedDelay = SCHEDULER_PERIOD, initialDelay = SCHEDULER_PERIOD)
+    public void schedulePeriodicRefresh() {
+        initLocalCache();
+    }
 
     public Set<String> getPermission(SysUser user) {
         if(user == null){
@@ -96,25 +141,15 @@ public class SysPermissionServiceImpl implements ISysPermissionService {
             return true;
         }
 
-        // 遍历权限，判断是否有一个满足
-        // TODO 角色缓存、资源缓存
-        Set<String> permSet = rolePool.builderFromCache(roleIds)
-                .resource()
-                .getCollection()
-                .stream()
-                .flatMap(r -> r.getResources().stream())
-                .flatMap(r -> r.getPermissions().stream())
-                .collect(Collectors.toSet());
-        return Arrays.stream(permissions).anyMatch(permission -> permSet.contains(permission));
-        // return Arrays.stream(permissions).anyMatch(permission -> {
-        //     List<SysResource> resourceList = resourceService.listByPermissionFromCache(permission);
-        //     // 采用严格模式，如果权限找不到对应的 Resource 的话，认为
-        //     if (CollUtil.isEmpty(resourceList)) {
-        //         return false;
-        //     }
-        //     // 获得是否拥有该权限，任一一个
-        //     return resourceList.stream().anyMatch(resource -> CollUtil.containsAny(roleIds, menuRoleCache.get(resource.getId())));
-        // });
+        return Arrays.stream(permissions).anyMatch(permission -> {
+            Set<SysResource> resourceList = resourceService.listByPermissionFromCache(permission);
+            // 采用严格模式，如果权限找不到对应的 Resource 的话，认为
+            if (CollUtil.isEmpty(resourceList)) {
+                return false;
+            }
+            // 获得是否拥有该权限，任一一个
+            return resourceList.stream().anyMatch(resource -> CollUtil.containsAny(roleIds, resourceRoleCache.get(resource.getId())));
+        });
     }
 
     @Override

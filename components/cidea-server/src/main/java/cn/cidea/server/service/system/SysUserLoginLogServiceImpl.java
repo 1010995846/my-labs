@@ -30,7 +30,16 @@ public class SysUserLoginLogServiceImpl extends ServiceImpl<ISysUserLoginLogMapp
     private DefaultIdentifierGenerator identifierGenerator;
 
     @Override
-    public void create(String username, LoginTypeEnum logTypeEnum, LoginResultEnum loginResult) {
+    public void fail(String username, LoginTypeEnum logType, LoginResultEnum loginResult, Throwable ex) {
+        create(username, logType, loginResult, ex);
+    }
+
+    @Override
+    public void success(String username, LoginTypeEnum logType) {
+        create(username, logType, LoginResultEnum.SUCCESS, null);
+    }
+
+    private void create(String username, LoginTypeEnum logTypeEnum, LoginResultEnum loginResult, Throwable ex) {
         // 查询用户
         SysUser user = userService.getUserByUsername(username);
         // 插入登录日志
@@ -46,6 +55,9 @@ public class SysUserLoginLogServiceImpl extends ServiceImpl<ISysUserLoginLogMapp
         loginLog.setIp(1);
         loginLog.setTime(new Date());
         loginLog.setResult(loginResult.getResult());
+        if(ex != null){
+            loginLog.setRemark(ex.getMessage());
+        }
         baseMapper.insert(loginLog);
         // 更新最后登录时间
         // if (user != null && Objects.equals(LoginResultEnum.SUCCESS.getResult(), loginResult.getResult())) {

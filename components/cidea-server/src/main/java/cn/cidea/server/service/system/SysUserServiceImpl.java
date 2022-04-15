@@ -2,11 +2,9 @@ package cn.cidea.server.service.system;
 
 import cn.cidea.server.dal.mysql.ISysUserMapper;
 import cn.cidea.server.dataobject.entity.SysUser;
-import cn.cidea.server.dataobject.entity.pool.SysUserPool;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,9 +16,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class SysUserServiceImpl extends ServiceImpl<ISysUserMapper, SysUser> implements ISysUserService {
-
-    @Autowired
-    private SysUserPool userPool;
 
     @Override
     public SysUser getUserByUsername(String username) {

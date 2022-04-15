@@ -2,11 +2,10 @@ package cn.cidea.server.service.system;
 
 
 import cn.cidea.server.dataobject.entity.SysResource;
-import com.baomidou.mybatisplus.extension.service.IService;
+import cn.cidea.server.mybatis.ICacheOneService;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.util.List;
+import java.util.Set;
 
 /**
  * (SysResource)表服务接口
@@ -15,9 +14,7 @@ import java.util.List;
  * @since 2022-04-06 18:06:27
  */
 @Transactional(readOnly = true)
-public interface ISysResourceService extends IService<SysResource> {
+public interface ISysResourceService extends ICacheOneService<Long, SysResource> {
 
-    void initLocalCache();
-
-    List<SysResource> listByPermissionFromCache(String permission);
+    Set<SysResource> listByPermissionFromCache(String... permissions);
 }

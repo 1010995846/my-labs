@@ -67,10 +67,10 @@ public class LoginServiceImpl implements ILoginService {
             authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (BadCredentialsException badCredentialsException) {
-            loginLogService.create(username, logTypeEnum, LoginResultEnum.BAD_CREDENTIALS);
+            loginLogService.fail(username, logTypeEnum, LoginResultEnum.BAD_CREDENTIALS, badCredentialsException);
             throw Assert.BAD_CREDENTIALS.build("账号密码不正确");
         } catch (DisabledException disabledException) {
-            loginLogService.create(username, logTypeEnum, LoginResultEnum.USER_DISABLED);
+            loginLogService.fail(username, logTypeEnum, LoginResultEnum.USER_DISABLED, disabledException);
             throw Assert.BAD_CREDENTIALS.build("账号被禁用");
         } catch (AuthenticationException authenticationException) {
             Throwable cause = authenticationException.getCause();
@@ -78,12 +78,12 @@ public class LoginServiceImpl implements ILoginService {
                 cause = authenticationException;
             }
             log.error("[登录异常]", cause);
-            loginLogService.create(username, logTypeEnum, LoginResultEnum.UNKNOWN_ERROR);
+            loginLogService.fail(username, logTypeEnum, LoginResultEnum.UNKNOWN_ERROR, cause);
             throw Assert.BAD_CREDENTIALS.build(cause.getMessage());
         }
         // 登录成功的日志
         Assert.SERVER.nonNull(authentication.getPrincipal(), "Principal 不会为空");
-        loginLogService.create(username, logTypeEnum, LoginResultEnum.SUCCESS);
+        loginLogService.success(username, logTypeEnum);
         LoginUserDTO principal = (LoginUserDTO) authentication.getPrincipal();
         String sessionId = sessionService.create(principal);
         principal.setSessionId(sessionId);

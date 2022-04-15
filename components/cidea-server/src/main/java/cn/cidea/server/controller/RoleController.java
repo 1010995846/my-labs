@@ -1,9 +1,7 @@
 package cn.cidea.server.controller;
 
 
-import cn.cidea.framework.web.core.api.Request;
 import cn.cidea.framework.web.core.api.Response;
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
 import cn.cidea.server.dataobject.dto.SysRoleDTO;
 import cn.cidea.server.service.system.ISysRoleService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,21 +27,21 @@ public class RoleController {
     @RequestMapping(value = "/save")
     @PreAuthorize("@ps.hasPermission('system:role:save')")
     public Response login(@Valid @RequestBody SysRoleDTO saveDTO){
-        Long id = roleService.createRole(saveDTO);
+        Long id = roleService.save(saveDTO);
         return Response.success(id);
     }
 
     @RequestMapping(value = "/disable")
     @PreAuthorize("@ps.hasPermission('system:role:save')")
     public Response authenticateError(Long id, Boolean disabled){
-        roleService.updateRoleStatus(id, disabled);
+        roleService.updateDisabled(id, disabled);
         return Response.success(null);
     }
 
     @RequestMapping(value = "/delete")
     @PreAuthorize("@ps.hasPermission('system:role:delete')")
     public Response authenticate(Long id){
-        roleService.deleteRole(id);
+        roleService.delete(id);
         return Response.success(null);
     }
 

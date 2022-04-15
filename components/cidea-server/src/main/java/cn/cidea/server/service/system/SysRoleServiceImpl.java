@@ -3,26 +3,27 @@ package cn.cidea.server.service.system;
 import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.server.dataobject.covert.RoleConvert;
 import cn.cidea.server.dataobject.enums.DataScopeEnum;
+import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
 import cn.cidea.server.mq.producer.permission.RoleProducer;
+import cn.cidea.server.mybatis.CacheOneServiceImpl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import cn.cidea.server.dal.mysql.ISysRoleMapper;
 import cn.cidea.server.dataobject.dto.SysRoleDTO;
 import cn.cidea.server.dataobject.entity.SysRole;
 import cn.cidea.server.dataobject.enums.RoleCodeEnum;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> implements ISysRoleService {
+public class SysRoleServiceImpl extends CacheOneServiceImpl<Long, ISysRoleMapper, SysRole> implements ISysRoleService {
 
     /**
      * 定时执行 {@link #schedulePeriodicRefresh()} 的周期
@@ -43,91 +44,52 @@ public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> imp
      */
     private static final long SCHEDULER_PERIOD = 5 * 60 * 1000L;
 
-    /**
-     * 角色缓存
-     * key：角色编号 {@link SysRole#getId()}
-     *
-     * 这里声明 volatile 修饰的原因是，每次刷新时，直接修改指向
-     */
-    private volatile Map<Long, SysRole> roleCache;
-    /**
-     * 缓存角色的最大更新时间，用于后续的增量轮询，判断是否有更新
-     */
-    private volatile Date maxUpdateTime;
-
     @Resource
     @Lazy
     private ISysPermissionService permissionService;
-    @Resource
-    @Lazy
-    private ISysRoleService self;
 
     @Resource
     private RoleProducer roleProducer;
-
-    /**
-     * 初始化 {@link #roleCache} 缓存
-     */
-    @Override
-    @PostConstruct
-    public void initLocalCache() {
-        // 获取角色列表，如果有更新
-        List<SysRole> roleList = loadRoleIfUpdate(maxUpdateTime);
-        if (CollUtil.isEmpty(roleList)) {
-            return;
-        }
-
-        // 写入缓存
-        roleCache = roleList.stream().collect(Collectors.toMap(SysRole::getId, r -> r));
-        maxUpdateTime = roleList.stream().map(SysRole::getUpdateTime).max(Date::compareTo).get();
-        log.info("[initLocalCache][初始化 Role 数量为 {}]", roleList.size());
-    }
+    @Resource
+    private DefaultIdentifierGenerator identifierGenerator;
 
     @Scheduled(fixedDelay = SCHEDULER_PERIOD, initialDelay = SCHEDULER_PERIOD)
     public void schedulePeriodicRefresh() {
-        self.initLocalCache();
-    }
-
-    /**
-     * 如果角色发生变化，从数据库中获取最新的全量角色。
-     * 如果未发生变化，则返回空
-     *
-     * @param maxUpdateTime 当前角色的最大更新时间
-     * @return 角色列表
-     */
-    private List<SysRole> loadRoleIfUpdate(Date maxUpdateTime) {
-        // 第一步，判断是否要更新。
-        if (maxUpdateTime == null) {
-            // 如果更新时间为空，说明 DB 一定有新数据
-            log.info("[loadRoleIfUpdate][首次加载全量角色]");
-        } else {
-            // 判断数据库中是否有更新的角色
-            if (baseMapper.selectExistsByUpdateTimeAfter(maxUpdateTime) == null) {
-                return null;
-            }
-            log.info("[loadRoleIfUpdate][增量加载全量角色]");
-        }
-        // 第二步，如果有更新，则从数据库加载所有角色
-        return baseMapper.selectList(new QueryWrapper<>());
+        initLocalCache();
     }
 
     @Override
     @Transactional
-    public Long createRole(SysRoleDTO saveDTO) {
+    public Long save(SysRoleDTO saveDTO) {
         // 校验角色
-        checkDuplicateRole(saveDTO.getName(), saveDTO.getCode(), null);
+        checkDuplicateRole(saveDTO.getName(), saveDTO.getCode(), saveDTO.getId());
         // 插入到数据库
         SysRole role = RoleConvert.INSTANCE.convert(saveDTO);
-        role.setBuiltIn(false);
-        role.setDisabled(false);
+        boolean isNew = role.getId() == null;
+        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+        Date updateTime = new Date();
+        if (isNew) {
+            role.setId(identifierGenerator.nextId(null));
+            role.setBuiltIn(false);
+            role.setDisabled(false);
+            role.setCreateBy(loginUserId).setCreateTime(updateTime);
+        } else {
+            // 校验是否可以更新
+            checkUpdateRole(role.getId());
+        }
         // 默认可查看所有数据。原因是，可能一些项目不需要项目权限
         role.setDataScope(DataScopeEnum.ALL.getScope());
-        baseMapper.insert(role);
+        role.setUpdateBy(loginUserId).setUpdateTime(updateTime);
+        if (isNew) {
+            baseMapper.insert(role);
+        } else {
+            baseMapper.updateById(role);
+        }
         // 发送刷新消息
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                roleProducer.sendRoleRefreshMessage();
+                roleProducer.sendRefreshMessage();
             }
         });
         // 返回
@@ -135,21 +97,7 @@ public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> imp
     }
 
     @Override
-    public void updateRole(SysRoleDTO reqVO) {
-        // 校验是否可以更新
-        checkUpdateRole(reqVO.getId());
-        // 校验角色的唯一字段是否重复
-        checkDuplicateRole(reqVO.getName(), reqVO.getCode(), reqVO.getId());
-
-        // 更新到数据库
-        SysRole updateObject = new SysRole();
-        baseMapper.updateById(updateObject);
-        // 发送刷新消息
-        roleProducer.sendRoleRefreshMessage();
-    }
-
-    @Override
-    public void updateRoleStatus(Long id, Boolean disabled) {
+    public void updateDisabled(Long id, Boolean disabled) {
         // 校验是否可以更新
         checkUpdateRole(id);
         // 更新状态
@@ -158,11 +106,11 @@ public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> imp
         updateObject.setDisabled(disabled);
         baseMapper.updateById(updateObject);
         // 发送刷新消息
-        roleProducer.sendRoleRefreshMessage();
+        roleProducer.sendRefreshMessage();
     }
 
     @Override
-    public void updateRoleDataScope(Long id, Integer dataScope, Set<Long> dataScopeDeptIds) {
+    public void updateDataScope(Long id, Integer dataScope, Set<Long> dataScopeDeptIds) {
         // 校验是否可以更新
         checkUpdateRole(id);
         // 更新数据范围
@@ -172,11 +120,11 @@ public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> imp
         // updateObject.setDataScopeDeptIds(dataScopeDeptIds);
         baseMapper.updateById(updateObject);
         // 发送刷新消息
-        roleProducer.sendRoleRefreshMessage();
+        roleProducer.sendRefreshMessage();
     }
 
     @Override
-    public void deleteRole(Long id) {
+    public void delete(Long id) {
         // 校验是否可以更新
         this.checkUpdateRole(id);
         // 标记删除
@@ -188,24 +136,10 @@ public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> imp
 
             @Override
             public void afterCommit() {
-                roleProducer.sendRoleRefreshMessage();
+                roleProducer.sendRefreshMessage();
             }
 
         });
-    }
-
-    @Override
-    public SysRole getRoleFromCache(Long id) {
-        return roleCache.get(id);
-    }
-
-    @Override
-    public List<SysRole> listFromCache(Collection<Long> ids) {
-        if (CollectionUtil.isEmpty(ids)) {
-            return Collections.emptyList();
-        }
-        return roleCache.values().stream().filter(SysRole -> ids.contains(SysRole.getId()))
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -218,13 +152,13 @@ public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> imp
 
     /**
      * 校验角色的唯一字段是否重复
-     *
+     * <p>
      * 1. 是否存在相同名字的角色
      * 2. 是否存在相同编码的角色
      *
      * @param name 角色名字
      * @param code 角色额编码
-     * @param id 角色编号
+     * @param id   角色编号
      */
     public void checkDuplicateRole(String name, String code, Long id) {
         // 0. 超级管理员，不允许创建
@@ -259,7 +193,7 @@ public class SysRoleServiceImpl extends ServiceImpl<ISysRoleMapper, SysRole> imp
         }
         // 内置角色，不允许删除
         if (!Boolean.FALSE.equals(SysRole.getBuiltIn())) {
-            throw Assert.VALID.build("不可删除内置角色");
+            throw Assert.VALID.build("不可编辑内置角色");
         }
     }
 
