@@ -1,8 +1,8 @@
-package cn.cidea.framework.mq.redis.core.pubsub;
+package cn.cidea.framework.mq.redis.pubsub;
 
-import cn.cidea.framework.mq.redis.core.RedisMQTemplate;
-import cn.cidea.framework.mq.dto.AbstractMessage;
-import cn.cidea.framework.mq.interceptor.MessageInterceptor;
+import cn.cidea.framework.mq.core.MQTemplate;
+import cn.cidea.framework.mq.core.dto.AbstractMessage;
+import cn.cidea.framework.mq.core.interceptor.MessageInterceptor;
 import cn.hutool.core.util.TypeUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Setter;
@@ -34,7 +34,7 @@ public abstract class AbstractChannelMessageListener<T extends AbstractChannelMe
      * RedisMQTemplate
      */
     @Setter
-    private RedisMQTemplate redisMQTemplate;
+    private MQTemplate mqTemplate;
 
     @SneakyThrows
     protected AbstractChannelMessageListener() {
@@ -58,6 +58,9 @@ public abstract class AbstractChannelMessageListener<T extends AbstractChannelMe
             consumeMessageBefore(messageObj);
             // 消费消息
             this.onMessage(messageObj);
+        } catch (RuntimeException e){
+            consumeMessageAfterError(messageObj, e);
+            throw e;
         } finally {
             consumeMessageAfter(messageObj);
         }
@@ -85,18 +88,27 @@ public abstract class AbstractChannelMessageListener<T extends AbstractChannelMe
     }
 
     private void consumeMessageBefore(AbstractMessage message) {
-        assert redisMQTemplate != null;
-        List<MessageInterceptor> interceptors = redisMQTemplate.getInterceptors();
+        assert mqTemplate != null;
+        List<MessageInterceptor> interceptors = mqTemplate.getInterceptors();
         // 正序
         interceptors.forEach(interceptor -> interceptor.consumeMessageBefore(message));
     }
 
     private void consumeMessageAfter(AbstractMessage message) {
-        assert redisMQTemplate != null;
-        List<MessageInterceptor> interceptors = redisMQTemplate.getInterceptors();
+        assert mqTemplate != null;
+        List<MessageInterceptor> interceptors = mqTemplate.getInterceptors();
         // 倒序
         for (int i = interceptors.size() - 1; i >= 0; i--) {
             interceptors.get(i).consumeMessageAfter(message);
+        }
+    }
+
+    private void consumeMessageAfterError(AbstractMessage message, RuntimeException e) {
+        assert mqTemplate != null;
+        List<MessageInterceptor> interceptors = mqTemplate.getInterceptors();
+        // 倒序
+        for (int i = interceptors.size() - 1; i >= 0; i--) {
+            interceptors.get(i).consumeMessageAfterError(message, e);
         }
     }
 

@@ -1,6 +1,7 @@
-package cn.cidea.framework.mq.interceptor;
+package cn.cidea.framework.mq.core.interceptor;
 
-import cn.cidea.framework.mq.dto.AbstractMessage;
+
+import cn.cidea.framework.mq.core.dto.AbstractMessage;
 
 /**
  * MQ拦截器，作为插件机制，实现拓展。
@@ -18,6 +19,9 @@ public interface MessageInterceptor {
     }
 
     default void consumeMessageAfter(AbstractMessage message) {
+    }
+
+    default void consumeMessageAfterError(AbstractMessage message, RuntimeException e) {
     }
 
 }

@@ -1,4 +1,4 @@
-package cn.cidea.framework.mq.dto;
+package cn.cidea.framework.mq.core.dto;
 
 import java.util.HashMap;
 import java.util.Map;

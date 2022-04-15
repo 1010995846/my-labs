@@ -1,6 +1,6 @@
-package cn.cidea.framework.mq.redis.core.pubsub;
+package cn.cidea.framework.mq.redis.pubsub;
 
-import cn.cidea.framework.mq.dto.AbstractMessage;
+import cn.cidea.framework.mq.core.dto.AbstractMessage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**

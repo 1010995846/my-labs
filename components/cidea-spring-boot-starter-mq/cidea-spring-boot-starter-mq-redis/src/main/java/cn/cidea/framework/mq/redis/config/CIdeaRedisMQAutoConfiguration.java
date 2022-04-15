@@ -1,9 +1,8 @@
-package cn.cidea.framework.mq.redis.core.config;
+package cn.cidea.framework.mq.redis.config;
 
-import cn.cidea.framework.mq.redis.core.pubsub.AbstractChannelMessageListener;
-import cn.cidea.framework.mq.redis.core.stream.AbstractStreamMessageListener;
-import cn.cidea.framework.mq.interceptor.MessageInterceptor;
-import cn.cidea.framework.mq.redis.core.RedisMQTemplate;
+import cn.cidea.framework.mq.redis.pubsub.AbstractChannelMessageListener;
+import cn.cidea.framework.mq.core.interceptor.MessageInterceptor;
+import cn.cidea.framework.mq.redis.RedisMQTemplate;
 import cn.cidea.framework.redis.config.CIdeaRedisAutoConfiguration;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -13,16 +12,11 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisServerCommands;
-import org.springframework.data.redis.connection.stream.Consumer;
-import org.springframework.data.redis.connection.stream.ObjectRecord;
-import org.springframework.data.redis.connection.stream.ReadOffset;
-import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 
 import java.util.List;
 import java.util.Properties;
@@ -58,7 +52,7 @@ public class CIdeaRedisMQAutoConfiguration {
         container.setConnectionFactory(redisMQTemplate.getRedisTemplate().getRequiredConnectionFactory());
         // 添加监听器
         listeners.forEach(listener -> {
-            listener.setRedisMQTemplate(redisMQTemplate);
+            listener.setMqTemplate(redisMQTemplate);
             container.addMessageListener(listener, new ChannelTopic(listener.getChannel()));
             log.info("[redisMessageListenerContainer][注册 Channel({}) 对应的监听器({})]",
                     listener.getChannel(), listener.getClass().getName());
