@@ -26,7 +26,7 @@ import java.io.IOException;
  */
 @RequiredArgsConstructor
 @Component
-public class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
+public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final SecurityProperties securityProperties;
 

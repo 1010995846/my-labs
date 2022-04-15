@@ -3,10 +3,14 @@ package cn.cidea.server.dataobject.entity;
 import java.util.Date;
 import java.util.List;
 
+import cn.cidea.server.mybatis.CacheModel;
+import cn.cidea.server.mybatis.CacheOneModel;
 import cn.cidea.server.mybatis.handlers.FastjsonNullDefaultTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -19,8 +23,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
  */
 @Data
 @Accessors(chain = true)
+@EqualsAndHashCode(callSuper = false)
 @TableName(autoResultMap = true)
-public class SysResource {
+public class SysResource extends CacheOneModel<Long, SysResource> {
 
     @TableId(value = "id", type = IdType.INPUT)
     private Long id;

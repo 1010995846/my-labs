@@ -31,8 +31,6 @@ public class LoginUserDTO implements UserDetails {
 
     private Integer userType;
 
-    private Set<Long> roleIds;
-
     private Date loginTime;
 
     private Long expireTime;
@@ -46,6 +44,8 @@ public class LoginUserDTO implements UserDetails {
      * 是否禁用
      */
     private Boolean disabled;
+
+    private Set<Long> roleIds;
 
     @Override
     @JsonIgnore
@@ -74,6 +74,6 @@ public class LoginUserDTO implements UserDetails {
     @Override
     @JsonIgnore
     public boolean isEnabled() {
-        return !disabled && !deleted;
+        return Boolean.FALSE.equals(disabled) && Boolean.FALSE.equals(deleted);
     }
 }

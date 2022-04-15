@@ -43,6 +43,7 @@ public class Person extends Model<Person> {
     /**
      * 教育背景，json对象
      */
+    @TableField(typeHandler = FastjsonNullDefaultTypeHandler.class)
     private EducationalBackground educationalBackground;
 
     @Data

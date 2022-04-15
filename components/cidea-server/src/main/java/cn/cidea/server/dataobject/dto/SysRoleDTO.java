@@ -63,7 +63,7 @@ public class SysRoleDTO implements Serializable {
      */
     private Boolean deleted;
     /**
-     * 【次选方案】资源ID集合
+     * 资源集合
      */
     private List<SysResourceDTO> resources;
 }

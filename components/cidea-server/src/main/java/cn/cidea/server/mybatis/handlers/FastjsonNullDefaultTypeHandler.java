@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * json默认值
+ * json格式
+ * 会赋予默认值
  * @author Charlotte
  */
 @Slf4j

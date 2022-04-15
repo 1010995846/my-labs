@@ -1,6 +1,6 @@
 package cn.cidea.server.security.config;
 
-import cn.cidea.server.security.filter.JWTAuthenticationTokenFilter;
+import cn.cidea.server.security.filter.AuthenticationTokenFilter;
 import cn.cidea.server.service.auth.ILoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * Token 认证过滤器 Bean
      */
     @Autowired
-    private JWTAuthenticationTokenFilter authenticationTokenFilter;
+    private AuthenticationTokenFilter authenticationTokenFilter;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

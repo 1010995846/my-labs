@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import cn.cidea.server.mybatis.CacheModel;
+import cn.cidea.server.mybatis.CacheOneModel;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
@@ -20,8 +22,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
  */
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper=false)
-public class SysRole extends Model<SysRole> {
+@EqualsAndHashCode(callSuper = false)
+public class SysRole extends CacheOneModel<Long, SysRole> {
 
     @TableId(value = "id", type = IdType.INPUT)
     private Long id;
@@ -83,4 +85,5 @@ public class SysRole extends Model<SysRole> {
     public boolean enabled(){
         return !disabled && !deleted;
     }
+
 }

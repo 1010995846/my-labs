@@ -49,11 +49,11 @@ public class SysUserDTO {
     /**
      * 是否禁用
      */
-    private Integer disabled;
+    private Boolean disabled;
     /**
      * 是否删除
      */
-    private Integer deleted;
+    private Boolean deleted;
     /**
      * 电子邮箱
      */

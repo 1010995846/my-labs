@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<!-- scan是开启扫描日志配置 -->
+<configuration scan="false">
+    <!-- 引用 Spring Boot 的 logback 基础配置 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <contextName>${spring.application.name}</contextName>
+    <springProperty name="APP_NAME" scope="context" source="spring.application.name"/>
+    <springProperty name="LOG_LEVEL_PATTERN" scope="context" source="ihp.logging.level" defaultValue="DEBUG"/>
+
+    <springProperty name="LOG_FLUSH" scope="context" source="ihp.logging.flush" defaultValue="true"/>
+    <springProperty name="LOG_FILE" scope="context" source="logging.file" defaultValue="logs/${APP_NAME}"/>
+    <springProperty name="LOG_MAXFILESIZE" scope="context" source="logback.filesize" defaultValue="50MB"/>
+    <springProperty name="LOG_FILEMAXDAY" scope="context" source="logback.filemaxday" defaultValue="30"/>
+
+    <!-- 格式化输出：%d 表示日期，%thread 表示线程名，%-5level：级别从左显示 5 个字符宽度，%msg：日志消息，%n是换行符 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}[${LOG_LEVEL_PATTERN:-%5p}][${PID:- }][%thread] %logger : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <!-- 控制台日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 按照每天生成常规日志文件 -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}/${APP_NAME}-error.log</file>
+        <!-- 基于时间的分包策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}/${APP_NAME}-error.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxFileSize>20MB</maxFileSize>
+            <!--保留时间,单位:天-->
+            <maxHistory>${LOG_FILEMAXDAY}</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="BIZ" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}/${APP_NAME}-biz.log</file>
+        <!-- 基于时间的分包策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}/${APP_NAME}-biz.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
+            <!--保留时间,单位:天-->
+            <maxHistory>${LOG_FILEMAXDAY}</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <immediateFlush>${LOG_FLUSH}</immediateFlush>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 异步输出 -->
+    <appender name="ASYNC-BIZ" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
+        <!-- 添加附加的appender,最多只能添加⼀个 -->
+        <appender-ref ref="BIZ"/>
+    </appender>
+
+    <appender name="ASYNC-ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
+        <appender-ref ref="ERROR"/>
+    </appender>
+
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="BIZ"/>
+    </root>
+
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.mybatis" level="INFO"/>
+    <logger name="org.redisson" level="INFO"/>
+
+</configuration>
