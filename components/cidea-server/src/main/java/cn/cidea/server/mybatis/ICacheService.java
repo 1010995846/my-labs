@@ -8,24 +8,13 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-public interface ICacheService<P extends Serializable, T extends CacheModel<P, T>> extends IService<T> {
+/**
+ * @author Charlotte
+ */
+public interface ICacheService {
 
     /**
      * 初始化缓存
      */
     void initLocalCache();
-
-    /**
-     * 详情-缓存
-     * @param id
-     * @return
-     */
-    T getFromCache(P id);
-
-    /**
-     * 列表-缓存
-     * @param ids
-     * @return
-     */
-    List<T> listFromCache(Collection<P> ids);
 }

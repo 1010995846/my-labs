@@ -19,41 +19,25 @@ import java.util.stream.Collectors;
  * @author Charlotte
  */
 @Slf4j
-public class CacheServiceImpl<P extends Serializable, M extends BaseMapper<T>, T extends CacheModel<P, T>> extends ServiceImpl<M, T> implements ICacheService<P, T> {
+public abstract class CacheServiceImpl<M extends BaseMapper<T>, T extends CacheModel<T>> extends ServiceImpl<M, T> implements ICacheService {
 
     /**
-     * 角色缓存
-     * key：角色编号 {@link Model#pkVal()} ()}
-     *
-     * 这里声明 volatile 修饰的原因是，每次刷新时，直接修改指向
+     * 缓存的最后更新时间，用于后续的增量轮询，判断是否有更新
      */
     @Getter
-    protected volatile Map<P, T> cache;
-    /**
-     * 缓存角色的最大更新时间，用于后续的增量轮询，判断是否有更新
-     */
-    @Getter
-    private volatile Date maxUpdateTime;
+    protected volatile Date maxUpdateTime;
 
     /**
-     * 初始化 {@link #cache} 缓存
+     * 初始化缓存
      */
-    @PostConstruct
     @Override
-    public void initLocalCache() {
-        // 获取角色列表，如果有更新
-        List<T> list = loadIfUpdate(maxUpdateTime);
-        if (CollUtil.isEmpty(list)) {
-            return;
-        }
+    @PostConstruct
+    public abstract void initLocalCache();
 
-        // 写入缓存
-        cache = CollectionSteamUtils.convertMap(list, CacheModel::pkVal);
-        maxUpdateTime = CollectionSteamUtils.getMaxValue(list, CacheModel::getUpdateTime);
-        log.info("[initLocalCache][初始化 Role 数量为 {}]", list.size());
-    }
-
-    protected List<T> loadIfUpdate(Date maxUpdateTime) {
+    /**
+     * @return
+     */
+    protected List<T> loadIfUpdate() {
         // 第一步，判断是否要更新。
         if (maxUpdateTime == null) {
             // 如果更新时间为空，说明 DB 一定有新数据
@@ -70,17 +54,4 @@ public class CacheServiceImpl<P extends Serializable, M extends BaseMapper<T>, T
         return list();
     }
 
-    @Override
-    public T getFromCache(P id) {
-        return cache.get(id);
-    }
-
-    @Override
-    public List<T> listFromCache(Collection<P> ids) {
-        if (CollectionUtil.isEmpty(ids)) {
-            return Collections.emptyList();
-        }
-        return cache.values().stream().filter(e -> ids.contains(e.pkVal()))
-                .collect(Collectors.toList());
-    }
 }
