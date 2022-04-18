@@ -1,12 +1,13 @@
 package cn.cidea.framework.mq.core.dto;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Redis 消息抽象基类
  */
-public abstract class AbstractMessage {
+public abstract class AbstractMessage implements Serializable {
 
     /**
      * 头

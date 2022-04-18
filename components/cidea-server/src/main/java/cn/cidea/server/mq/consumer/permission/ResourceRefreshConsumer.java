@@ -22,8 +22,7 @@ public class ResourceRefreshConsumer extends AbstractChannelMessageListener<Reso
 
     @Override
     public void onMessage(ResourceRefreshMessage message) {
-        log.info("[onMessage][收到 Menu 刷新消息]");
+        log.info("[onMessage][收到 Resource 刷新消息]");
         resourceService.initLocalCache();
     }
-
 }

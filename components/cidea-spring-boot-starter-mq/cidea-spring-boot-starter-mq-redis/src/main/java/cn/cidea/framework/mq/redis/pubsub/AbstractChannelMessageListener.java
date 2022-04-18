@@ -5,8 +5,12 @@ import cn.cidea.framework.mq.core.dto.AbstractMessage;
 import cn.cidea.framework.mq.core.interceptor.MessageInterceptor;
 import cn.hutool.core.util.TypeUtil;
 import com.alibaba.fastjson.JSONObject;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.redisson.PubSubMessageListener;
+import org.redisson.client.RedisPubSubListener;
+import org.redisson.client.protocol.pubsub.PubSubType;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 
@@ -20,11 +24,12 @@ import java.util.List;
  *
  * @author 芋道源码
  */
-public abstract class AbstractChannelMessageListener<T extends AbstractChannelMessage> implements MessageListener {
+public abstract class AbstractChannelMessageListener<T extends AbstractChannelMessage> implements RedisPubSubListener<String> {
 
     /**
      * 消息类型
      */
+    @Getter
     private final Class<T> messageType;
     /**
      * Redis Channel
@@ -44,7 +49,6 @@ public abstract class AbstractChannelMessageListener<T extends AbstractChannelMe
 
     /**
      * 获得 Sub 订阅的 Redis Channel 通道
-     *
      * @return channel
      */
     public final String getChannel() {
@@ -52,8 +56,21 @@ public abstract class AbstractChannelMessageListener<T extends AbstractChannelMe
     }
 
     @Override
-    public final void onMessage(Message message, byte[] bytes) {
-        T messageObj = JSONObject.parseObject(message.getBody(), messageType);
+    public boolean onStatus(PubSubType type, CharSequence channel) {
+        return false;
+    }
+
+    @Override
+    public void onPatternMessage(CharSequence pattern, CharSequence channel, String message) {
+        onMessage(channel, message);
+    }
+
+    @Override
+    public void onMessage(CharSequence channel, String msg) {
+        if(!channel.equals(getChannel())){
+            return;
+        }
+        T messageObj = JSONObject.parseObject(msg, messageType);
         try {
             consumeMessageBefore(messageObj);
             // 消费消息

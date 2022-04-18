@@ -20,7 +20,7 @@
 		<java.version>1.8</java.version>
 		<project.encoding>UTF-8</project.encoding>
 
-		<redisson.starter.version>3.11.5</redisson.starter.version>
+		<redisson.starter.version>3.17.0</redisson.starter.version>
 		<mybatis.plus.starter.version>3.5.1</mybatis.plus.starter.version>
 
 		<guava.version>31.0.1-jre</guava.version>

@@ -5,22 +5,30 @@ import cn.cidea.framework.mq.redis.pubsub.AbstractChannelMessage;
 import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.redisson.api.RTopic;
+import org.redisson.api.RedissonClient;
+
+import java.util.List;
 
 /**
  * Redis MQ 操作模板类
- *
- * @author 芋道源码
  */
 @AllArgsConstructor
 public class RedisMQTemplate extends MQTemplate<AbstractChannelMessage> {
 
     @Getter
-    private final RedisTemplate<String, ?> redisTemplate;
+    private final RedissonClient redissonClient;
 
+    /**
+     * {@link cn.cidea.framework.mq.redis.config.CIdeaRedisMQAutoConfiguration#redisMessageListenerContainer(RedisMQTemplate, List)}
+     * @param message
+     */
     @Override
     protected void doSend(AbstractChannelMessage message) {
-        redisTemplate.convertAndSend(message.getChannel(), JSONObject.toJSONString(message));
+        RTopic topic = redissonClient.getTopic(message.getChannel());
+        // TODO 直接使用对象会有类加载不一致问题，原因不明，暂时使用JSONString
+        topic.publish(JSONObject.toJSONString(message));
+        // topic.publish(message);
     }
 
     /**
