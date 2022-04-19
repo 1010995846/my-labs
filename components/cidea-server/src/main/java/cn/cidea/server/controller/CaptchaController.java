@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 
 @RestController
-@RequestMapping("/system/captcha")
+@RequestMapping("/sys/captcha")
 public class CaptchaController {
 
     @Resource

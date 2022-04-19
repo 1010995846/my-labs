@@ -1,14 +1,13 @@
 package cn.cidea.framework.mq.redis;
 
 import cn.cidea.framework.mq.core.MQTemplate;
+import cn.cidea.framework.mq.redis.config.CIdeaRedisMQAutoConfiguration;
 import cn.cidea.framework.mq.redis.pubsub.AbstractChannelMessage;
 import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
-
-import java.util.List;
 
 /**
  * Redis MQ 操作模板类
@@ -20,7 +19,8 @@ public class RedisMQTemplate extends MQTemplate<AbstractChannelMessage> {
     private final RedissonClient redissonClient;
 
     /**
-     * {@link cn.cidea.framework.mq.redis.config.CIdeaRedisMQAutoConfiguration#redisMessageListenerContainer(RedisMQTemplate, List)}
+     * pub
+     * 监听器sub {@link CIdeaRedisMQAutoConfiguration.ListenerAutoConfiguration#ListenerAutoConfiguration}
      * @param message
      */
     @Override

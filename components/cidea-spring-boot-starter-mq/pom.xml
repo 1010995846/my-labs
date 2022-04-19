@@ -23,5 +23,6 @@
     <modules>
         <module>cidea-spring-boot-starter-mq-api</module>
         <module>cidea-spring-boot-starter-mq-redis</module>
+        <module>cidea-spring-boot-starter-mq-redisson</module>
     </modules>
 </project>

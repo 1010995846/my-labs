@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
+ * 消息模板
  * @author Charlotte
  */
 public abstract class MQTemplate<T extends AbstractMessage> {

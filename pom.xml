@@ -69,6 +69,11 @@
 			</dependency>
 			<dependency>
 				<groupId>cn.cidea</groupId>
+				<artifactId>cidea-spring-boot-starter-mq-redisson</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.cidea</groupId>
 				<artifactId>cidea-spring-boot-starter-web</artifactId>
 				<version>${project.version}</version>
 			</dependency>

@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>cn.cidea</groupId>
-            <artifactId>cidea-spring-boot-starter-mq-redis</artifactId>
+            <artifactId>cidea-spring-boot-starter-mq-redisson</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.cidea</groupId>

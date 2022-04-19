@@ -27,9 +27,9 @@ public class CaptchaServiceImpl implements ICaptchaService {
     @Override
     public CaptchaImageRespVO getCaptchaImage() {
         Boolean enable = captchaProperties.getEnable();
-        if (!Boolean.TRUE.equals(enable)) {
-            return CaptchaImageRespVO.builder().enable(enable).build();
-        }
+        // if (!Boolean.TRUE.equals(enable)) {
+        //     return CaptchaImageRespVO.builder().enable(enable).build();
+        // }
         // 生成验证码
         CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(captchaProperties.getWidth(), captchaProperties.getHeight());
         // 缓存到 Redis 中

@@ -8,11 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.redisson.PubSubMessageListener;
 import org.redisson.client.RedisPubSubListener;
 import org.redisson.client.protocol.pubsub.PubSubType;
-import org.springframework.data.redis.connection.Message;
-import org.springframework.data.redis.connection.MessageListener;
 
 import java.lang.reflect.Type;
 import java.util.List;

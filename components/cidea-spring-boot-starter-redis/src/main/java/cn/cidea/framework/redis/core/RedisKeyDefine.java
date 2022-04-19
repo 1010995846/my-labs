@@ -9,8 +9,6 @@ import java.time.Duration;
 
 /**
  * Redis Key 定义类
- *
- * @author 芋道源码
  */
 @Data
 public class RedisKeyDefine {
