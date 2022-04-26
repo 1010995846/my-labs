@@ -33,32 +33,44 @@ class TransactionTestTest {
 
     @Autowired
     private PlatformTransactionManager transactionManager;
+
     @Test
-    public void rollback(){
+    public void rollback() {
         userMapper.delete(new UpdateWrapper<SysUser>().lambda().eq(SysUser::getUsername, targetName));
 
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         TransactionStatus ts = transactionManager.getTransaction(def);
 
-        userMapper.insert(getTargetUser());
-        List<SysUser> list = getTargetList();
-        Assertions.assertTrue(list.size() == 1, "未提交!");
-        ts.flush();
+        List<SysUser> list;
+        try {
 
-        def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NOT_SUPPORTED);
-        TransactionStatus tsInner = transactionManager.getTransaction(def);
-        // 事物未提交前查不到
-        list = getTargetList();
-        Assertions.assertTrue(list.size() == 0, "未隔离!");
-        transactionManager.commit(tsInner);
+            userMapper.insert(getTargetUser());
+            list = getTargetList();
+            Assertions.assertTrue(list.size() == 1, "未提交!");
+            ts.flush();
 
-        // 回滚方式一
-//        ts.setRollbackOnly();
-//        transactionManager.commit(ts);
+            def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NOT_SUPPORTED);
+            TransactionStatus tsInner = transactionManager.getTransaction(def);
+            // 第一个事物提交前，查不到
+            list = getTargetList();
+            Assertions.assertTrue(list.size() == 0, "未隔离!");
+            transactionManager.commit(tsInner);
+
+            // 抛异常触发手动回滚
+            if(1 == 1){
+                throw new RuntimeException();
+            }
+        } catch (Throwable t) {
+
+            // 回滚方式一
+            // transactionManager.rollback(ts);
 //         回滚方式二
-        transactionManager.rollback(ts);
+            ts.setRollbackOnly();
+        } finally {
+            transactionManager.commit(ts);
+        }
 
         list = getTargetList();
         Assertions.assertTrue(list.size() == 0, "未回滚!");
@@ -69,7 +81,7 @@ class TransactionTestTest {
     private TransactionTemplate transactionTemplate;
 
     @Test
-    public void commitSimple(){
+    public void commitSimple() {
         // 默认与Spring事物一致，表达式内相当于@Translational注解切面
         transactionTemplate.execute(status -> {
             userMapper.delete(new UpdateWrapper<SysUser>().lambda().eq(SysUser::getUsername, targetName));
@@ -84,7 +96,7 @@ class TransactionTestTest {
     }
 
     @Test
-    public void rollbackSimple(){
+    public void rollbackSimple() {
         try {
             transactionTemplate.execute(status -> {
                 userMapper.delete(new UpdateWrapper<SysUser>().lambda().eq(SysUser::getUsername, targetName));
@@ -92,17 +104,18 @@ class TransactionTestTest {
                 // 方案一
 //                status.setRollbackOnly();
                 // 方案二
-                if(1 == 1){
+                if (1 == 1) {
                     throw new RuntimeException();
                 }
                 return null;
             });
-        } catch (RuntimeException r){
+        } catch (RuntimeException r) {
 
         }
         List<SysUser> list = getTargetList();
         Assertions.assertTrue(list.size() == 0, "未回滚!");
     }
+
     private List<SysUser> getTargetList() {
         return userMapper.selectList(new QueryWrapper<SysUser>().lambda()
                 .eq(SysUser::getUsername, targetName));

@@ -3,6 +3,9 @@ package cn.cidea.framework.common.utils;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -81,5 +84,14 @@ public class StringFormatUtils {
      */
     public static String underlineToHump(String str) {
         return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, str);
+    }
+
+    public static String encodeChinese(String str) throws UnsupportedEncodingException {
+        Matcher matcher = Pattern.compile("[\\u4e00-\\u9fa5]").matcher(str);
+        while (matcher.find()) {
+            String tmp = matcher.group();
+            str = str.replaceAll(tmp, URLEncoder.encode(tmp, "UTF-8"));
+        }
+        return str.replace(" ", "%20");
     }
 }

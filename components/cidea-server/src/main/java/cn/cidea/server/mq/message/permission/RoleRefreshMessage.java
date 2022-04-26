@@ -1,21 +1,20 @@
 package cn.cidea.server.mq.message.permission;
 
-import cn.cidea.framework.mq.redis.pubsub.AbstractChannelMessage;
+import cn.cidea.framework.mq.redis.core.message.AbstractMessage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.redisson.client.ChannelName;
 
 /**
  * 角色数据刷新 Message
- *
- * @author 芋道源码
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RoleRefreshMessage extends AbstractChannelMessage {
+public class RoleRefreshMessage extends AbstractMessage {
 
     @Override
-    public String getChannel() {
-        return "sys.role.refresh";
+    public ChannelName getChannel() {
+        return new ChannelName("sys.role.refresh");
     }
 
 }

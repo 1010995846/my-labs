@@ -166,11 +166,11 @@ public class SysPermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceM
     public void processRoleDeleted(Long roleId) {
 
         // 发送刷新消息. 注意，需要事务提交后，在进行发送刷新消息。不然 db 还未提交，结果缓存先刷新了
+        producer.sendRoleMenuRefreshMessage();
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 
             @Override
             public void afterCommit() {
-                producer.sendRoleMenuRefreshMessage();
             }
 
         });

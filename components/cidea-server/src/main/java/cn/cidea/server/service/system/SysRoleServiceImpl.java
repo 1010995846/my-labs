@@ -59,7 +59,6 @@ public class SysRoleServiceImpl extends CacheOneServiceImpl<Long, ISysRoleMapper
     }
 
     @Override
-    @Transactional
     public Long save(SysRoleDTO saveDTO) {
         // 校验角色
         checkDuplicateRole(saveDTO.getName(), saveDTO.getCode(), saveDTO.getId());

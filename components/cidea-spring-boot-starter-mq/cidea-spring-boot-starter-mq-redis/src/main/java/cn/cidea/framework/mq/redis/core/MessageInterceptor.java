@@ -1,7 +1,7 @@
-package cn.cidea.framework.mq.core.interceptor;
+package cn.cidea.framework.mq.redis.core;
 
 
-import cn.cidea.framework.mq.core.dto.AbstractMessage;
+import cn.cidea.framework.mq.redis.AbstractMessage;
 
 /**
  * MQ拦截器，作为插件机制，实现拓展。

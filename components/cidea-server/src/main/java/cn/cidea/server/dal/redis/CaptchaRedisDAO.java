@@ -8,8 +8,6 @@ import java.time.Duration;
 
 /**
  * 验证码的 Redis DAO
- *
- * @author 芋道源码
  */
 @Repository
 public class CaptchaRedisDAO {

@@ -1,42 +1,40 @@
-package cn.cidea.framework.mq.redis.pubsub;
+package cn.cidea.framework.mq.redis.core.message.pubsub;
 
-import cn.cidea.framework.mq.core.MQTemplate;
-import cn.cidea.framework.mq.core.dto.AbstractMessage;
-import cn.cidea.framework.mq.core.interceptor.MessageInterceptor;
+import cn.cidea.framework.mq.redis.AbstractMessage;
+import cn.cidea.framework.mq.redis.RedisMQTemplate;
+import cn.cidea.framework.mq.redis.core.MessageInterceptor;
 import cn.hutool.core.util.TypeUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
-import org.redisson.client.RedisPubSubListener;
-import org.redisson.client.protocol.pubsub.PubSubType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Redis Pub/Sub 监听器抽象类，用于实现广播消费
- *
- * @param <T> 消息类型。一定要填写噢，不然会报错
- *
- * @author 芋道源码
+ * 监听基类
+ * @author Charlotte
+ * @param <T> 监听的消息类型
  */
-public abstract class AbstractChannelMessageListener<T extends AbstractChannelMessage> implements RedisPubSubListener<String> {
+public abstract class AbstractChannelMessageListener<T extends AbstractMessage> implements MessageListener {
 
     /**
      * 消息类型
      */
     @Getter
-    private final Class<T> messageType;
+    protected final Class<T> messageType;
     /**
      * Redis Channel
      */
-    private final String channel;
+    protected final String channel;
     /**
      * RedisMQTemplate
      */
-    @Setter
-    private MQTemplate mqTemplate;
+    @Autowired
+    protected RedisMQTemplate mqTemplate;
 
     @SneakyThrows
     protected AbstractChannelMessageListener() {
@@ -53,25 +51,16 @@ public abstract class AbstractChannelMessageListener<T extends AbstractChannelMe
     }
 
     @Override
-    public boolean onStatus(PubSubType type, CharSequence channel) {
-        return false;
+    public void onMessage(Message message, byte[] pattern) {
+        T messageObj = JSONObject.parseObject(message.getBody(), messageType);
+        onMessage(messageObj);
     }
 
-    @Override
-    public void onPatternMessage(CharSequence pattern, CharSequence channel, String message) {
-        onMessage(channel, message);
-    }
-
-    @Override
-    public void onMessage(CharSequence channel, String msg) {
-        if(!channel.equals(getChannel())){
-            return;
-        }
-        T messageObj = JSONObject.parseObject(msg, messageType);
+    private void onMessage(T messageObj) {
         try {
             consumeMessageBefore(messageObj);
             // 消费消息
-            this.onMessage(messageObj);
+            this.invoke(messageObj);
         } catch (RuntimeException e){
             consumeMessageAfterError(messageObj, e);
             throw e;
@@ -85,7 +74,7 @@ public abstract class AbstractChannelMessageListener<T extends AbstractChannelMe
      *
      * @param message 消息
      */
-    public abstract void onMessage(T message);
+    public abstract void invoke(T message);
 
     /**
      * 通过解析类上的泛型，获得消息类型

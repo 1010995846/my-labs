@@ -7,8 +7,6 @@ import lombok.Getter;
  * 数据范围枚举类
  *
  * 用于实现数据级别的权限
- *
- * @author 芋道源码
  */
 @Getter
 @AllArgsConstructor

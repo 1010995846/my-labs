@@ -1,35 +1,67 @@
-package cn.cidea.framework.mq.core;
+package cn.cidea.framework.mq.redis;
 
-import cn.cidea.framework.mq.core.dto.AbstractMessage;
-import cn.cidea.framework.mq.core.interceptor.MessageInterceptor;
+import cn.cidea.framework.mq.redis.core.MessageInterceptor;
+import com.alibaba.fastjson.JSONObject;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
  * 消息模板
  * @author Charlotte
  */
-public abstract class MQTemplate<T extends AbstractMessage> {
+public class RedisMQTemplate<T extends AbstractMessage> {
 
-    protected abstract void doSend(T message);
+    @Autowired
+    @Getter
+    private StringRedisTemplate redisTemplate;
 
     /**
-     * 拦截器数组
+     * 拦截器
      */
+    @Autowired
     protected final List<MessageInterceptor> interceptors = new ArrayList<>();
+
+    protected void doPub(T message) {
+        // 发送消息
+        redisTemplate.convertAndSend(message.getChannel(), JSONObject.toJSONString(message));
+    }
+
+    protected void doSend(T message) {
+
+    }
+
+    protected void doSendDelay(T message, long delay, TimeUnit timeUnit){
+
+    }
 
     /**
      * 发送 Redis 消息，基于 Redis pub/sub 实现
      *
      * @param message 消息
      */
+    public void pub(T message) {
+        around(message, this::doPub);
+    }
+
     public void send(T message) {
+        around(message, this::doSend);
+    }
+
+    public void sendDelay(T message, Long timeout, TimeUnit timeUnit) {
+        around(message, msg -> doSendDelay(msg, timeout, timeUnit));
+    }
+
+    public void around(T message, Consumer<T> consumer){
         try {
             sendMessageBefore(message);
             // 发送消息
-            doSend(message);
+            consumer.accept(message);
         } catch (RuntimeException e) {
             sendMessageAfterError(message, e);
             throw e;
@@ -37,7 +69,6 @@ public abstract class MQTemplate<T extends AbstractMessage> {
             sendMessageAfter(message);
         }
     }
-
 
     protected void sendMessageBefore(T message) {
         // 正序
@@ -70,4 +101,5 @@ public abstract class MQTemplate<T extends AbstractMessage> {
     public List<MessageInterceptor> getInterceptors() {
         return interceptors;
     }
+
 }

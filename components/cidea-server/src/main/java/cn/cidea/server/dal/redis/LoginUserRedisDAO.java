@@ -11,8 +11,6 @@ import javax.annotation.Resource;
 
 /**
  * {@link LoginUserDTO} 的 RedisDAO
- *
- * @author 芋道源码
  */
 @Repository
 public class LoginUserRedisDAO {

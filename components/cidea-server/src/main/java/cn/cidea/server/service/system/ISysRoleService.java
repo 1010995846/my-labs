@@ -6,6 +6,7 @@ import cn.cidea.server.mybatis.ICacheService;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.cidea.server.dataobject.dto.SysRoleDTO;
 import cn.cidea.server.dataobject.entity.SysRole;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -26,7 +27,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public interface ISysRoleService extends IService<SysRole>, ICacheOneService<Long, SysRole> {
 
-    @Transactional
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     Long save(@Valid SysRoleDTO saveDTO);
 
     @Transactional

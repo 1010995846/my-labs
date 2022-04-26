@@ -10,8 +10,6 @@ import static cn.cidea.framework.redis.core.RedisKeyDefine.KeyTypeEnum.STRING;
 
 /**
  * System Redis Key 枚举类
- *
- * @author 芋道源码
  */
 public interface RedisKeyConstants {
 

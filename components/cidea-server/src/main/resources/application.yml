@@ -6,6 +6,11 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+    host: 192.168.52.16
+    port: 5672
+    username: ihp
+    password: ihp
 
 mybatis-plus:
   configuration:
@@ -23,3 +28,10 @@ security:
   session-timeout: 1d
   mock-enable: true
   mock-secret: PDSA
+
+cidea:
+  mq:
+    retryInterval:
+      - PT1S
+      - PT5S
+      - PT30S
