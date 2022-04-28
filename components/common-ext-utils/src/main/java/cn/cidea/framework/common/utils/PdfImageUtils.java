@@ -1,31 +1,23 @@
 package cn.cidea.framework.common.utils;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Iterator;
 
 /**
  * PDF转图片，转base64
- * <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
- * <dependency>
- * <groupId>org.apache.pdfbox</groupId>
- * <artifactId>pdfbox</artifactId>
- * <version>2.0.20</version>
- * </dependency>
+ * pdfbox
  *
  * @author Charlotte
  */
-public class PdfUtils {
+public class PdfImageUtils {
 
     public static final float DEFAULT_DPI = 105;
     // 默认转换的图片格式为jpeg
