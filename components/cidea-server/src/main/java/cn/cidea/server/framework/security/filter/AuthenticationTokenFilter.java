@@ -1,9 +1,9 @@
-package cn.cidea.server.security.filter;
+package cn.cidea.server.framework.security.filter;
 
 import cn.cidea.framework.web.core.api.Response;
 import cn.cidea.framework.web.core.handler.GlobalExceptionHandler;
+import cn.cidea.server.framework.security.config.SecurityProperties;
 import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
-import cn.cidea.server.security.config.SecurityProperties;
 import cn.hutool.core.util.StrUtil;
 import cn.cidea.server.dataobject.dto.LoginUserDTO;
 import cn.cidea.server.service.auth.ILoginService;

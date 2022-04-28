@@ -1,6 +1,6 @@
-package cn.cidea.server.security.config;
+package cn.cidea.server.framework.security.config;
 
-import cn.cidea.server.security.filter.AuthenticationTokenFilter;
+import cn.cidea.server.framework.security.filter.AuthenticationTokenFilter;
 import cn.cidea.server.service.auth.ILoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -88,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webjars/**").anonymous()
                 .antMatchers("/*/api-docs").anonymous()
                 .antMatchers("/druid/**").anonymous()
-                .antMatchers("/test").permitAll()
+                .antMatchers("/test/**").permitAll()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated()
                 .and()

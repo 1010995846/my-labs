@@ -1,7 +1,7 @@
 package cn.cidea.server.service.auth;
 
 import cn.cidea.server.dal.redis.LoginUserRedisDAO;
-import cn.cidea.server.security.config.SecurityProperties;
+import cn.cidea.server.framework.security.config.SecurityProperties;
 import cn.hutool.core.util.IdUtil;
 import cn.cidea.server.dataobject.dto.LoginUserDTO;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,7 @@
 package cn.cidea.framework.mq.redis.config;
 
-import cn.cidea.framework.mq.redis.interceptor.CideaInterceptor;
+import cn.cidea.framework.mq.redis.interceptor.MessageInitInterceptor;
+import cn.cidea.framework.mq.redis.interceptor.MessageRetryInterceptor;
 import cn.cidea.framework.mq.redis.properties.RedisMqProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +21,13 @@ public class CIdeaRedisMQFunctionAutoConfiguration {
     }
 
     @Bean
-    public CideaInterceptor logInterceptor(){
-        return new CideaInterceptor();
+    public MessageInitInterceptor idInterceptor(){
+        return new MessageInitInterceptor();
+    }
+
+    @Bean
+    public MessageRetryInterceptor retryInterceptor(){
+        return new MessageRetryInterceptor();
     }
 
 }

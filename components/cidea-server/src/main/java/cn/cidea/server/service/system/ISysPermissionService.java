@@ -1,8 +1,7 @@
 package cn.cidea.server.service.system;
 
-import cn.cidea.server.dataobject.entity.SysRoleResource;
 import cn.cidea.server.mybatis.ICacheService;
-import cn.cidea.server.security.service.SecurityPermissionFrameworkService;
+import cn.cidea.server.framework.security.service.SecurityPermissionFrameworkService;
 
 /**
  * @author Charlotte

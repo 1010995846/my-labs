@@ -1,4 +1,4 @@
-package cn.cidea.server.security.handler;
+package cn.cidea.server.framework.security.handler;
 
 import cn.cidea.framework.web.core.api.Response;
 import cn.cidea.framework.web.core.asserts.Assert;

@@ -1,4 +1,4 @@
-package cn.cidea.server.security.service;
+package cn.cidea.server.framework.security.service;
 
 /**
  * Security 框架 Permission Service 接口，定义 security 组件需要的功能

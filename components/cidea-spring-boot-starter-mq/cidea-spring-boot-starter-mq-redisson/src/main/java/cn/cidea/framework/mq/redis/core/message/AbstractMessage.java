@@ -1,10 +1,12 @@
 package cn.cidea.framework.mq.redis.core.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.Getter;
 import org.redisson.client.protocol.pubsub.Message;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,13 +15,22 @@ import java.util.Map;
  * @author Charlotte
  */
 @Data
-public abstract class AbstractMessage implements Message, Serializable {
+public abstract class AbstractMessage<T> implements Message, Serializable {
 
     private Long id;
     /**
-     * 当前重试次数
+     * 第n次重试
+     * 手动设为小于0时不进行重试
      */
     private Integer retry;
+
+    /**
+     * 下次重试间隔，为空时不进行重试
+     */
+    @JsonIgnore
+    private Duration nextDuration;
+
+    private Date sendTime;
 
     /**
      * 头
@@ -34,23 +45,4 @@ public abstract class AbstractMessage implements Message, Serializable {
         headers.put(key, value);
     }
 
-    /**
-     * 获取下一次的重试次数
-     * @return
-     */
-    public Integer nextRetry(){
-        if(retry == null){
-            retry = 0;
-        }
-        return ++retry;
-    }
-
-    /**
-     * 是否进行重试
-     * 小于0时不进行自动重试
-     * @return
-     */
-    public boolean retry(){
-        return retry == null || retry >= 0;
-    }
 }

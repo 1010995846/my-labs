@@ -17,10 +17,5 @@ public class RedisMqProperties {
      * 重试次数对应的间隔
      * 为空或超出次数时不再重试
      */
-    // private Duration[] retryInterval;
-    private Duration[] retryInterval = new Duration[]{
-            Duration.ofSeconds(10),
-            Duration.ofMinutes(1),
-            Duration.ofMinutes(10),
-    };
+    private Duration[] retryInterval;
 }

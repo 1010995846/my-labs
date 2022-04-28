@@ -34,4 +34,4 @@ cidea:
     retryInterval:
       - PT1S
       - PT5S
-      - PT30S
+      - PT10S
