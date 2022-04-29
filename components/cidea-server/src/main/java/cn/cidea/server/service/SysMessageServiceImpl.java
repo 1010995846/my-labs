@@ -39,7 +39,10 @@ public class SysMessageServiceImpl extends ServiceImpl<ISysMessageMapper, SysMes
             throw new RuntimeException("消息Class加载失败!");
         }
         Assert.VALID.isTrue(ClassUtils.isAssignable(AbstractMessage.class, messageClass), "消息Class异常!");
-        AbstractMessage channelMessage = (AbstractMessage) message.getContent().toJavaObject(messageClass);
+        if(content == null){
+            content = message.getContent();
+        }
+        AbstractMessage channelMessage = (AbstractMessage) content.toJavaObject(messageClass);
         if(!Boolean.TRUE.equals(retry)){
             channelMessage.setRetry(-1);
         }
