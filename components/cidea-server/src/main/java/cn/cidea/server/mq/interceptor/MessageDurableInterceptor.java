@@ -8,6 +8,7 @@ import cn.cidea.server.service.ISysMessageService;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +21,6 @@ import java.util.Date;
 @Component
 public class MessageDurableInterceptor implements MessageInterceptor {
 
-    @Autowired
-    private ISysMessageService messageService;
     @Autowired
     private MessageRedisDAO redisDAO;
 
@@ -49,14 +48,15 @@ public class MessageDurableInterceptor implements MessageInterceptor {
                 .setChannel(message.getChannel().toString())
                 .setMsgId(message.getId())
                 .setRetry(message.getRetry())
-                .setContent(JSONObject.toJSONString(message))
+                .setContent(JSONObject.parseObject(JSONObject.toJSONString(message)))
+                .setClassName(message.getClass().getName())
                 .setCreateTime(message.getSendTime())
                 .setUpdateTime(new Date());
         if(isNew){
-            sysMessage.setStatus(1)
+            sysMessage.setStatus(0)
                     .setAck(false);
         } else {
-            sysMessage.setStatus(2)
+            sysMessage.setStatus(1)
                     .setAck(true);
         }
         if(message.getNextDuration() != null){
@@ -76,7 +76,7 @@ public class MessageDurableInterceptor implements MessageInterceptor {
         }
     }
 
-    public static void main(String[] args) {
-
+    @Override
+    public void consumeFinally(AbstractMessage message) {
     }
 }

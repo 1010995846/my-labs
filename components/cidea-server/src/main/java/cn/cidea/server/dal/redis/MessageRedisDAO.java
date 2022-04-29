@@ -11,10 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
+ * 消息持久化的缓存层
  * @author Charlotte
  */
 @Slf4j
@@ -30,7 +29,7 @@ public class MessageRedisDAO {
     private static final long CACHE_REFRESH_SIZE = 5;
     private static final long CACHE_SCHEDULER_REFRESH_PERIOD = 10 * 1000L;
 
-    private static final String FILTER_NAME = "mq:redis:filter";
+    private static final String BLOOM_FILTER_NAME = "mq:redis:exist:filter";
     private static final String CACHE_NAME = "mq:redis:cache";
     private static final String CACHE_LOCK_NAME = "mq:redis:lock";
 
@@ -97,7 +96,7 @@ public class MessageRedisDAO {
     }
 
     private RBloomFilter<Long> getBloomFilter() {
-        RBloomFilter<Long> bloomFilter = redissonClient.getBloomFilter(FILTER_NAME);
+        RBloomFilter<Long> bloomFilter = redissonClient.getBloomFilter(BLOOM_FILTER_NAME);
         boolean init = bloomFilter.tryInit(55000000L, 0.03);
         return bloomFilter;
     }

@@ -1,12 +1,11 @@
 package cn.cidea.server.dataobject.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 import java.util.Date;
@@ -20,6 +19,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
+@TableName(autoResultMap = true)
 public class SysMessage extends Model<SysMessage> {
 
     @TableId(value = "id", type = IdType.INPUT)
@@ -35,10 +35,13 @@ public class SysMessage extends Model<SysMessage> {
     /**
      * 消息内容【json格式】
      */
-    private Object content;
+    @TableField(typeHandler = FastjsonTypeHandler.class)
+    private JSONObject content;
+
+    private String className;
 
     /**
-     * 0-未投递；1-等待ack；2-消费成功；-1；消费失败
+     * 0-初始；1-消费成功；-1；消费失败
      */
     private Integer status;
 

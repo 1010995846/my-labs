@@ -1,10 +1,13 @@
 package cn.cidea.server.service;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import cn.cidea.server.dataobject.entity.SysMessage;
 import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * (SysMessage)表服务接口
@@ -15,5 +18,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Transactional(readOnly = true)
 public interface ISysMessageService extends IService<SysMessage> {
+
+    void resend(@NotNull Long id, Boolean retry, JSONObject content);
 
 }

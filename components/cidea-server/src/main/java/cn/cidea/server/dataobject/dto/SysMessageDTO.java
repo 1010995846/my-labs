@@ -1,7 +1,9 @@
 package cn.cidea.server.dataobject.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 /**
@@ -12,20 +14,20 @@ import lombok.Data;
  */
 @Data
 public class SysMessageDTO implements Serializable {
-    /**
-     *
-     */
+
     private Long id;
-    /**
-     *
-     */
+
+    private String channel;
+
     private Long msgId;
     /**
      * 消息内容【json格式】
      */
-    private Object content;
+    private JSONObject content;
+
+    private String className;
     /**
-     * 0-未投递；1-等待ack；2-消费成功；-1；消费失败
+     * 0-初始；1-消费成功；-1；消费失败
      */
     private Integer state;
     /**
@@ -36,24 +38,22 @@ public class SysMessageDTO implements Serializable {
      * 重试次数
      */
     private Integer retry;
+
+    private Long nextRetry;
     /**
      * 异常信息
      */
     private String errorMsg;
-    /**
-     *
-     */
+
     private String output;
-    /**
-     *
-     */
+
     private String host;
-    /**
-     *
-     */
+
     private String port;
-    /**
-     *
-     */
+
     private String applicationName;
+
+    private Date createTime;
+
+    private Date updateTime;
 }
