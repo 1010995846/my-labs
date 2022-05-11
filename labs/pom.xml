@@ -4,11 +4,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.cidea</groupId>
-        <artifactId>my-labs</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <artifactId>labs-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>labs</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>cn.cidea</groupId>
+                <artifactId>common-utils</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>lab-base</module>
@@ -21,10 +32,13 @@
         <module>lab-thread</module>
         <module>lab-util</module>
         <module>lab-spring</module>
-        <module>lab-spring-security</module>
         <module>lab-mybatis</module>
         <module>lab-mysql</module>
         <module>lab-nginx</module>
         <module>lab-kafka</module>
+
+        <module>cidea-spring-boot-starter-chain-demo</module>
+        <module>cidea-spring-boot-starter-strategy-demo</module>
     </modules>
+
 </project>
