@@ -16,6 +16,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Set;
 
 /**
  * 负责代理实现
@@ -47,7 +48,7 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor, BeanFa
         log.debug("call: {}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
         // 获取routeKey。getRouteKeys()是抽象方法，用于重写，提供自定义的获取方案
         String[] routeKeys = getRouteKeys(obj, method, args, methodProxy);
-        if(routeKeys == null){
+        if (routeKeys == null) {
             routeKeys = NULL_KEYS;
         }
         log.debug("routeKeys = {}", Arrays.toString(routeKeys));
@@ -59,36 +60,41 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor, BeanFa
             // 尝试映射到对应的branchClass
             Class<?> targetClass = AopUtils.getTargetClass(bean);
             for (String routeKey : routeKeys) {
-                Class serviceClassToUse = StrategyRouteHelper.getBranchClass(targetClass, routeKey);
-                if(serviceClassToUse == null){
-                    continue;
-                }
+                Set<Class> candidateServiceClassSet = StrategyRouteHelper.getBranchClass(targetClass, routeKey);
+                for (Class serviceClassToUse : candidateServiceClassSet) {
+                    // 映射到了branchClass，进行初始化
+                    log.debug("branchClassToUse = {}", serviceClassToUse);
+                    Method methodToUse = MethodUtils.getMatchingAccessibleMethod(
+                            serviceClassToUse, method.getName(), method.getParameterTypes());
+                    if(methodToUse == null){
+                        continue;
+                    }
 
-                // 映射到了branchClass，进行初始化
-                log.debug("branchClassToUse = {}", serviceClassToUse);
-                String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
+                    String serviceNameToUse = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, serviceClassToUse.getSimpleName()) + STRATEGY_ROUTE_SERVICE_SUFFIX;
 
-                // 避免并发时branch重复注入spring
-                Object beanToUse;
-                if (!beanFactory.containsBean(serviceNameToUse)) {
-                    synchronized (serviceClassToUse) {
-                        if (!beanFactory.containsBean(serviceNameToUse)) {
-                            // branch未注册时，注入spring，完成依赖
-                            RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
-                            beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+                    // 避免并发时branch重复注入spring
+                    Object beanToUse;
+                    if (!beanFactory.containsBean(serviceNameToUse)) {
+                        synchronized (serviceClassToUse) {
+                            if (!beanFactory.containsBean(serviceNameToUse)) {
+                                // branch未注册时，注入spring，完成依赖
+                                RootBeanDefinition beanDefinition = new RootBeanDefinition(serviceClassToUse);
+                                beanFactory.registerBeanDefinition(serviceNameToUse, beanDefinition);
+                            }
                         }
                     }
-                }
-                beanToUse = beanFactory.getBean(serviceNameToUse);
+                    beanToUse = beanFactory.getBean(serviceNameToUse);
 
-                Method methodToUse = MethodUtils.getMatchingMethod(
-                        serviceClassToUse, method.getName(), method.getParameterTypes());
-                invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
-                StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
-                break;
+                    invocationToUse = new StrategyRouteHelper.Invocation(methodToUse, beanToUse);
+                    StrategyRouteHelper.cacheBean(routeKey, method, invocationToUse);
+                    break;
+                }
+                if(invocationToUse != null){
+                    break;
+                }
             }
         }
-        if (invocationToUse == null){
+        if (invocationToUse == null) {
             // 兜底的默认操作，路由不存在对应的branchClass
             log.debug("call master service。");
             // 调用获取默认bean和method的方法，默认为代理的mainBean和method，可重写修改
@@ -124,6 +130,7 @@ public abstract class AbstractStrategyProxy implements MethodInterceptor, BeanFa
 
     /**
      * 路由key，由用户重写自定义路由策略规则，匹配对应接口/父类下属的分支{@link StrategyBranch#value()}
+     *
      * @param obj
      * @param method
      * @param args

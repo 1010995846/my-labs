@@ -5,6 +5,7 @@ import cn.cidea.framework.strategy.annotation.StrategyBranches;
 import cn.cidea.framework.strategy.annotation.StrategyMaster;
 import cn.cidea.framework.strategy.utils.PackageUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.intercept.Invocation;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.ClassMetadata;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 路由工具类，分支类的扫描、注册，路由的映射、缓存
+ *
  * @author Charlotte
  */
 @Slf4j
@@ -39,6 +41,7 @@ public class StrategyRouteHelper {
 
     /**
      * 是否允许缓存，默认开启，调试时可关闭
+     *
      * @see #setEnableCache(boolean)
      */
     private static boolean enableCache = true;
@@ -49,24 +52,27 @@ public class StrategyRouteHelper {
     private static Map<String, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
 
     public static void addBranchClass(Class clazz) {
+        // done: 允许分支含有多个路由键
         List<StrategyBranch> strategyBranchList = getStrategyBranches(clazz.getAnnotations());
         if (CollectionUtils.isEmpty(strategyBranchList)) {
             return;
         }
 
-        Class port = getPortClass(clazz);
-        // 分支路由配置
-        Map<String, Class> branchClassMap = serviceClassMap.get(port);
-        if (branchClassMap == null) {
-            branchClassMap = new HashMap<>();
-            serviceClassMap.put(port, branchClassMap);
-        }
-        // 默认路由key：类名
-        branchClassMap.put(clazz.getSimpleName(), clazz);
-        // 注解配置的路由key
-        for (StrategyBranch strategyBranch : strategyBranchList) {
-            for (String key : strategyBranch.value()) {
-                branchClassMap.put(key, clazz);
+        Set<Class> portList = getPortClass(clazz);
+        for (Class port : portList) {
+            // 分支路由配置
+            Map<String, Class> branchClassMap = serviceClassMap.get(port);
+            if (branchClassMap == null) {
+                branchClassMap = new HashMap<>();
+                serviceClassMap.put(port, branchClassMap);
+            }
+            // 默认路由key：类名
+            branchClassMap.put(clazz.getSimpleName(), clazz);
+            // 注解配置的路由key
+            for (StrategyBranch strategyBranch : strategyBranchList) {
+                for (String key : strategyBranch.value()) {
+                    branchClassMap.put(key, clazz);
+                }
             }
         }
     }
@@ -74,11 +80,11 @@ public class StrategyRouteHelper {
     private static List<StrategyBranch> getStrategyBranches(Annotation[] annotations) {
         List<StrategyBranch> strategyBranchList = new ArrayList<>();
         for (Annotation annotation : annotations) {
-            if(annotation.annotationType().getName().contains("java.lang")){
+            if (annotation.annotationType().getName().contains("java.lang")) {
                 continue;
-            } else if(annotation instanceof StrategyBranch){
+            } else if (annotation instanceof StrategyBranch) {
                 strategyBranchList.add((StrategyBranch) annotation);
-            } else if(annotation instanceof StrategyBranches){
+            } else if (annotation instanceof StrategyBranches) {
                 strategyBranchList.addAll(Arrays.asList(((StrategyBranches) annotation).value()));
             } else {
                 strategyBranchList.addAll(getStrategyBranches(annotation.annotationType().getAnnotations()));
@@ -88,10 +94,10 @@ public class StrategyRouteHelper {
     }
 
     public static void cacheBean(String key, Method method, Invocation invocation) {
-        if(!enableCache){
+        if (!enableCache) {
             return;
         }
-        if(key == null){
+        if (key == null) {
             key = NULL_KEY;
         }
         Map<Method, Invocation> methodInvocationMap = beanCache.get(key);
@@ -103,12 +109,12 @@ public class StrategyRouteHelper {
     }
 
     public static Invocation getCache(String[] keys, Method method) {
-        if(!enableCache){
+        if (!enableCache) {
             return null;
         }
         Invocation invocation;
         for (String key : keys) {
-            if((invocation = getCache(key, method)) != null){
+            if ((invocation = getCache(key, method)) != null) {
                 return invocation;
             }
         }
@@ -116,10 +122,10 @@ public class StrategyRouteHelper {
     }
 
     public static Invocation getCache(String key, Method method) {
-        if(!enableCache){
+        if (!enableCache) {
             return null;
         }
-        if(key == null){
+        if (key == null) {
             key = NULL_KEY;
         }
         Map<Method, Invocation> invocationMap = beanCache.get(key);
@@ -131,43 +137,57 @@ public class StrategyRouteHelper {
 
     /**
      * 根据分支类获取上级主流程类，若实现接口则返回第一个接口作为业务接口
+     *
      * @param clazz
      * @return
      */
-    public static Class getPortClass(Class clazz) {
+    public static Set<Class> getPortClass(Class clazz) {
         Class upper = clazz;
-        Class strategyMainClassToUse = null;
-        while (upper != null){
+        String packageName = clazz.getPackage().getName();
+        // 最上级的master类
+        Set<Class> strategyPortClassCandidateList = new HashSet<>();
+        while (upper != null) {
             if (isMaster(upper)) {
-                strategyMainClassToUse = upper;
+                // master注解标记
+                strategyPortClassCandidateList.add(upper);
             }
-            if(upper.getInterfaces().length != 0){
-                // 优先返回接口
-                return upper.getInterfaces()[0];
+            for (Class upperInterface : upper.getInterfaces()) {
+                if (packageName.contains(upperInterface.getPackage().getName())) {
+                    // 接口在上级包中，视为port之一
+                    strategyPortClassCandidateList.add(upperInterface);
+                }
             }
             upper = upper.getSuperclass();
         }
-        if(strategyMainClassToUse != null){
-            // 无接口时优先返回main注解的上级类
-            return strategyMainClassToUse;
+        if (strategyPortClassCandidateList.size() == 0) {
+            // 默认自身
+            strategyPortClassCandidateList.add(clazz);
         }
-        return clazz;
+        return strategyPortClassCandidateList;
     }
 
     /**
      * 根据clazz从serviceClassMap中获取main所在的branch域，并根据routeKey获取branch
-     * @see #addBranchClass(Class) 方法添加branch时进行解析并加入serviceClassMap
+     *
      * @param clazz
      * @param routeKey
      * @return
+     * @see #addBranchClass(Class) 方法添加branch时进行解析并加入serviceClassMap
      */
-    public static Class getBranchClass(Class clazz, String routeKey) {
-        Class portClass = getPortClass(clazz);
-        Map<String, Class> branchClassMap = serviceClassMap.get(portClass);
-        if (branchClassMap == null) {
-            return null;
+    public static Set<Class> getBranchClass(Class clazz, String routeKey) {
+        Set<Class> portClassList = getPortClass(clazz);
+        Set<Class> candidateBranchSet = new HashSet<>();
+        for (Class portClass : portClassList) {
+            Map<String, Class> branchClassMap = serviceClassMap.get(portClass);
+            if (branchClassMap == null) {
+                continue;
+            }
+            Class branchClass = branchClassMap.get(routeKey);
+            if (branchClass != null) {
+                candidateBranchSet.add(branchClass);
+            }
         }
-        return branchClassMap.get(routeKey);
+        return candidateBranchSet;
     }
 
     public static boolean isMaster(Object bean) {
@@ -175,16 +195,16 @@ public class StrategyRouteHelper {
         return isMaster(realClass);
     }
 
-    public static boolean isMaster(Class clazz){
+    public static boolean isMaster(Class clazz) {
         return clazz.getAnnotation(StrategyMaster.class) != null;
     }
 
-    public static boolean isBranch(Object bean){
+    public static boolean isBranch(Object bean) {
         Class realClass = AopUtils.getTargetClass(bean);
         return isBranch(realClass);
     }
 
-    public static boolean isBranch(Class clazz){
+    public static boolean isBranch(Class clazz) {
         return AnnotationUtils.findAnnotation(clazz, StrategyBranch.class) != null
                 || AnnotationUtils.findAnnotation(clazz, StrategyBranches.class) != null;
     }
@@ -200,36 +220,39 @@ public class StrategyRouteHelper {
 
     public static void registerBranch(Class<?> masterClass) {
         // 获取策略的端口
-        Class portClass = getPortClass(masterClass);
-        String className = portClass.getName();
-        // 根据端口获取包路径，也是上文使用说明中，分支类要在接口包下的原因
-        String[] basePackages = new String[]{className.substring(0, className.lastIndexOf('.'))};
+        Set<Class> portClassSet = getPortClass(masterClass);
+        for (Class portClass : portClassSet) {
 
-        // 过滤器匹配Branch
-        List<TypeFilter> includeFilters = new ArrayList<>();
-        includeFilters.add(new AbstractClassTestingTypeFilter() {
-            @Override
-            public boolean match(ClassMetadata metadataReader) {
-                try {
-                    Class clazz = ClassUtils.forName(metadataReader.getClassName(), portClass.getClassLoader());
-                    return isBranch(clazz);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+            String className = portClass.getName();
+            // 根据端口获取包路径，也是上文使用说明中，分支类要在接口包下的原因
+            String[] basePackages = new String[]{className.substring(0, className.lastIndexOf('.'))};
+
+            // 过滤器匹配Branch
+            List<TypeFilter> includeFilters = new ArrayList<>();
+            includeFilters.add(new AbstractClassTestingTypeFilter() {
+                @Override
+                public boolean match(ClassMetadata metadataReader) {
+                    try {
+                        Class clazz = ClassUtils.forName(metadataReader.getClassName(), portClass.getClassLoader());
+                        return isBranch(clazz);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
                 }
-                return false;
+            });
+            List<TypeFilter> excludeFilters = new ArrayList<>();
+
+            // 包工具类，扫描包并返回符合条件的Class，具体实现请查阅源码
+            Set<Class<?>> candidates = PackageUtils.scanPackages(basePackages, portClass.getClassLoader(), includeFilters, excludeFilters);
+            if (candidates.isEmpty()) {
+                log.info("扫描指定包[{}]时未发现符合条件的分支类", basePackages.toString());
+                return;
             }
-        });
-        List<TypeFilter> excludeFilters = new ArrayList<>();
 
-        // 包工具类，扫描包并返回符合条件的Class，具体实现请查阅源码
-        Set<Class<?>> candidates = PackageUtils.scanPackages(basePackages, portClass.getClassLoader(), includeFilters, excludeFilters);
-        if (candidates.isEmpty()) {
-            log.info("扫描指定包[{}]时未发现符合条件的分支类", basePackages.toString());
-            return;
-        }
-
-        for (Class<?> candidate : candidates) {
-            addBranchClass(candidate);
+            for (Class<?> candidate : candidates) {
+                addBranchClass(candidate);
+            }
         }
     }
 

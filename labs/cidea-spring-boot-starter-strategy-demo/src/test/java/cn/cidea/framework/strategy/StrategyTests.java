@@ -41,9 +41,9 @@ class StrategyTests implements BeanFactoryAware {
         OrgStrategyProxy.routeKey.remove();
         System.out.println("name = " + implBean.getName("1"));// 打印defaultOrg
         OrgStrategyProxy.routeKey.set("p1");
-        System.out.println("name = " + implBean.getName("1"));// 打印ext
+        System.out.println("name = " + implBean.getName("1"));// 打印plural
         OrgStrategyProxy.routeKey.set("p2");
-        System.out.println("name = " + implBean.getName("1"));// 打印ext
+        System.out.println("name = " + implBean.getName("1"));// 打印plural
     }
 
     @Test
