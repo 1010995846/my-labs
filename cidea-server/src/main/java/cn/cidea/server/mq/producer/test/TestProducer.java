@@ -1,6 +1,6 @@
 package cn.cidea.server.mq.producer.test;
 
-import cn.cidea.framework.mq.redis.core.RedisMQTemplate;
+import cn.cidea.framework.mq.redisson.core.RedisMQTemplate;
 import cn.cidea.server.mq.message.permission.ResourceRefreshMessage;
 import cn.cidea.server.mq.message.test.TestRedisMessage;
 import cn.cidea.server.mq.message.test.TestRedisRetryMessage;

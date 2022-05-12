@@ -26,17 +26,17 @@ public interface SecurityPermissionFrameworkService {
      *
      * 注意，角色使用的是 SysRoleDO 的 code 标识
      *
-     * @param role 角色
+     * @param code 角色
      * @return 是否
      */
-    boolean hasRole(String role);
+    boolean hasRole(String code);
 
     /**
      * 判断是否有角色，任一一个即可
      *
-     * @param roles 角色数组
+     * @param codes 角色数组
      * @return 是否
      */
-    boolean hasAnyRoles(String... roles);
+    boolean hasAnyRoles(String... codes);
 
 }

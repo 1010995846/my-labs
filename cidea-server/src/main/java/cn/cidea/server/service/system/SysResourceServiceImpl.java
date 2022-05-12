@@ -1,11 +1,8 @@
 package cn.cidea.server.service.system;
 
 import cn.cidea.server.dataobject.entity.SysResource;
-import cn.cidea.framework.common.utils.CollectionSteamUtils;
-import cn.cidea.server.mybatis.CacheOneServiceImpl;
-import cn.hutool.core.collection.CollUtil;
+import cn.cidea.framework.mybatisplus.plugin.cache.CacheOneServiceImpl;
 import cn.cidea.server.dal.mysql.ISysResourceMapper;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;

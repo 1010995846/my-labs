@@ -36,6 +36,7 @@
         <module>lab-mysql</module>
         <module>lab-nginx</module>
         <module>lab-kafka</module>
+        <module>lab-rabbit-server</module>
 
         <module>cidea-spring-boot-starter-chain-demo</module>
         <module>cidea-spring-boot-starter-strategy-demo</module>

@@ -1,13 +1,10 @@
 package cn.cidea.server.dataobject.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import cn.cidea.server.mybatis.CacheModel;
-import cn.cidea.server.mybatis.CacheOneModel;
+import cn.cidea.framework.mybatisplus.plugin.cache.CacheOneModel;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

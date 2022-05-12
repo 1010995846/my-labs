@@ -1,14 +1,12 @@
 package cn.cidea.server.mq.interceptor;
 
-import cn.cidea.framework.mq.redis.core.interceptor.MessageInterceptor;
-import cn.cidea.framework.mq.redis.core.message.AbstractMessage;
+import cn.cidea.framework.mq.redisson.core.interceptor.MessageInterceptor;
+import cn.cidea.framework.mq.redisson.core.message.AbstractMessage;
 import cn.cidea.server.dal.redis.MessageRedisDAO;
 import cn.cidea.server.dataobject.entity.SysMessage;
-import cn.cidea.server.service.ISysMessageService;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

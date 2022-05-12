@@ -1,7 +1,7 @@
 package cn.cidea.server.dal.redis;
 
 import cn.cidea.server.dataobject.entity.SysMessage;
-import cn.cidea.server.service.ISysMessageService;
+import cn.cidea.server.service.system.ISysMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

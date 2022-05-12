@@ -7,6 +7,8 @@ import cn.cidea.server.dataobject.entity.SysUserLoginLog;
 import cn.cidea.server.dataobject.enums.LoginTypeEnum;
 import cn.cidea.server.dataobject.enums.LoginResultEnum;
 import cn.cidea.framework.web.core.utils.ServletUtils;
+import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,6 @@ public class SysUserLoginLogServiceImpl extends ServiceImpl<ISysUserLoginLogMapp
 
     @Autowired
     private ISysUserService userService;
-    @Autowired
-    private DefaultIdentifierGenerator identifierGenerator;
 
     @Override
     public void fail(String username, LoginTypeEnum logType, LoginResultEnum loginResult, Throwable ex) {
@@ -44,7 +44,7 @@ public class SysUserLoginLogServiceImpl extends ServiceImpl<ISysUserLoginLogMapp
         SysUser user = userService.getUserByUsername(username);
         // 插入登录日志
         SysUserLoginLog loginLog = new SysUserLoginLog();
-        loginLog.setId(identifierGenerator.nextId(null));
+        loginLog.setId(IdWorker.getId());
         loginLog.setType(logTypeEnum.getType());
         if (user != null) {
             loginLog.setUserId(user.getId());

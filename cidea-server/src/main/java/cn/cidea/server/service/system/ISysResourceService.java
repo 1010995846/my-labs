@@ -2,7 +2,7 @@ package cn.cidea.server.service.system;
 
 
 import cn.cidea.server.dataobject.entity.SysResource;
-import cn.cidea.server.mybatis.ICacheOneService;
+import cn.cidea.framework.mybatisplus.plugin.cache.ICacheOneService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;

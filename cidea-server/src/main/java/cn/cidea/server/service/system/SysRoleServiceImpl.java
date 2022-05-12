@@ -5,21 +5,18 @@ import cn.cidea.server.dataobject.covert.RoleConvert;
 import cn.cidea.server.dataobject.enums.DataScopeEnum;
 import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
 import cn.cidea.server.mq.producer.permission.RoleProducer;
-import cn.cidea.server.mybatis.CacheOneServiceImpl;
+import cn.cidea.framework.mybatisplus.plugin.cache.CacheOneServiceImpl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.cidea.server.dal.mysql.ISysRoleMapper;
 import cn.cidea.server.dataobject.dto.SysRoleDTO;
 import cn.cidea.server.dataobject.entity.SysRole;
 import cn.cidea.server.dataobject.enums.RoleCodeEnum;
-import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
@@ -50,8 +47,6 @@ public class SysRoleServiceImpl extends CacheOneServiceImpl<Long, ISysRoleMapper
 
     @Resource
     private RoleProducer roleProducer;
-    @Resource
-    private DefaultIdentifierGenerator identifierGenerator;
 
     @Scheduled(fixedDelay = SCHEDULER_PERIOD, initialDelay = SCHEDULER_PERIOD)
     public void schedulePeriodicRefresh() {
@@ -68,7 +63,7 @@ public class SysRoleServiceImpl extends CacheOneServiceImpl<Long, ISysRoleMapper
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         Date updateTime = new Date();
         if (isNew) {
-            role.setId(identifierGenerator.nextId(null));
+            role.setId(IdWorker.getId());
             role.setBuiltIn(false);
             role.setDisabled(false);
             role.setCreateBy(loginUserId).setCreateTime(updateTime);

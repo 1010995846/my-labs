@@ -29,10 +29,10 @@
             <modules>
                 <module>common-utils</module>
                 <module>cidea-server</module>
+                <module>cidea-server-starter-mybatis-plus</module>
                 <module>cidea-server-starter-redis</module>
                 <module>cidea-server-starter-web</module>
                 <module>common-ext-utils</module>
-                <module>component-mq</module>
                 <module>labs</module>
             </modules>
         </profile>

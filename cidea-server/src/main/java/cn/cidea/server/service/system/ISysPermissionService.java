@@ -1,6 +1,6 @@
 package cn.cidea.server.service.system;
 
-import cn.cidea.server.mybatis.ICacheService;
+import cn.cidea.framework.mybatisplus.plugin.cache.ICacheService;
 import cn.cidea.server.framework.security.service.SecurityPermissionFrameworkService;
 
 /**

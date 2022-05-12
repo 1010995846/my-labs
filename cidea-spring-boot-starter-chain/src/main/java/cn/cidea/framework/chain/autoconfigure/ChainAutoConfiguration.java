@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  */
 @Configuration
 @ConditionalOnMissingBean({ChainFactoryBean.class, ChainScannerConfigurer.class})
-public class ChainAutoConfiguration  implements BeanFactoryAware, ImportBeanDefinitionRegistrar {
+public class ChainAutoConfiguration implements BeanFactoryAware, ImportBeanDefinitionRegistrar {
 
     protected Logger log = LoggerFactory.getLogger(ChainAutoConfiguration.class);
 

@@ -1,10 +1,9 @@
 package cn.cidea.server.dataobject.entity;
 
-import cn.cidea.server.mybatis.handlers.FastjsonNullDefaultTypeHandler;
+import cn.cidea.framework.mybatisplus.plugin.handlers.FastjsonNullDefaultTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import com.baomidou.mybatisplus.annotation.TableId;

@@ -1,6 +1,6 @@
 package cn.cidea.server.mq.message.test;
 
-import cn.cidea.framework.mq.redis.core.message.AbstractMessage;
+import cn.cidea.framework.mq.redisson.core.message.AbstractMessage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.redisson.client.ChannelName;

@@ -1,6 +1,6 @@
 package cn.cidea.server.mq.incrementer;
 
-import cn.cidea.framework.mq.redis.core.message.MessageIdGenerator;
+import cn.cidea.framework.mq.redisson.core.message.MessageIdGenerator;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import org.springframework.stereotype.Component;
 

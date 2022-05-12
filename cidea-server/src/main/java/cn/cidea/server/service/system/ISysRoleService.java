@@ -1,8 +1,7 @@
 package cn.cidea.server.service.system;
 
 
-import cn.cidea.server.mybatis.ICacheOneService;
-import cn.cidea.server.mybatis.ICacheService;
+import cn.cidea.framework.mybatisplus.plugin.cache.ICacheOneService;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.cidea.server.dataobject.dto.SysRoleDTO;
 import cn.cidea.server.dataobject.entity.SysRole;
@@ -12,9 +11,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**

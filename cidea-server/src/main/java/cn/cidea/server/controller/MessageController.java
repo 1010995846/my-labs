@@ -4,7 +4,7 @@ import cn.cidea.framework.web.core.api.Response;
 import cn.cidea.server.dataobject.covert.SysMessageCovert;
 import cn.cidea.server.dataobject.dto.SysMessageDTO;
 import cn.cidea.server.dataobject.entity.SysMessage;
-import cn.cidea.server.service.ISysMessageService;
+import cn.cidea.server.service.system.ISysMessageService;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,11 +4,12 @@ import cn.cidea.framework.common.utils.CollectionSteamUtils;
 import cn.cidea.server.dal.mysql.ISysUserMapper;
 import cn.cidea.server.dataobject.dto.LoginUserDTO;
 import cn.cidea.server.dataobject.entity.SysResource;
+import cn.cidea.server.dataobject.entity.SysRole;
 import cn.cidea.server.dataobject.entity.SysRoleResource;
 import cn.cidea.server.dataobject.entity.SysUser;
 import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
 import cn.cidea.server.mq.producer.permission.PermissionProducer;
-import cn.cidea.server.mybatis.CacheServiceImpl;
+import cn.cidea.framework.mybatisplus.plugin.cache.CacheServiceImpl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.cidea.server.dal.mysql.ISysRoleResourceMapper;
@@ -73,7 +74,7 @@ public class SysPermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceM
     @Override
     public void initLocalCache() {
         List<SysRoleResource> list = loadIfUpdate();
-        if(CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             return;
         }
 
@@ -95,18 +96,21 @@ public class SysPermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceM
     }
 
     public Set<String> getPermission(SysUser user) {
-        if(user == null){
+        if (user == null) {
             return new HashSet<>(0);
         }
+
         // Set<String> roles = new HashSet<>();
         // 管理员拥有所有权限
         // if (user.isAdmin()) {
         //     roles.add("*:*:*"); // 所有模块
         // } else {
-            // 读取
-            // roles.addAll(resourceService.selectMenuPermsByUserId(user.getId()));
+        // 读取
+        // roles.addAll(resourceService.selectMenuPermsByUserId(user.getId()));
         // }
-        userPool.builder(user).roleBuilder().resource();
+        userPool.builder(user)
+                .roleBuilder()
+                .resource();
         Set<String> permSet = user.getRoles().stream()
                 .flatMap(r -> r.getResources().stream())
                 .flatMap(r -> r.getPermissions().stream())
@@ -132,7 +136,7 @@ public class SysPermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceM
 
         // 获得当前登录的角色。如果为空，说明没有权限
         LoginUserDTO loginUser = SecurityFrameworkUtils.getLoginUser();
-        if(loginUser == null || loginUser.getRoleIds() == null){
+        if (loginUser == null || loginUser.getRoleIds() == null) {
             return false;
         }
         // 判断是否是超管。如果是，当然符合条件
@@ -153,13 +157,26 @@ public class SysPermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceM
     }
 
     @Override
-    public boolean hasRole(String role) {
-        return false;
+    public boolean hasRole(String code) {
+        if (code == null) {
+            return true;
+        }
+        LoginUserDTO loginUser = SecurityFrameworkUtils.getLoginUser();
+        List<SysRole> roleList = roleService.listFromCache(loginUser.getRoleIds());
+        return roleList.stream().anyMatch(role -> code.equals(role.getCode()));
     }
 
     @Override
-    public boolean hasAnyRoles(String... roles) {
-        return false;
+    public boolean hasAnyRoles(String... codes) {
+        if (codes == null) {
+            return true;
+        }
+        LoginUserDTO loginUser = SecurityFrameworkUtils.getLoginUser();
+        List<SysRole> roleList = roleService.listFromCache(loginUser.getRoleIds());
+        List<String> codeList = roleList.stream()
+                .map(SysRole::getCode)
+                .collect(Collectors.toList());
+        return Arrays.stream(codes).anyMatch(code -> codeList.contains(code));
     }
 
     @Override

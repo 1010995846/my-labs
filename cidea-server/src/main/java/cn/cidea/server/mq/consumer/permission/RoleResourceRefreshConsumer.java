@@ -1,6 +1,6 @@
 package cn.cidea.server.mq.consumer.permission;
 
-import cn.cidea.framework.mq.redis.core.message.pubsub.AbstractPubSubListener;
+import cn.cidea.framework.mq.redisson.core.message.pubsub.AbstractPubSubListener;
 import cn.cidea.server.mq.message.permission.RoleResourceRefreshMessage;
 import cn.cidea.server.service.system.ISysPermissionService;
 import lombok.extern.slf4j.Slf4j;

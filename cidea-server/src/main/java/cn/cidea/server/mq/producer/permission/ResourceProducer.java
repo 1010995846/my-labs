@@ -1,6 +1,6 @@
 package cn.cidea.server.mq.producer.permission;
 
-import cn.cidea.framework.mq.redis.core.RedisMQTemplate;
+import cn.cidea.framework.mq.redisson.core.RedisMQTemplate;
 import cn.cidea.server.mq.message.permission.ResourceRefreshMessage;
 import org.springframework.stereotype.Component;
 

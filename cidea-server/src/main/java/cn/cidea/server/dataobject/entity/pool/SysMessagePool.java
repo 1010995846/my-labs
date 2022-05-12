@@ -1,7 +1,7 @@
 package cn.cidea.server.dataobject.entity.pool;
 
 
-import cn.cidea.server.service.ISysMessageService;
+import cn.cidea.server.service.system.ISysMessageService;
 import cn.cidea.server.dataobject.entity.SysMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

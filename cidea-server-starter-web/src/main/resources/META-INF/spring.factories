@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cn.cidea.framework.web.config.CIdeaWebAutoConfiguration
+  cn.cidea.framework.web.config.WebAutoConfiguration
