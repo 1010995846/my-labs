@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Strategy {
+public @interface StrategyPort {
 
     /**
      * 指定策略路由

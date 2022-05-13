@@ -23,7 +23,7 @@ public @interface StrategyScan {
 
     Class<?>[] basePackageClasses() default {};
 
-    Class<? extends Annotation> annotationClass() default Strategy.class;
+    Class<? extends Annotation> annotationClass() default StrategyPort.class;
 
     Class<? extends BeanNameGenerator> nameGenerator() default StrategyBeanNameGenerator.class;
 }

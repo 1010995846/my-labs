@@ -1,7 +1,7 @@
 package cn.cidea.framework.strategy.core.factory.support;
 
 import cn.cidea.framework.strategy.core.annotation.ClassPathStrategyScanner;
-import cn.cidea.framework.strategy.core.annotation.Strategy;
+import cn.cidea.framework.strategy.core.annotation.StrategyPort;
 import cn.cidea.framework.strategy.core.factory.StrategyFactoryBean;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
@@ -33,7 +33,7 @@ public class StrategyScannerConfigurer
 
     private Class<? extends StrategyFactoryBean> factoryBeanClass = StrategyFactoryBean.class;
 
-    private Class<? extends Annotation> annotationClass = Strategy.class;
+    private Class<? extends Annotation> annotationClass = StrategyPort.class;
 
     private BeanNameGenerator nameGenerator = new StrategyBeanNameGenerator();
 

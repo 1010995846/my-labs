@@ -48,7 +48,7 @@ public class StrategyFactoryBean<T> implements InitializingBean, FactoryBean<T>,
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        notNull(this.port, "Property 'chainInterface' is required");
+        notNull(this.port, "Property 'port' is required");
         notNull(this.beanFactory, "Property 'beanFactory' is required");
     }
 

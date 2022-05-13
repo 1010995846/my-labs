@@ -1,6 +1,6 @@
 package cn.cidea.framework.strategy.config;
 
-import cn.cidea.framework.strategy.core.annotation.Strategy;
+import cn.cidea.framework.strategy.core.annotation.StrategyPort;
 import cn.cidea.framework.strategy.core.factory.support.StrategyBeanNameGenerator;
 import cn.cidea.framework.strategy.core.factory.support.StrategyScannerConfigurer;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class StrategyAutoConfiguration implements BeanFactoryAware, ImportBeanDe
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         if (!AutoConfigurationPackages.has(this.beanFactory)) {
-            log.debug("Could not determine auto-configuration package, automatic chain scanning disabled.");
+            log.debug("Could not determine auto-configuration package, automatic Strategy scanning disabled.");
             return;
         }
 
@@ -47,7 +47,7 @@ public class StrategyAutoConfiguration implements BeanFactoryAware, ImportBeanDe
         }
 
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(StrategyScannerConfigurer.class);
-        builder.addPropertyValue("annotationClass", Strategy.class);
+        builder.addPropertyValue("annotationClass", StrategyPort.class);
         builder.addPropertyValue("basePackage", StringUtils.collectionToCommaDelimitedString(packages));
         builder.addPropertyValue("nameGenerator", new StrategyBeanNameGenerator());
         BeanWrapper beanWrapper = new BeanWrapperImpl(StrategyScannerConfigurer.class);

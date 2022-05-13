@@ -1,16 +1,14 @@
 package cn.cidea.framework.strategy.core.factory.proxy;
 
 import cn.cidea.framework.strategy.core.IStrategyRoute;
-import cn.cidea.framework.strategy.core.annotation.Strategy;
+import cn.cidea.framework.strategy.core.annotation.StrategyPort;
 import cn.cidea.framework.strategy.core.annotation.StrategyBranch;
 import cn.cidea.framework.strategy.core.annotation.StrategyBranches;
 import cn.cidea.framework.strategy.core.annotation.StrategyMaster;
+import cn.cidea.framework.strategy.core.factory.support.StrategyRegistry;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
@@ -34,27 +32,22 @@ public class StrategyProxy implements MethodInterceptor {
     private Logger log = LoggerFactory.getLogger(StrategyProxy.class);
 
     private Class<?> portClass;
+
     private Class<? extends IStrategyRoute> routeClass;
+
     private DefaultListableBeanFactory beanFactory;
 
-    private static final String NULL_KEY = "null";
-    private static final String[] NULL_KEYS = new String[]{NULL_KEY};
     private Object masterBean;
 
     /**
-     * 分支实例缓存
+     * 分支实例
      */
-    private Map<String, Object> branchBeanCache;
-
-    /**
-     * 分支执行方法缓存，(routeKey, 代理的method): 执行bean和执行method的封装对象
-     */
-    private static Map<String, Map<Method, Invocation>> beanCache = new ConcurrentHashMap<>(16);
+    private Map<String, Object> branchBean;
 
     public StrategyProxy(Class<?> portClass, DefaultListableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
         this.portClass = portClass;
-        Strategy annotation = AnnotationUtils.findAnnotation(portClass, Strategy.class);
+        StrategyPort annotation = AnnotationUtils.findAnnotation(portClass, StrategyPort.class);
         Assert.notNull(annotation, "strategy class has not @Strategy");
         this.routeClass = annotation.route();
     }
@@ -76,18 +69,19 @@ public class StrategyProxy implements MethodInterceptor {
         tryInit();
 
         String[] routeKeys = route.getRouteKeys(obj, method, args, methodProxy);
-        if (routeKeys == null) {
-            routeKeys = NULL_KEYS;
+        if(routeKeys == null){
+            // 默认，避免NPE
+            routeKeys = new String[]{};
         }
         log.debug("routeKeys = {}", Arrays.toString(routeKeys));
         // 待执行bean和method的封装对象
         Invocation invocationToUse;
         // 尝试获取缓存
-        if ((invocationToUse = getCache(routeKeys, method)) == null) {
+        if ((invocationToUse = StrategyRegistry.getCache(routeKeys, method)) == null) {
             // 无缓存，开始解析
             // 尝试映射到对应的branchClass
             for (String routeKey : routeKeys) {
-                Object beanToUse = branchBeanCache.get(routeKey);
+                Object beanToUse = branchBean.get(routeKey);
                 if(beanToUse == null){
                     continue;
                 }
@@ -97,7 +91,7 @@ public class StrategyProxy implements MethodInterceptor {
                     continue;
                 }
                 invocationToUse = new Invocation(methodToUse, beanToUse);
-                cacheBean(routeKey, method, invocationToUse);
+                StrategyRegistry.cacheBean(routeKey, method, invocationToUse);
                 break;
             }
         }
@@ -110,9 +104,7 @@ public class StrategyProxy implements MethodInterceptor {
             Method methodToUse = MethodUtils.getMatchingAccessibleMethod(
                     masterBean.getClass(), method.getName(), method.getParameterTypes());
             invocationToUse = new Invocation(methodToUse, masterBean);
-            for (String routeKey : routeKeys) {
-                cacheBean(routeKey, method, invocationToUse);
-            }
+            StrategyRegistry.cacheBean(routeKeys, method, invocationToUse);
         }
         Object result = invocationToUse.invoke(args);
         log.debug("strategy proxy finished。");
@@ -120,16 +112,16 @@ public class StrategyProxy implements MethodInterceptor {
     }
 
     private void tryInit() {
-        if (branchBeanCache != null) {
+        if (branchBean != null) {
             return;
         }
         synchronized (this) {
-            if (branchBeanCache != null) {
+            if (branchBean != null) {
                 return;
             }
-            branchBeanCache = new ConcurrentHashMap<>();
+            branchBean = new HashMap<>();
             Map<String, ?> beansOfType = beanFactory.getBeansOfType(portClass);
-            branchBeanCache.putAll(beansOfType);
+            branchBean.putAll(beansOfType);
             for (Object bean : beansOfType.values()) {
                 if(bean.getClass().getAnnotation(StrategyMaster.class) != null){
                     if(masterBean != null){
@@ -146,47 +138,14 @@ public class StrategyProxy implements MethodInterceptor {
                         continue;
                     }
                     for (String key : branch.value()) {
-                        if (branchBeanCache.containsKey(key)) {
+                        if (branchBean.containsKey(key)) {
                             log.warn("strategy branch key `{}` conflict", key);
                         }
-                        branchBeanCache.put(key, bean);
+                        branchBean.put(key, bean);
                     }
                 }
             }
         }
-    }
-
-    private void cacheBean(String key, Method method, Invocation invocation) {
-        if (key == null) {
-            key = NULL_KEY;
-        }
-        Map<Method, Invocation> methodInvocationMap = beanCache.get(key);
-        if (methodInvocationMap == null) {
-            methodInvocationMap = new ConcurrentHashMap<>(64);
-            beanCache.put(key, methodInvocationMap);
-        }
-        methodInvocationMap.put(method, invocation);
-    }
-
-    private Invocation getCache(String[] keys, Method method) {
-        Invocation invocation;
-        for (String key : keys) {
-            if ((invocation = getCache(key, method)) != null) {
-                return invocation;
-            }
-        }
-        return null;
-    }
-
-    private Invocation getCache(String key, Method method) {
-        if (key == null) {
-            key = NULL_KEY;
-        }
-        Map<Method, Invocation> invocationMap = beanCache.get(key);
-        if (invocationMap == null) {
-            return null;
-        }
-        return invocationMap.get(method);
     }
 
     private List<StrategyBranch> getBranchAnnotations(Class branch) {

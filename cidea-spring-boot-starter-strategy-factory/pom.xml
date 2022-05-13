@@ -8,7 +8,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>cidea-spring-boot-starter-strategy</artifactId>
-    <version>0.1.0-FACTORY-SNAPSHOT</version>
+    <version>0.1.1-FACTORY-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

@@ -66,7 +66,7 @@ public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner imp
         for (BeanDefinitionHolder holder : beanDefinitions) {
             definition = (GenericBeanDefinition) holder.getBeanDefinition();
             String beanClassName = definition.getBeanClassName();
-            log.debug("Creating ChainFactoryBean with name '" + holder.getBeanName() + "' and '" + beanClassName
+            log.debug("Creating StrategyFactoryBean with name '" + holder.getBeanName() + "' and '" + beanClassName
                     + "' interface");
 
             // 重点，设置构造参数，这里为接口的全限定名
