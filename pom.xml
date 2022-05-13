@@ -21,6 +21,7 @@
         <module>cidea-spring-boot-starter-mq-redisson</module>
         <module>cidea-spring-boot-starter-chain</module>
         <module>cidea-spring-boot-starter-strategy</module>
+        <module>cidea-spring-boot-starter-strategy-factory</module>
     </modules>
 
     <profiles>

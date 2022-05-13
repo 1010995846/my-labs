@@ -40,6 +40,7 @@
 
         <module>cidea-spring-boot-starter-chain-demo</module>
         <module>cidea-spring-boot-starter-strategy-demo</module>
+        <module>cidea-spring-boot-starter-strategy-factory-demo</module>
     </modules>
 
 </project>
