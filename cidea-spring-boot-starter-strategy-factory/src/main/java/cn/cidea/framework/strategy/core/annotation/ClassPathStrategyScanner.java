@@ -79,6 +79,7 @@ public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner imp
 
             // 保证链路接口多实现的同时，默认调链路代理
             definition.setPrimary(true);
+            // definition.setInitMethodName();
             definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
         }
 

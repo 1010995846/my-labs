@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  cn.cidea.framework.security.config.SecurityAutoConfiguration,\
+  cn.cidea.framework.security.config.WebSecurityConfig

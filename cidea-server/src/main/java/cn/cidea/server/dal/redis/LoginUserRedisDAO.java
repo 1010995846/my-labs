@@ -1,7 +1,7 @@
 package cn.cidea.server.dal.redis;
 
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
-import cn.cidea.server.framework.security.config.SecurityProperties;
+import cn.cidea.framework.security.core.properties.SecurityProperties;
+import cn.cidea.framework.security.core.LoginUserDTO;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;

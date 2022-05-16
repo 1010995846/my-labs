@@ -2,9 +2,9 @@ package cn.cidea.server.controller;
 
 
 import cn.cidea.framework.web.core.api.Response;
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
+import cn.cidea.framework.security.core.LoginUserDTO;
 import cn.cidea.server.dataobject.entity.SysUser;
-import cn.cidea.server.service.auth.ILoginService;
+import cn.cidea.framework.security.core.service.ISecurityLoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
-    private ILoginService loginService;
+    private ISecurityLoginService loginService;
 
     @RequestMapping(value = "/login")
     public Response login(String username, String password, String code, String uuid){

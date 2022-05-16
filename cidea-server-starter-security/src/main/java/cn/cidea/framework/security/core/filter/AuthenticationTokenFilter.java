@@ -1,14 +1,16 @@
-package cn.cidea.server.framework.security.filter;
+package cn.cidea.framework.security.core.filter;
 
+import cn.cidea.framework.security.core.properties.SecurityProperties;
+import cn.cidea.framework.security.core.LoginUserDTO;
+import cn.cidea.framework.security.core.service.ISecurityLoginService;
+import cn.cidea.framework.security.core.service.ISecuritySessionService;
+import cn.cidea.framework.security.core.utils.SecurityFrameworkUtils;
 import cn.cidea.framework.web.core.api.Response;
 import cn.cidea.framework.web.core.handler.GlobalExceptionHandler;
-import cn.cidea.server.framework.security.config.SecurityProperties;
-import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
 import cn.hutool.core.util.StrUtil;
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
-import cn.cidea.server.service.auth.ILoginService;
 import cn.cidea.framework.web.core.utils.ServletUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,15 +24,16 @@ import java.io.IOException;
  * JWT 过滤器，验证 token 的有效性
  * 验证通过后，获得 {@link LoginUserDTO} 信息，并加入到 Spring Security 上下文
  */
-@RequiredArgsConstructor
-@Component
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
-    private final SecurityProperties securityProperties;
+    @Autowired
+    private SecurityProperties securityProperties;
 
-    private final ILoginService authenticationProvider;
+    @Autowired
+    private ISecuritySessionService authenticationProvider;
 
-    private final GlobalExceptionHandler globalExceptionHandler;
+    @Autowired
+    private GlobalExceptionHandler globalExceptionHandler;
 
     @Override
     @SuppressWarnings("NullableProblems")
@@ -79,7 +82,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             return null;
         }
         Long userId = Long.valueOf(sessionId.substring(securityProperties.getMockSecret().length()));
-        return authenticationProvider.mockLogin(userId);
+        return authenticationProvider.mock(userId);
     }
 
 }

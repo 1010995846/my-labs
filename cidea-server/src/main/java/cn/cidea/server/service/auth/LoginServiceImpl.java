@@ -1,10 +1,12 @@
 package cn.cidea.server.service.auth;
 
+import cn.cidea.framework.security.core.service.ISecurityLoginService;
+import cn.cidea.framework.security.core.service.ISecuritySessionService;
 import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.server.service.common.ICaptchaService;
 import cn.cidea.server.service.system.ISysUserLoginLogService;
 import cn.cidea.server.dataobject.covert.SysUserCovert;
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
+import cn.cidea.framework.security.core.LoginUserDTO;
 import cn.cidea.server.dataobject.entity.SysUser;
 import cn.cidea.server.dataobject.entity.pool.SysUserPool;
 import cn.cidea.server.dataobject.enums.LoginTypeEnum;
@@ -12,7 +14,6 @@ import cn.cidea.server.dataobject.enums.LoginResultEnum;
 import cn.cidea.server.service.system.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -26,10 +27,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class LoginServiceImpl implements ILoginService {
+public class LoginServiceImpl implements ISecurityLoginService {
 
     @Autowired
-    @Lazy
     private AuthenticationManager authenticationManager;
 
     @Autowired
@@ -39,7 +39,7 @@ public class LoginServiceImpl implements ILoginService {
     @Autowired
     private ICaptchaService captchaService;
     @Autowired
-    private ISessionService sessionService;
+    private ISecuritySessionService sessionService;
 
     @Autowired
     private SysUserPool userPool;
@@ -90,38 +90,5 @@ public class LoginServiceImpl implements ILoginService {
         return principal;
     }
 
-    @Override
-    public LoginUserDTO verifySessionAndRefresh(String sessionId) {
-        // 获得 LoginUser
-        LoginUserDTO loginUser = sessionService.get(sessionId);
-        if (loginUser == null) {
-            return null;
-        }
-        // 刷新 LoginUser 缓存
-        return this.refreshLoginUserCache(sessionId, loginUser);
-    }
-    
-    private LoginUserDTO refreshLoginUserCache(String sessionId, LoginUserDTO loginUser) {
-        // 每 1/3 的 Session 超时时间，刷新 LoginUser 缓存
-        if (System.currentTimeMillis() - loginUser.getUpdateTime().getTime() <
-                sessionService.getTimeout().toMillis() / 3) {
-            return loginUser;
-        }
 
-        // 重新加载 LoginUser 信息
-        loginUser = SysUserCovert.INSTANCE.toLoginDTO(userService.getById(loginUser.getId()));
-        if (loginUser == null || !loginUser.isEnabled()) {
-            // 校验 sessionId 时，用户被禁用的情况下，也认为 sessionId 过期，方便前端跳转到登录界面
-            throw Assert.BAD_CREDENTIALS.build("Session 已经过期");
-        }
-
-        // 刷新 LoginUser 缓存
-        sessionService.refresh(sessionId, loginUser);
-        return loginUser;
-    }
-
-    @Override
-    public LoginUserDTO mockLogin(Long userId) {
-        return SysUserCovert.INSTANCE.toLoginDTO(userService.getById(userId));
-    }
 }

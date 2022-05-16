@@ -1,12 +1,12 @@
 package cn.cidea.server.service.system;
 
 import cn.cidea.framework.mybatisplus.plugin.cache.ICacheService;
-import cn.cidea.server.framework.security.service.SecurityPermissionFrameworkService;
+import cn.cidea.framework.security.core.service.ISecurityPermissionService;
 
 /**
  * @author Charlotte
  */
-public interface ISysPermissionService extends SecurityPermissionFrameworkService, ICacheService {
+public interface IPermissionService extends ISecurityPermissionService, ICacheService {
     
     void processRoleDeleted(Long roleId);
 

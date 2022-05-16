@@ -1,9 +1,11 @@
-package cn.cidea.server.framework.security.service;
+package cn.cidea.framework.security.core.service;
 
 /**
  * Security 框架 Permission Service 接口，定义 security 组件需要的功能
+ * 权限认证相关
+ * @author Charlotte
  */
-public interface SecurityPermissionFrameworkService {
+public interface ISecurityPermissionService {
 
     /**
      * 判断是否有权限

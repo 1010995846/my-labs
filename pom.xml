@@ -32,6 +32,7 @@
                 <module>cidea-server</module>
                 <module>cidea-server-starter-mybatis-plus</module>
                 <module>cidea-server-starter-redis</module>
+                <module>cidea-server-starter-security</module>
                 <module>cidea-server-starter-web</module>
                 <module>common-ext-utils</module>
                 <module>labs</module>

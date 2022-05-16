@@ -1,15 +1,18 @@
 package cn.cidea.server.service.system;
 
 import cn.cidea.framework.common.utils.CollectionSteamUtils;
+import cn.cidea.framework.security.core.utils.SecurityFrameworkUtils;
 import cn.cidea.server.dal.mysql.ISysUserMapper;
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
+import cn.cidea.framework.security.core.LoginUserDTO;
 import cn.cidea.server.dataobject.entity.SysResource;
 import cn.cidea.server.dataobject.entity.SysRole;
 import cn.cidea.server.dataobject.entity.SysRoleResource;
 import cn.cidea.server.dataobject.entity.SysUser;
-import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
 import cn.cidea.server.mq.producer.permission.PermissionProducer;
 import cn.cidea.framework.mybatisplus.plugin.cache.CacheServiceImpl;
+import cn.cidea.server.service.system.IPermissionService;
+import cn.cidea.server.service.system.ISysResourceService;
+import cn.cidea.server.service.system.ISysRoleService;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.cidea.server.dal.mysql.ISysRoleResourceMapper;
@@ -34,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @Service("ps")
 @Slf4j
-public class SysPermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceMapper, SysRoleResource> implements ISysPermissionService {
+public class PermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceMapper, SysRoleResource> implements IPermissionService {
 
     private static final long SCHEDULER_PERIOD = 5 * 60 * 1000L;
 

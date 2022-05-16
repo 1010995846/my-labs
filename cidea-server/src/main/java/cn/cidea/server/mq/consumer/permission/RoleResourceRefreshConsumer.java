@@ -2,7 +2,7 @@ package cn.cidea.server.mq.consumer.permission;
 
 import cn.cidea.framework.mq.redisson.core.message.pubsub.AbstractPubSubListener;
 import cn.cidea.server.mq.message.permission.RoleResourceRefreshMessage;
-import cn.cidea.server.service.system.ISysPermissionService;
+import cn.cidea.server.service.system.IPermissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 public class RoleResourceRefreshConsumer extends AbstractPubSubListener<RoleResourceRefreshMessage> {
 
     @Resource
-    private ISysPermissionService permissionService;
+    private IPermissionService permissionService;
 
     @Override
     public void consume(RoleResourceRefreshMessage message) {

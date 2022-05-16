@@ -1,4 +1,4 @@
-package cn.cidea.server.framework.security.handler;
+package cn.cidea.framework.security.core.handler;
 
 import cn.cidea.framework.web.core.api.Response;
 import cn.cidea.framework.web.core.asserts.Assert;
@@ -15,12 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * 访问一个需要认证的 URL 资源，但是此时自己尚未认证（登录）的情况下，返回 {@link GlobalErrorCodeConstants#UNAUTHORIZED} 错误码，从而使前端重定向到登录页
+ * 访问一个需要认证的 URL 资源，但是此时自己尚未认证（登录）的情况下，返回 {@link Assert#UNAUTHORIZED} 错误码，从而使前端重定向到登录页
  *
  * 补充：Spring Security 通过 {@link ExceptionTranslationFilter#sendStartAuthentication(HttpServletRequest, HttpServletResponse, FilterChain, AuthenticationException)} 方法，调用当前类
  */
 @Slf4j
-@Component
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
 
     @Override

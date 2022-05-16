@@ -28,6 +28,11 @@ public class SysUser extends Model<SysUser> {
      * 个人信息ID
      */
     private Long personId;
+
+    /**
+     * 所属租户ID
+     */
+    private Long tenantId;
     /**
      * 昵称
      */
@@ -47,7 +52,7 @@ public class SysUser extends Model<SysUser> {
     /**
      * 头像
      */
-    private String acatar;
+    private String avatar;
     /**
      * 备注
      */
@@ -84,10 +89,6 @@ public class SysUser extends Model<SysUser> {
      * 创建时间
      */
     private Date createTime;
-    /**
-     * 【次选方案】角色ID集合
-     */
-    // private Object roleIds;
 
     @TableField(exist = false)
     private List<SysRole> roles;

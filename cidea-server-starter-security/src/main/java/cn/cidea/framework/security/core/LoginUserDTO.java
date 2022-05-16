@@ -1,4 +1,4 @@
-package cn.cidea.server.dataobject.dto;
+package cn.cidea.framework.security.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

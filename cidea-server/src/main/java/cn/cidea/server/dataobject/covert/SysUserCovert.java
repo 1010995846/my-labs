@@ -1,7 +1,7 @@
 package cn.cidea.server.dataobject.covert;
 
 import cn.cidea.framework.common.utils.CollectionSteamUtils;
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
+import cn.cidea.framework.security.core.LoginUserDTO;
 import cn.cidea.server.dataobject.dto.SysUserDTO;
 import cn.cidea.server.dataobject.entity.SysRole;
 import cn.cidea.server.dataobject.entity.SysUser;

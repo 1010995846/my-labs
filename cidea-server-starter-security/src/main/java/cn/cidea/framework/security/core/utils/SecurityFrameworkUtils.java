@@ -1,7 +1,7 @@
-package cn.cidea.server.framework.security.utils;
+package cn.cidea.framework.security.core.utils;
 
+import cn.cidea.framework.security.core.LoginUserDTO;
 import cn.cidea.framework.web.core.utils.WebFrameworkUtils;
-import cn.cidea.server.dataobject.dto.LoginUserDTO;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

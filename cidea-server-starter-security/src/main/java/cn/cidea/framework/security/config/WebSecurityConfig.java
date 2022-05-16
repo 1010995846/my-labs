@@ -1,10 +1,11 @@
-package cn.cidea.server.framework.security.config;
+package cn.cidea.framework.security.config;
 
-import cn.cidea.server.framework.security.filter.AuthenticationTokenFilter;
-import cn.cidea.server.service.auth.ILoginService;
+import cn.cidea.framework.security.core.filter.AuthenticationTokenFilter;
+import cn.cidea.framework.security.core.service.ISecurityLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,10 +22,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 // 开启对 Spring Security 注解的方法，进行权限验证
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private ILoginService loginService;
+    private ISecurityLoginService loginService;
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
     /**

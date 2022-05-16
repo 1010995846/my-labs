@@ -1,4 +1,4 @@
-package cn.cidea.server.framework.security.config;
+package cn.cidea.framework.security.core.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -1,9 +1,9 @@
 package cn.cidea.server.service.system;
 
+import cn.cidea.framework.security.core.utils.SecurityFrameworkUtils;
 import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.server.dataobject.covert.RoleConvert;
 import cn.cidea.server.dataobject.enums.DataScopeEnum;
-import cn.cidea.server.framework.security.utils.SecurityFrameworkUtils;
 import cn.cidea.server.mq.producer.permission.RoleProducer;
 import cn.cidea.framework.mybatisplus.plugin.cache.CacheOneServiceImpl;
 import cn.hutool.core.collection.CollUtil;
@@ -43,7 +43,7 @@ public class SysRoleServiceImpl extends CacheOneServiceImpl<Long, ISysRoleMapper
 
     @Resource
     @Lazy
-    private ISysPermissionService permissionService;
+    private IPermissionService permissionService;
 
     @Resource
     private RoleProducer roleProducer;
