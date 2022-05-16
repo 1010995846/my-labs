@@ -64,11 +64,13 @@ public class RedisChannelDispatch implements InitializingBean {
                             String jsonStr = queue.poll();
                             if (jsonStr != null) {
                                 for (AbstractMessageListener<?> listener : entry.getValue()) {
+                                    // TODO 线程执行队列
                                     listener.onMessage(entry.getKey(), jsonStr);
                                 }
                             }
                         } catch (Throwable t) {
                             if (t instanceof RedissonShutdownException) {
+                                log.warn("redis关闭，暂停监听");
                                 return;
                             }
                             log.error("监听异常", t);

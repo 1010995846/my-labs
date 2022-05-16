@@ -8,15 +8,14 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,10 @@ import java.util.Map;
 @Slf4j
 public class PdfFormBuilder {
 
-    private File source;
+    /**
+     * 表单文件
+     */
+    private byte[] source;
 
     private Map<String, Text> textMap = new HashMap<>();
 
@@ -41,13 +43,12 @@ public class PdfFormBuilder {
 
     private Map<String, Image> imageMap = new HashMap<>();
 
-    public PdfFormBuilder(File source) {
-        if (source == null) {
-            throw new RuntimeException("file can not be null!");
-        } else if (!source.exists()) {
-            throw new RuntimeException("file is not find!");
-        }
-        this.source = source;
+    public PdfFormBuilder(File file) throws IOException {
+        source = FileUtils.readFileToByteArray(file);
+    }
+
+    public PdfFormBuilder(InputStream inputStream) throws IOException {
+        source = IOUtils.toByteArray(inputStream);
     }
 
     /**
@@ -86,18 +87,11 @@ public class PdfFormBuilder {
         return this;
     }
 
-    /**
-     * 宋体
-     * TODO 使用项目中自带的字体
-     */
     public PdfFormBuilder simsun() throws DocumentException, IOException {
-        textFont = BaseFont.createFont("C:\\Windows\\Fonts\\simsun.ttc,0", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        textFont = BaseFont.createFont("font/simsun.ttc,0", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         return this;
     }
 
-    /**
-     * tomcat-embed-core
-     */
     public void write(HttpServletResponse response, String fileName) throws IOException, DocumentException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/pdf");
@@ -111,11 +105,10 @@ public class PdfFormBuilder {
 
     public void write(OutputStream os) throws IOException, DocumentException {
         try {
-            byte[] file = FileUtils.readFileToByteArray(source);
             PdfReader reader = null;
             PdfStamper stamper = null;
             try {
-                reader = new PdfReader(file);
+                reader = new PdfReader(source);
 
                 stamper = new PdfStamper(reader, os);
                 // 不可编辑
@@ -125,12 +118,16 @@ public class PdfFormBuilder {
                     textFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
                 }
 
+                ArrayList<BaseFont> fonts = new ArrayList<>();
+                fonts.add(textFont);
+                acroFields.setSubstitutionFonts(fonts);
+
                 for (Map.Entry<String, Text> entry : textMap.entrySet()) {
                     String fieldName = entry.getKey();
                     Text text = entry.getValue();
+                    acroFields.setFieldProperty(fieldName, "textfont", ObjectUtils.firstNonNull(text.getFont(), textFont), null);
+                    acroFields.setFieldProperty(fieldName, "textsize", ObjectUtils.firstNonNull(text.getSize(), Float.valueOf(10L)), null);
                     acroFields.setField(fieldName, text.value);
-                    acroFields.setFieldProperty(fieldName, "textfont", ObjectUtils.firstNonNull(text.font, textFont), null);
-                    acroFields.setFieldProperty(fieldName, "textsize", text.textsize, null);
                 }
                 // acroFields.setField("tr", "On", true)
                 for (Map.Entry<String, Image> entry : imageMap.entrySet()) {
@@ -169,13 +166,7 @@ public class PdfFormBuilder {
                 }
             }
         } finally {
-            try {
-                if (os != null) {
-                    os.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            IOUtils.closeQuietly(os);
         }
     }
 
@@ -187,7 +178,7 @@ public class PdfFormBuilder {
 
         private BaseFont font;
 
-        private Float textsize = 11F;
+        private Float size;
 
         public static Text of(String value) {
             return new Text().setValue(value);
