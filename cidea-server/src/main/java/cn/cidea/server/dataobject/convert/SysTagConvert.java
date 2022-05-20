@@ -1,4 +1,4 @@
-package cn.cidea.server.dataobject.covert;
+package cn.cidea.server.dataobject.convert;
 
 
 import cn.cidea.server.dataobject.dto.SysTagDTO;
@@ -13,9 +13,9 @@ import org.mapstruct.factory.Mappers;
  * @since 2022-04-14 11:29:16
  */
 @Mapper
-public interface SysTagCovert {
+public interface SysTagConvert {
 
-    SysTagCovert INSTANCE = Mappers.getMapper(SysTagCovert.class);
+    SysTagConvert INSTANCE = Mappers.getMapper(SysTagConvert.class);
 
     SysTagDTO toDTO(SysTag entity);
 

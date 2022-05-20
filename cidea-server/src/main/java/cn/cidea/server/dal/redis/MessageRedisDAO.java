@@ -26,14 +26,20 @@ public class MessageRedisDAO {
     @Autowired
     private RedissonClient redissonClient;
 
-    private static final long CACHE_REFRESH_SIZE = 5;
-    private static final long CACHE_SCHEDULER_REFRESH_PERIOD = 10 * 1000L;
+    /**
+     * 缓存写入DB，数量到达最大数量后写入
+     */
+    private static final long CACHE_REFRESH_SIZE = 100;
+    /**
+     * 缓存写入DB，定时写入
+     */
+    private static final long CACHE_REFRESH_SCHEDULER_PERIOD = 60 * 1000L;
 
     private static final String BLOOM_FILTER_NAME = "mq:redis:exist:filter";
     private static final String CACHE_NAME = "mq:redis:cache";
     private static final String CACHE_LOCK_NAME = "mq:redis:lock";
 
-    @Scheduled(fixedDelay = CACHE_SCHEDULER_REFRESH_PERIOD, initialDelay = CACHE_SCHEDULER_REFRESH_PERIOD)
+    @Scheduled(fixedDelay = CACHE_REFRESH_SCHEDULER_PERIOD, initialDelay = CACHE_REFRESH_SCHEDULER_PERIOD)
     public void schedulePeriodicRefresh() {
         log.info("定时flush");
         flush();

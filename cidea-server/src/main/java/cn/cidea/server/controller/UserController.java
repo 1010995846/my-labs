@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 /**
  * @author Charlotte
  */
 @RestController
-@RequestMapping(value = "/sys/user")
+@RequestMapping(value = "/system/user")
 @Slf4j
 public class UserController {
 

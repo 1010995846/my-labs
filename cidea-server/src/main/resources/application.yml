@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: cidea-server
   main:
     allow-circular-references: true
   datasource:

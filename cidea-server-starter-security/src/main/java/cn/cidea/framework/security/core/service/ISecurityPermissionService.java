@@ -41,4 +41,5 @@ public interface ISecurityPermissionService {
      */
     boolean hasAnyRoles(String... codes);
 
+    boolean superAdmin();
 }

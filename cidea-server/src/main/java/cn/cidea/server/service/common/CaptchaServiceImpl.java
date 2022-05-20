@@ -2,7 +2,7 @@ package cn.cidea.server.service.common;
 
 import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.server.controller.vo.CaptchaImageRespVO;
-import cn.cidea.server.dataobject.covert.CaptchaConvert;
+import cn.cidea.server.dataobject.convert.CaptchaConvert;
 import cn.cidea.server.framework.captcha.config.CaptchaProperties;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;

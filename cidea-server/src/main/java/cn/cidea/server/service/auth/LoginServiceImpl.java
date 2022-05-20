@@ -5,7 +5,7 @@ import cn.cidea.framework.security.core.service.ISecuritySessionService;
 import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.server.service.common.ICaptchaService;
 import cn.cidea.server.service.system.ISysUserLoginLogService;
-import cn.cidea.server.dataobject.covert.SysUserCovert;
+import cn.cidea.server.dataobject.convert.SysUserConvert;
 import cn.cidea.framework.security.core.LoginUserDTO;
 import cn.cidea.server.dataobject.entity.SysUser;
 import cn.cidea.server.dataobject.entity.pool.SysUserPool;
@@ -51,7 +51,7 @@ public class LoginServiceImpl implements ISecurityLoginService {
         Assert.BAD_CREDENTIALS.isFalse(user.getDisabled(), "账号被禁用");
         Assert.BAD_CREDENTIALS.isFalse(user.getDeleted(), "账号被删除");
         userPool.builder(user).role();
-        return SysUserCovert.INSTANCE.toLoginDTO(user);
+        return SysUserConvert.INSTANCE.toLoginDTO(user);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package cn.cidea.server.dataobject.covert;
+package cn.cidea.server.dataobject.convert;
 
 
 import cn.cidea.server.dataobject.dto.PersonDTO;
@@ -13,9 +13,9 @@ import org.mapstruct.factory.Mappers;
  * @since 2022-04-14 13:39:20
  */
 @Mapper
-public interface PersonCovert {
+public interface PersonConvert {
 
-    PersonCovert INSTANCE = Mappers.getMapper(PersonCovert.class);
+    PersonConvert INSTANCE = Mappers.getMapper(PersonConvert.class);
 
     PersonDTO toDTO(Person entity);
 

@@ -4,7 +4,7 @@ import cn.cidea.framework.security.core.properties.SecurityProperties;
 import cn.cidea.framework.security.core.service.ISecuritySessionService;
 import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.server.dal.redis.LoginUserRedisDAO;
-import cn.cidea.server.dataobject.covert.SysUserCovert;
+import cn.cidea.server.dataobject.convert.SysUserConvert;
 import cn.cidea.server.service.system.ISysUserService;
 import cn.hutool.core.util.IdUtil;
 import cn.cidea.framework.security.core.LoginUserDTO;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.util.Date;
 
 /**
@@ -81,7 +80,7 @@ public class SessionServiceImpl implements ISecuritySessionService {
         }
 
         // 重新加载 LoginUser 信息
-        loginUser = SysUserCovert.INSTANCE.toLoginDTO(userService.getById(loginUser.getId()));
+        loginUser = SysUserConvert.INSTANCE.toLoginDTO(userService.getById(loginUser.getId()));
         if (loginUser == null || !loginUser.isEnabled()) {
             // 校验 sessionId 时，用户被禁用的情况下，也认为 sessionId 过期，方便前端跳转到登录界面
             throw Assert.BAD_CREDENTIALS.build("Session 已经过期");
@@ -94,6 +93,6 @@ public class SessionServiceImpl implements ISecuritySessionService {
 
     @Override
     public LoginUserDTO mock(Long userId) {
-        return SysUserCovert.INSTANCE.toLoginDTO(userService.getById(userId));
+        return SysUserConvert.INSTANCE.toLoginDTO(userService.getById(userId));
     }
 }

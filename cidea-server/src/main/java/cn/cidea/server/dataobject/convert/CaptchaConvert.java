@@ -1,4 +1,4 @@
-package cn.cidea.server.dataobject.covert;
+package cn.cidea.server.dataobject.convert;
 
 import cn.cidea.server.controller.vo.CaptchaImageRespVO;
 import cn.hutool.captcha.AbstractCaptcha;

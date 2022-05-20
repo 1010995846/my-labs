@@ -1,4 +1,4 @@
-package cn.cidea.server.dataobject.covert;
+package cn.cidea.server.dataobject.convert;
 
 
 import cn.cidea.server.dataobject.dto.SysMessageDTO;
@@ -13,9 +13,9 @@ import org.mapstruct.factory.Mappers;
  * @since 2022-04-27 13:53:04
  */
 @Mapper
-public interface SysMessageCovert {
+public interface SysMessageConvert {
 
-    SysMessageCovert INSTANCE = Mappers.getMapper(SysMessageCovert.class);
+    SysMessageConvert INSTANCE = Mappers.getMapper(SysMessageConvert.class);
 
     SysMessageDTO toDTO(SysMessage entity);
 

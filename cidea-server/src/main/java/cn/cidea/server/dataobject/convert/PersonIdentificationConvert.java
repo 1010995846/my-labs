@@ -1,6 +1,4 @@
-package cn.cidea.server.dataobject.covert;
-
-import java.util.Date;
+package cn.cidea.server.dataobject.convert;
 
 import cn.cidea.server.dataobject.dto.PersonIdentificationDTO;
 import cn.cidea.server.dataobject.entity.PersonIdentification;
@@ -14,9 +12,9 @@ import org.mapstruct.factory.Mappers;
  * @since 2022-04-14 11:29:16
  */
 @Mapper
-public interface PersonIdentificationCovert {
+public interface PersonIdentificationConvert {
 
-    PersonIdentificationCovert INSTANCE = Mappers.getMapper(PersonIdentificationCovert.class);
+    PersonIdentificationConvert INSTANCE = Mappers.getMapper(PersonIdentificationConvert.class);
 
     PersonIdentificationDTO toDTO(PersonIdentification entity);
 

@@ -1,4 +1,4 @@
-package cn.cidea.server.dataobject.covert;
+package cn.cidea.server.dataobject.convert;
 
 import cn.cidea.framework.common.utils.CollectionSteamUtils;
 import cn.cidea.framework.security.core.LoginUserDTO;
@@ -17,9 +17,9 @@ import org.mapstruct.factory.Mappers;
  * @since 2022-04-14 11:29:16
  */
 @Mapper(imports = {CollectionSteamUtils.class, SysRole.class})
-public interface SysUserCovert {
+public interface SysUserConvert {
 
-    SysUserCovert INSTANCE = Mappers.getMapper(SysUserCovert.class);
+    SysUserConvert INSTANCE = Mappers.getMapper(SysUserConvert.class);
 
     SysUserDTO toDTO(SysUser entity);
 

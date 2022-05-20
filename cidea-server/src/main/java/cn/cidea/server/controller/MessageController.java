@@ -1,7 +1,7 @@
 package cn.cidea.server.controller;
 
 import cn.cidea.framework.web.core.api.Response;
-import cn.cidea.server.dataobject.covert.SysMessageCovert;
+import cn.cidea.server.dataobject.convert.SysMessageConvert;
 import cn.cidea.server.dataobject.dto.SysMessageDTO;
 import cn.cidea.server.dataobject.entity.SysMessage;
 import cn.cidea.server.service.system.ISysMessageService;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Charlotte
  */
 @RestController
-@RequestMapping("/sys/message")
+@RequestMapping("/system/message")
 public class MessageController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class MessageController {
         List<SysMessage> list = messageService.list(new QueryWrapper<SysMessage>().lambda()
                 .eq(query.getStatus() != null, SysMessage::getStatus, query.getStatus())
                 .orderByDesc(SysMessage::getCreateTime));
-        List<SysMessageDTO> dtoList = list.stream().map(SysMessageCovert.INSTANCE::toDTO).collect(Collectors.toList());
+        List<SysMessageDTO> dtoList = list.stream().map(SysMessageConvert.INSTANCE::toDTO).collect(Collectors.toList());
         return Response.success(dtoList);
     }
 

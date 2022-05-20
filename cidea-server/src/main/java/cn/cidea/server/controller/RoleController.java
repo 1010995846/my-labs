@@ -2,8 +2,11 @@ package cn.cidea.server.controller;
 
 
 import cn.cidea.framework.web.core.api.Response;
+import cn.cidea.server.dataobject.convert.SysRoleConvert;
 import cn.cidea.server.dataobject.dto.SysRoleDTO;
+import cn.cidea.server.dataobject.entity.SysRole;
 import cn.cidea.server.service.system.ISysRoleService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,12 +20,27 @@ import javax.validation.Valid;
  * @author Charlotte
  */
 @RestController
-@RequestMapping(value = "/sys/role")
+@RequestMapping(value = "/system/role")
 @Slf4j
 public class RoleController {
 
     @Autowired
     private ISysRoleService roleService;
+
+    @RequestMapping(value = "/list")
+    @PreAuthorize("@ps.hasPermission('system:role:query')")
+    public Response list(@Valid @RequestBody SysRoleDTO roleDTO){
+        return Response.success(SysRoleConvert.INSTANCE.toDTO(roleService.list()));
+    }
+
+    @RequestMapping(value = "/page")
+    @PreAuthorize("@ps.hasPermission('system:role:query')")
+    public Response page(@Valid @RequestBody SysRoleDTO roleDTO){
+        Page<SysRole> page = new Page<>();
+        page.setPages(1).setSize(2);
+        page = roleService.page(page);
+        return Response.success(page.convert(SysRoleConvert.INSTANCE::toDTO));
+    }
 
     @RequestMapping(value = "/save")
     @PreAuthorize("@ps.hasPermission('system:role:save')")

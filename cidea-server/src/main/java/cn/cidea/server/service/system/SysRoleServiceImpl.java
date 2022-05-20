@@ -2,7 +2,7 @@ package cn.cidea.server.service.system;
 
 import cn.cidea.framework.security.core.utils.SecurityFrameworkUtils;
 import cn.cidea.framework.web.core.asserts.Assert;
-import cn.cidea.server.dataobject.covert.RoleConvert;
+import cn.cidea.server.dataobject.convert.SysRoleConvert;
 import cn.cidea.server.dataobject.enums.DataScopeEnum;
 import cn.cidea.server.mq.producer.permission.RoleProducer;
 import cn.cidea.framework.mybatisplus.plugin.cache.CacheOneServiceImpl;
@@ -58,7 +58,7 @@ public class SysRoleServiceImpl extends CacheOneServiceImpl<Long, ISysRoleMapper
         // 校验角色
         checkDuplicateRole(saveDTO.getName(), saveDTO.getCode(), saveDTO.getId());
         // 插入到数据库
-        SysRole role = RoleConvert.INSTANCE.convert(saveDTO);
+        SysRole role = SysRoleConvert.INSTANCE.convert(saveDTO);
         boolean isNew = role.getId() == null;
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         Date updateTime = new Date();

@@ -1,9 +1,7 @@
 package cn.cidea.server.dataobject.entity.pool;
 
 import cn.cidea.framework.web.core.asserts.Assert;
-import cn.cidea.server.dal.mysql.ISysRoleMapper;
-import cn.cidea.server.dal.mysql.ISysUserMapper;
-import cn.cidea.server.dal.mysql.ISysUserRoleMapper;
+import cn.cidea.server.dal.mysql.*;
 import cn.cidea.server.dataobject.entity.SysRole;
 import cn.cidea.server.dataobject.entity.SysUser;
 import cn.cidea.server.dataobject.entity.SysUserRole;
@@ -28,9 +26,13 @@ public class SysUserPool {
     @Autowired
     private ISysUserMapper baseMapper;
     @Autowired
-    private ISysUserRoleMapper userRoleDAO;
+    private ISysUserRoleMapper userRoleMapper;
     @Autowired
-    private ISysRoleMapper roleDAO;
+    private ISysRoleMapper roleMapper;
+    @Autowired
+    private ISysUserDepartmentRelMapper departmentRelMapper;
+    @Autowired
+    private ISysDepartmentMapper departmentMapper;
 
     public Builder builder(SysUser user) {
         if (user == null) {
@@ -75,12 +77,12 @@ public class SysUserPool {
             if(map.isEmpty()){
                 return this;
             }
-            List<SysUserRole> userRoleList = userRoleDAO.selectList(new QueryWrapper<SysUserRole>().lambda()
+            List<SysUserRole> userRoleList = userRoleMapper.selectList(new QueryWrapper<SysUserRole>().lambda()
                     .in(SysUserRole::getUserId, map.keySet()));
             Set<Long> roleIdSet = userRoleList.stream().map(SysUserRole::getRoleId).collect(Collectors.toSet());
             Map<Long, SysRole> roleMap;
             if(roleIdSet.size() != 0){
-                roleMap = roleDAO.selectList(new QueryWrapper<SysRole>().lambda()
+                roleMap = roleMapper.selectList(new QueryWrapper<SysRole>().lambda()
                                 .in(SysRole::getId, roleIdSet))
                         .stream()
                         .collect(Collectors.toMap(SysRole::getId, r -> r));

@@ -53,8 +53,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
                     SecurityFrameworkUtils.setLoginUser(loginUser, request);
                 }
             } catch (Throwable ex) {
-                // Response<?> result = globalExceptionHandler.handleException(request, ex);
-                Response<?> result = globalExceptionHandler.handleException(ex);
+                Response<?> result = globalExceptionHandler.defaultExceptionHandler(request, ex);
                 ServletUtils.writeJSON(response, result);
                 return;
             }

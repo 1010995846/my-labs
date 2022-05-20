@@ -1,6 +1,7 @@
 package cn.cidea.framework.security.core.utils;
 
 import cn.cidea.framework.security.core.LoginUserDTO;
+import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.framework.web.core.utils.WebFrameworkUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -63,6 +64,12 @@ public class SecurityFrameworkUtils {
             return null;
         }
         return authentication.getPrincipal() instanceof LoginUserDTO ? (LoginUserDTO) authentication.getPrincipal() : null;
+    }
+
+    public static LoginUserDTO getAndValidLoginUser() {
+        LoginUserDTO loginUser = getLoginUser();
+        Assert.UNAUTHORIZED.nonNull(loginUser);
+        return loginUser;
     }
 
     /**

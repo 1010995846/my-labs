@@ -19,13 +19,13 @@ public class SnowFlake {
     /**
      * 起始的时间戳
      */
-    private final static long START_STMP = 1480166465631L;
+    private final static long START_STAMP = 1480166465631L;
 
     /**
      * 每一位置占用的位数，依次为时间戳，数据中心，机器标志，序列号，合起来最大为long的最大长度63
      * 最左的时间戳位数等于63减去其余位置的位数
      * 一年31536000000 < 2^35
-     * 例：若时间戳剩余位数为43，则从开始时间${@link #START_STMP}算起至少可使用2^8即256年
+     * 例：若时间戳剩余位数为43，则从开始时间${@link #START_STAMP}算起至少可使用2^8即256年
      */
     /**
      * 数据中心占用的位数，最多2^${value}个节点
@@ -133,7 +133,7 @@ public class SnowFlake {
 
         lastStamp = currSatmp;
 
-        return (currSatmp - START_STMP) << TIMESTAMP_LEFT //时间戳部分
+        return (currSatmp - START_STAMP) << TIMESTAMP_LEFT //时间戳部分
                 | datacenterId << DATA_CENTER_LEFT       //数据中心部分
                 | machineId << MACHINE_LEFT             //机器标识部分
                 | sequence;                             //序列号部分

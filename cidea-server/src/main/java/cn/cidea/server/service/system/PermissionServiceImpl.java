@@ -10,9 +10,6 @@ import cn.cidea.server.dataobject.entity.SysRoleResource;
 import cn.cidea.server.dataobject.entity.SysUser;
 import cn.cidea.server.mq.producer.permission.PermissionProducer;
 import cn.cidea.framework.mybatisplus.plugin.cache.CacheServiceImpl;
-import cn.cidea.server.service.system.IPermissionService;
-import cn.cidea.server.service.system.ISysResourceService;
-import cn.cidea.server.service.system.ISysRoleService;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.cidea.server.dal.mysql.ISysRoleResourceMapper;
@@ -157,6 +154,16 @@ public class PermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceMapp
             // 获得是否拥有该权限，任一一个
             return resourceList.stream().anyMatch(resource -> CollUtil.containsAny(roleIds, resourceRoleCache.get(resource.getId())));
         });
+    }
+
+    @Override
+    public boolean superAdmin(){
+        LoginUserDTO loginUser = SecurityFrameworkUtils.getLoginUser();
+        if (loginUser == null || loginUser.getRoleIds() == null) {
+            return false;
+        }
+        Set<Long> roleIds = loginUser.getRoleIds();
+        return roleService.hasAnySuperAdmin(roleIds);
     }
 
     @Override
