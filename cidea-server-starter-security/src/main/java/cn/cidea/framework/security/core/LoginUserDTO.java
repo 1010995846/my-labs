@@ -5,10 +5,7 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Charlotte
@@ -30,6 +27,15 @@ public class LoginUserDTO implements UserDetails {
     private String password;
 
     private Integer userType;
+
+    private Long tenantId;
+
+    /**
+     * {@link cn.cidea.server.dataobject.enums.DataScopeEnum}
+     */
+    private Integer dataScope;
+
+    private List<Long> departmentIds;
 
     private Date loginTime;
 

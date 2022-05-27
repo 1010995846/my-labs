@@ -24,6 +24,9 @@ public class Response<T> implements Serializable {
      */
     private String message;
 
+    public static <T> Response<T> success() {
+        return success(null);
+    }
     public static <T> Response<T> success(T data) {
         Response<T> response = new Response<>();
         response.setData(data);

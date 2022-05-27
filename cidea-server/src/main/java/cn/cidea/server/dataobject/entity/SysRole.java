@@ -51,6 +51,8 @@ public class SysRole extends CacheOneModel<Long, SysRole> {
      * 备注
      */
     private String remark;
+
+    private Long tenantId;
     /**
      * 创建者
      */
