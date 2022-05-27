@@ -1,0 +1,9 @@
+server:
+  port: 10071
+
+spring:
+  application:
+    name: lab-netty-server
+
+netty:
+  port: 10079

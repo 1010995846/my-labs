@@ -1,0 +1,12 @@
+server:
+  port: 10072
+spring:
+  application:
+    name: lab-netty-client
+  main:
+    allow-circular-references: true
+
+netty:
+  server:
+    host: 127.0.0.1
+    port: 10079
