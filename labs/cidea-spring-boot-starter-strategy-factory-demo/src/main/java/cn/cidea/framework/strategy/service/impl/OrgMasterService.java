@@ -10,7 +10,7 @@ import cn.cidea.framework.strategy.service.IOrgService;
 public class OrgMasterService implements IOrgService {
 
     @Override
-    public String getName(String id) {
+    public String getName() {
         return "defaultOrg";
     }
 }

@@ -35,26 +35,26 @@ class StrategyTests implements BeanFactoryAware {
         IOrgService implBean = beanFactory.getBean(IOrgService.class);
         System.out.println("school=============");
         DefaultDynamicStrategyRoute.routeKey.set("school");
-        System.out.println(implBean.getName("1"));// 打印school
+        System.out.println(implBean.getName());// 打印school
 
         System.out.println("hosp=============");
         DefaultDynamicStrategyRoute.routeKey.set("hosp");
-        System.out.println(implBean.getName("1"));// 打印hosp
-        System.out.println(implBean.getName("1"));// 打印hosp
+        System.out.println(implBean.getName());// 打印hosp
+        System.out.println(implBean.getName());// 打印hosp
 
         System.out.println("ext=============");
         DefaultDynamicStrategyRoute.routeKey.set("ext");
-        System.out.println(implBean.getName("1"));// 打印ext
+        System.out.println(implBean.getName());// 打印ext
 
         System.out.println("defaultOrg=============");
         DefaultDynamicStrategyRoute.routeKey.remove();
-        System.out.println(implBean.getName("1"));// 打印defaultOrg
+        System.out.println(implBean.getName());// 打印defaultOrg
 
         System.out.println("plural=============");
         DefaultDynamicStrategyRoute.routeKey.set("p1");
-        System.out.println(implBean.getName("1"));// 打印plural
+        System.out.println(implBean.getName());// 打印plural
         DefaultDynamicStrategyRoute.routeKey.set("p2");
-        System.out.println(implBean.getName("1"));// 打印plural
+        System.out.println(implBean.getName());// 打印plural
     }
 
     @Test
@@ -64,8 +64,8 @@ class StrategyTests implements BeanFactoryAware {
         IOrgService implBean = beanFactory.getBean(IOrgService.class);
         System.out.println("school=============");
         DefaultDynamicStrategyRoute.routeKey.set("school");
-        System.out.println(implBean.getName(null));// 打印school
-        System.out.println(implBean.getName(null));// 打印school
+        System.out.println(implBean.getName());// 打印school
+        System.out.println(implBean.getName());// 打印school
 
         // 代理二，轮询
         System.out.println("期望：轮询");

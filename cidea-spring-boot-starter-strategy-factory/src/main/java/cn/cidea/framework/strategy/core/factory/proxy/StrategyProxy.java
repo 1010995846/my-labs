@@ -81,6 +81,9 @@ public class StrategyProxy implements MethodInterceptor {
             // 无缓存，开始解析
             // 尝试映射到对应的branchClass
             for (String routeKey : routeKeys) {
+                if(routeKey == null){
+                    continue;
+                }
                 Object beanToUse = branchBean.get(routeKey);
                 if(beanToUse == null){
                     continue;

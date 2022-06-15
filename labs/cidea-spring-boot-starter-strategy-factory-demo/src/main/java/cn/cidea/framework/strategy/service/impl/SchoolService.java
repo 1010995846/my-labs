@@ -9,7 +9,7 @@ import cn.cidea.framework.strategy.core.annotation.StrategyBranch;
 public class SchoolService extends OrgMasterService {
 
     @Override
-    public String getName(String id) {
+    public String getName() {
         return "school";
     }
 }

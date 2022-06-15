@@ -8,6 +8,6 @@ import cn.cidea.framework.strategy.core.annotation.StrategyPort;
 @StrategyPort
 public interface IOrgService {
 
-    String getName(String id);
+    String getName();
 
 }

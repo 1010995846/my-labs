@@ -8,7 +8,7 @@ import cn.cidea.framework.strategy.annotation.HospBranch;
 @HospBranch
 public class HospService extends OrgMasterService {
     @Override
-    public String getName(String id) {
+    public String getName() {
         return "hosp";
     }
 }

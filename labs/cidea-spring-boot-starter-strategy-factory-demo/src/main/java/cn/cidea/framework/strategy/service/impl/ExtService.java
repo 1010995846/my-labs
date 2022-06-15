@@ -6,7 +6,7 @@ import cn.cidea.framework.strategy.service.IOrgService;
 @StrategyBranch("ext")
 public class ExtService implements IOrgService {
     @Override
-    public String getName(String id) {
+    public String getName() {
         return "ext";
     }
 }
