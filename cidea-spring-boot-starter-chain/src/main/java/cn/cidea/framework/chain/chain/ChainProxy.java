@@ -44,7 +44,7 @@ public class ChainProxy<T> implements MethodInterceptor, BeanFactoryAware {
         log.debug("call: {}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
 
         Map<String, T> beansOfType = beanFactory.getBeansOfType(interfaceClass);
-        IChainLogService logService = beanFactory.getBean(IChainLogService.class);
+        IChainLogService logService = beanFactory.getBeanProvider(IChainLogService.class).getIfAvailable();
         for (Map.Entry<String, T> entry : beansOfType.entrySet()) {
             T bean = entry.getValue();
             if (bean == obj) {
