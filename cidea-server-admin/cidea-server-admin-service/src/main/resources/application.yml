@@ -1,0 +1,44 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: cidea-admin
+  main:
+    allow-circular-references: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/lab?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: dev
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    root: debug
+
+captcha:
+  enable: false
+
+security:
+  session-timeout: 1d
+  mock-enable: true
+  mock-secret: PDSA
+  tenant:
+    ignore-tables: sys_tenant
+    ignore-urls: /system/captcha/get
+
+cidea:
+  mq:
+    retryInterval:
+      - PT1S
+      - PT5S
+      - PT10S

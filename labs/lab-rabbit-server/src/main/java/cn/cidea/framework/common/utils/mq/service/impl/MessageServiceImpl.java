@@ -1,13 +1,13 @@
 package cn.cidea.framework.common.utils.mq.service.impl;
 
 import cn.cidea.framework.common.utils.mq.service.IMessageService;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.cidea.framework.common.utils.mq.entity.SysMessage;
 import cn.cidea.framework.common.utils.mq.entity.SysMessageContext;
 import cn.cidea.framework.common.utils.mq.mapper.ISysMessageContextMapper;
 import cn.cidea.framework.common.utils.mq.mapper.ISysMessageMapper;
 import cn.cidea.framework.common.utils.mq.pool.MsgPool;
-import cn.cidea.framework.common.api.SnowFlake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -42,7 +42,7 @@ public class MessageServiceImpl extends ServiceImpl<ISysMessageMapper, SysMessag
     @Override
     public void send(String context) {
         SysMessage sysMessage = new SysMessage();
-        long msgId = SnowFlake.getInstance().nextId();
+        long msgId = IdWorker.getId();
         sysMessage.setMsgId(msgId);
         try {
             sysMessage.setHost(InetAddress.getLocalHost().getHostAddress());

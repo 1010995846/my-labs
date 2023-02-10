@@ -1,9 +1,9 @@
 package cn.cidea.lab.mybatis;
 
+import cn.cidea.module.admin.AdminApplication;
+import cn.cidea.module.admin.dal.mysql.ISysUserMapper;
+import cn.cidea.module.admin.dataobject.entity.SysUser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import cn.cidea.server.ServerApplication;
-import cn.cidea.server.dataobject.entity.SysUser;
-import cn.cidea.server.dal.mysql.ISysUserMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author Charlotte
  */
 @SpringBootApplication
-@ComponentScan(basePackageClasses = ServerApplication.class)
+@ComponentScan(basePackageClasses = AdminApplication.class)
 public class LabMybatisApplication {
 
     public static void main(String[] args) {

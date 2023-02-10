@@ -9,7 +9,7 @@ import cn.cidea.framework.strategy.service.impl.OrgService;
 @HospBranch
 public class HospService extends OrgService {
     @Override
-    public String getName(String id) {
+    public String getName() {
         return "hosp";
     }
 }

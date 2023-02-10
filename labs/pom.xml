@@ -15,7 +15,7 @@
         <dependencies>
             <dependency>
                 <groupId>cn.cidea</groupId>
-                <artifactId>common-utils</artifactId>
+                <artifactId>cidea-core</artifactId>
                 <version>0.1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
@@ -35,6 +35,7 @@
         <module>lab-mybatis</module>
         <module>lab-mysql</module>
         <module>lab-nginx</module>
+        <module>lab-netty</module>
         <module>lab-kafka</module>
         <module>lab-rabbit-server</module>
 

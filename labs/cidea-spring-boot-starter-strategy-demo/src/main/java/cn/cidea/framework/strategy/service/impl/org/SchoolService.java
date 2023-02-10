@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 @Service
 @StrategyBranch("school")
 public class SchoolService extends OrgService {
-
     @Override
-    public String getName(String id) {
+    public String getName() {
         return "school";
     }
 }

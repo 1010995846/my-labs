@@ -17,7 +17,7 @@
 
         <dependency>
             <groupId>cn.cidea</groupId>
-            <artifactId>common-utils</artifactId>
+            <artifactId>cidea-core</artifactId>
         </dependency>
     </dependencies>
 

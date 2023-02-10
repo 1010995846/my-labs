@@ -1,5 +1,6 @@
 package cn.cidea.framework.common.utils;
 
+import cn.cidea.core.utils.StringFormatUtils;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;

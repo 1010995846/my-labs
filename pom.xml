@@ -17,6 +17,15 @@
     <description>Demo project for Spring Boot</description>
 
     <modules>
+        <module>cidea-core</module>
+        <module>cidea-server-rep</module>
+        <module>cidea-server-admin</module>
+        <module>cidea-server-pm</module>
+        <module>cidea-spring-boot-starter-mybatis-plus</module>
+        <module>cidea-spring-boot-starter-redis</module>
+        <module>cidea-spring-boot-starter-security</module>
+        <module>cidea-spring-boot-starter-security-tenant</module>
+        <module>cidea-spring-boot-starter-web</module>
         <module>cidea-spring-boot-starter-mq-redis</module>
         <module>cidea-spring-boot-starter-mq-redisson</module>
         <module>cidea-spring-boot-starter-chain</module>
@@ -28,13 +37,7 @@
         <profile>
             <id>dev</id>
             <modules>
-                <module>common-utils</module>
-                <module>cidea-server</module>
-                <module>cidea-server-starter-mybatis-plus</module>
-                <module>cidea-server-starter-redis</module>
-                <module>cidea-server-starter-security</module>
-                <module>cidea-server-starter-security-tenant</module>
-                <module>cidea-server-starter-web</module>
+                <module>cidea-server-test</module>
                 <module>common-ext-utils</module>
                 <module>labs</module>
             </modules>
@@ -82,6 +85,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>cn.cidea</groupId>
+                <artifactId>cidea-dependencies</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- starter -->
             <dependency>
                 <groupId>org.redisson</groupId>

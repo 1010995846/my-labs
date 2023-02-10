@@ -1,10 +1,10 @@
 package cn.cidea.lab.spring;
 
+import cn.cidea.module.admin.AdminApplication;
+import cn.cidea.module.admin.dal.mysql.ISysUserMapper;
+import cn.cidea.module.admin.dataobject.entity.SysUser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import cn.cidea.server.ServerApplication;
-import cn.cidea.server.dataobject.entity.SysUser;
-import cn.cidea.server.dal.mysql.ISysUserMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * 手动声明事务时注意提交/回滚触发结束处理，否则无法释放数据库连接，setRollbackOnly只是标识
  */
-@SpringBootTest(classes = ServerApplication.class)
+@SpringBootTest(classes = AdminApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 class TransactionTestTest {
 

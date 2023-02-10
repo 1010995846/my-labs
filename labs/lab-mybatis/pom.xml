@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>cn.cidea</groupId>
-            <artifactId>cidea-server</artifactId>
+            <artifactId>cidea-server-admin-service</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
 
@@ -23,7 +23,7 @@
 
         <dependency>
             <groupId>cn.cidea</groupId>
-            <artifactId>common-utils</artifactId>
+            <artifactId>cidea-core</artifactId>
         </dependency>
 
         <dependency>

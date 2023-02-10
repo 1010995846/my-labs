@@ -1,7 +1,8 @@
 package cn.cidea.lab.mysql;
 
-import cn.cidea.server.service.system.IPersonService;
-import cn.cidea.server.dataobject.entity.Person;
+import cn.cidea.module.admin.dataobject.dto.EducationalBackgroundDTO;
+import cn.cidea.module.admin.dataobject.entity.Person;
+import cn.cidea.module.admin.service.system.IPersonService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,9 @@ class LabMysqlApplicationTests {
         } else {
             person = personList.get(0);
         }
-        Person.EducationalBackground educationalBackground = person.getEducationalBackground();
+        EducationalBackgroundDTO educationalBackground = person.getEducationalBackground();
         if (educationalBackground == null) {
-            educationalBackground = new Person.EducationalBackground();
+            educationalBackground = new EducationalBackgroundDTO();
             person.setEducationalBackground(educationalBackground);
         }
         educationalBackground.setUniversity("华中");

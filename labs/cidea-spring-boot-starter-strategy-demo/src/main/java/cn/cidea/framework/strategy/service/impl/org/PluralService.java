@@ -14,7 +14,7 @@ import cn.cidea.framework.strategy.service.IOrgService;
 //@StrategyBranch("p2")
 public class PluralService implements IOrgService {
     @Override
-    public String getName(String id) {
+    public String getName() {
         return "plural";
     }
 }
