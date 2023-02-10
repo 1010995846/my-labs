@@ -1,4 +1,4 @@
 # Auto Configure
 org.springframework.boot.env.EnvironmentPostProcessor=
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cn.cidea.core.masking.DataMaskAutoConfiguration
+  cn.cidea.core.spring.serializer.masking.DataMaskAutoConfiguration

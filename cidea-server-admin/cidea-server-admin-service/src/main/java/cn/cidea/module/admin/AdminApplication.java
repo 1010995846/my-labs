@@ -1,6 +1,6 @@
 package cn.cidea.module.admin;
 
-import cn.cidea.core.serializer.FastjsonSerializer;
+import cn.cidea.core.spring.serializer.fastjson.EnableFastjsonSerializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @SpringBootApplication
 @EnableScheduling
-@FastjsonSerializer
+@EnableFastjsonSerializer
 public class AdminApplication {
 
     public static void main(String[] args) {

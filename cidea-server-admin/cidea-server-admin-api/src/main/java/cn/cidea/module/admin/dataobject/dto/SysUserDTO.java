@@ -1,7 +1,7 @@
 package cn.cidea.module.admin.dataobject.dto;
 
-import cn.cidea.core.masking.DataMasking;
-import cn.cidea.core.masking.DataMaskingFunc;
+import cn.cidea.core.spring.serializer.masking.DataMasking;
+import cn.cidea.core.spring.serializer.masking.DataMaskingFunc;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import lombok.NoArgsConstructor;
