@@ -2,11 +2,10 @@ package cn.cidea.module.admin.controller;
 
 
 import cn.cidea.framework.web.core.api.Response;
-import cn.cidea.module.admin.dal.redis.MessageRedisDAO;
 import cn.cidea.module.admin.mq.producer.permission.ResourceProducer;
 import cn.cidea.module.admin.mq.producer.test.TestProducer;
-import cn.cidea.module.admin.service.system.ISysResourceService;
-import cn.cidea.module.admin.service.system.ISysRoleService;
+import cn.cidea.module.admin.service.ISysResourceService;
+import cn.cidea.module.admin.service.ISysRoleService;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,6 @@ public class TestController {
     private ResourceProducer resourceProducer;
     @Autowired
     private TestProducer testProducer;
-    @Resource
-    private MessageRedisDAO messageRedisDAO;
 
     @RequestMapping(value = "/test/1")
     // 此处设置无用，Filter中已经设置了大部分访问需要登录，两者叠加
@@ -51,7 +48,6 @@ public class TestController {
     // 此处设置无用，Filter中已经设置了大部分访问需要登录，两者叠加
     @PreAuthorize("permitAll()")
     public Response test2(@RequestBody JSONObject param){
-        messageRedisDAO.flush();
         return Response.success(null);
     }
 

@@ -1,10 +1,10 @@
 package cn.cidea.framework.strategy.facade;
 
 
-import cn.cidea.framework.strategy.core.annotation.StrategyPort;
+import cn.cidea.framework.strategy.core.annotation.StrategyAPI;
 import cn.cidea.framework.strategy.core.annotation.StrategyMaster;
 
-@StrategyPort
+@StrategyAPI
 @StrategyMaster
 public class RootFacade {
 

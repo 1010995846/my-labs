@@ -1,5 +1,6 @@
 package cn.cidea.module.admin.dataobject.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import lombok.Data;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class SysUserLoginLogDTO {
+public class SysUserLoginLogDTO implements Serializable {
     /**
      *
      */

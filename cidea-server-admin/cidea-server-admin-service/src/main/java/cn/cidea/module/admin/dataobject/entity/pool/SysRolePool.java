@@ -6,7 +6,7 @@ import cn.cidea.module.admin.dal.mysql.ISysRoleResourceMapper;
 import cn.cidea.module.admin.dataobject.entity.SysResource;
 import cn.cidea.module.admin.dataobject.entity.SysRole;
 import cn.cidea.module.admin.dataobject.entity.SysRoleResource;
-import cn.cidea.module.admin.service.system.ISysRoleService;
+import cn.cidea.module.admin.service.ISysRoleService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

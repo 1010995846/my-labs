@@ -2,6 +2,7 @@ package cn.cidea.module.admin.dataobject.convert;
 
 
 import cn.cidea.module.admin.dataobject.dto.PersonDTO;
+import cn.cidea.module.admin.dataobject.dto.PersonSaveDTO;
 import cn.cidea.module.admin.dataobject.entity.Person;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -19,5 +20,6 @@ public interface PersonConvert {
 
     PersonDTO toDTO(Person entity);
 
+    Person toEntity(PersonSaveDTO dto);
 }
 

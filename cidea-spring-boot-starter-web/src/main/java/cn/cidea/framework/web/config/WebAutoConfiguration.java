@@ -1,6 +1,6 @@
 package cn.cidea.framework.web.config;
 
-import cn.cidea.framework.web.core.handler.GlobalExceptionHandler;
+import cn.cidea.framework.web.core.handler.ExceptionDispatcher;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +15,8 @@ import javax.servlet.Filter;
 public class WebAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
-    public GlobalExceptionHandler globalExceptionHandler() {
-        return new GlobalExceptionHandler();
+    public ExceptionDispatcher globalExceptionHandler() {
+        return new ExceptionDispatcher();
     }
 
     // ========== Filter 相关 ==========

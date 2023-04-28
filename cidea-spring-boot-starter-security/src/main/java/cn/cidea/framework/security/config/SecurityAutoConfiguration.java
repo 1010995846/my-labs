@@ -3,8 +3,6 @@ package cn.cidea.framework.security.config;
 import cn.cidea.framework.security.core.filter.AuthenticationTokenFilter;
 import cn.cidea.framework.security.core.handler.AuthenticationEntryPointImpl;
 import cn.cidea.framework.security.core.properties.SecurityProperties;
-import cn.cidea.framework.security.core.service.ISecuritySessionService;
-import cn.cidea.framework.web.core.handler.GlobalExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.AuthenticationEntryPoint;

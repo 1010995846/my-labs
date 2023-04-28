@@ -7,13 +7,12 @@ import cn.cidea.framework.security.core.service.TenantFrameworkService;
 import cn.cidea.framework.security.core.utils.SecurityFrameworkUtils;
 import cn.cidea.framework.web.core.api.Response;
 import cn.cidea.framework.web.core.asserts.Assert;
-import cn.cidea.framework.web.core.handler.GlobalExceptionHandler;
+import cn.cidea.framework.web.core.handler.ExceptionDispatcher;
 import cn.cidea.framework.web.core.utils.ServletUtils;
-import cn.hutool.core.collection.CollUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -36,10 +35,10 @@ public class TenantSecurityWebFilter extends OncePerRequestFilter {
 
     @Autowired
     private TenantProperties tenantProperties;
-    // @Autowired
-    // private AntPathMatcher pathMatcher;
     @Autowired
-    private GlobalExceptionHandler globalExceptionHandler;
+    private PathMatcher pathMatcher;
+    @Autowired
+    private ExceptionDispatcher exceptionDispatcher;
     @Autowired
     private TenantFrameworkService tenantFrameworkService;
 
@@ -65,20 +64,19 @@ public class TenantSecurityWebFilter extends OncePerRequestFilter {
             }
         }
 
-        //检查是否是忽略的 URL, 如果是则允许访问
-        if (!isIgnoreUrl(request)) {
-            // 2. 如果请求未带租户的编号，不允许访问。
+        if (isTargetUrl(request)) {
+            // 如果请求未带租户的编号，不允许访问。
             if (tenantId == null) {
                 log.error("[doFilterInternal][URL({}/{}) 未传递租户编号]", request.getRequestURI(), request.getMethod());
                 ServletUtils.writeJSON(response, Response.fail(Assert.BAD_REQUEST.getCode(),
                         "租户的请求未传递，请进行排查"));
                 return;
             }
-            // 3. 校验租户是合法，例如说被禁用、到期
+            // 校验租户是合法，例如说被禁用、到期
             try {
                 tenantFrameworkService.validTenant(tenantId);
             } catch (Throwable ex) {
-                Response<?> result = globalExceptionHandler.allExceptionHandler(request, ex);
+                Response<?> result = exceptionDispatcher.allExceptionHandler(request, ex);
                 ServletUtils.writeJSON(response, result);
                 return;
             }
@@ -88,17 +86,17 @@ public class TenantSecurityWebFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private boolean isIgnoreUrl(HttpServletRequest request) {
+    private boolean isTargetUrl(HttpServletRequest request) {
         // 快速匹配，保证性能
-        if (CollUtil.contains(tenantProperties.getIgnoreUrls(), request.getRequestURI())) {
-            return true;
-        }
-        // 逐个 Ant 路径匹配
-        // for (String url : tenantProperties.getIgnoreUrls()) {
-        //     if (pathMatcher.match(url, request.getRequestURI())) {
-        //         return true;
-        //     }
+        // if (CollUtil.contains(tenantProperties.getTargetUrls(), request.getRequestURI())) {
+        //     return true;
         // }
+        // 逐个 Ant 路径匹配
+        for (String url : CollectionUtils.emptyIfNull(tenantProperties.getTargetUrls())) {
+            if (pathMatcher.match(url, request.getRequestURI())) {
+                return true;
+            }
+        }
         return false;
     }
 

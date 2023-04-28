@@ -4,7 +4,7 @@ package cn.cidea.framework.strategy.core.annotation;
 import java.lang.annotation.*;
 
 /**
- * @author Charlotte
+ * @author CIdea
  */
 @Documented
 @Target(ElementType.TYPE)

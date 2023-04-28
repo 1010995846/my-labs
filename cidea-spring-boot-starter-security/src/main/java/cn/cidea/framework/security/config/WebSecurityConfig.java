@@ -1,11 +1,9 @@
 package cn.cidea.framework.security.config;
 
 import cn.cidea.framework.security.core.filter.AuthenticationTokenFilter;
-import cn.cidea.framework.security.core.service.ISecurityLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,6 +11,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private ISecurityLoginService loginService;
+    private UserDetailsService userDetailsService;
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
     /**
@@ -36,21 +37,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(loginService)
+        auth.userDetailsService(userDetailsService)
             // 不指定时默认使用动态DelegatingPasswordEncoder
-                // .passwordEncoder(bCryptPasswordEncoder())
+                .passwordEncoder(passwordEncoder())
         ;
+        return;
     }
 
     /**
      * 强散列哈希加密实现
      */
-    // @Bean
-    // public PasswordEncoder bCryptPasswordEncoder() {
-    //     // PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    //     PasswordEncoder passwordEncoder = NoOpPasswordEncoder.getInstance();
-    //     return passwordEncoder;
-    // }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        // PasswordEncoder passwordEncoder = NoOpPasswordEncoder.getInstance();
+        return passwordEncoder;
+    }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -72,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 过滤请求
                 .authorizeRequests()
                 // <Y> 对于登录login 验证码captchaImage 允许匿名访问
-                .antMatchers("/sys/user/login", "/captchaImage").anonymous()
+                .antMatchers("/sys/user/login", "/sys/captcha/get").anonymous()
                 // 无需认证
                 .antMatchers(
                         HttpMethod.GET,

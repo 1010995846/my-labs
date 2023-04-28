@@ -3,6 +3,8 @@ package cn.cidea.module.admin.dataobject.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * (SysRoleResource)表实体类
  *
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class SysRoleResourceDTO {
+public class SysRoleResourceDTO implements Serializable {
     /**
      *
      */

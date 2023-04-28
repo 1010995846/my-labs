@@ -3,11 +3,11 @@ package cn.cidea.framework.common.utils.mq.service.impl;
 import cn.cidea.framework.common.utils.mq.service.IMessageService;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import cn.cidea.framework.common.utils.mq.entity.SysMessage;
-import cn.cidea.framework.common.utils.mq.entity.SysMessageContext;
-import cn.cidea.framework.common.utils.mq.mapper.ISysMessageContextMapper;
-import cn.cidea.framework.common.utils.mq.mapper.ISysMessageMapper;
-import cn.cidea.framework.common.utils.mq.pool.MsgPool;
+import cn.cidea.framework.common.utils.mq.dataobject.entity.SysMessage;
+import cn.cidea.framework.common.utils.mq.dataobject.entity.SysMessageContext;
+import cn.cidea.framework.common.utils.mq.dal.mysql.ISysMessageContextMapper;
+import cn.cidea.framework.common.utils.mq.dal.mysql.ISysMessageMapper;
+import cn.cidea.framework.common.utils.mq.dataobject.entity.pool.MsgBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -59,12 +59,12 @@ public class MessageServiceImpl extends ServiceImpl<ISysMessageMapper, SysMessag
         messageContext.setContext(context);
         sysMessage.setContext(messageContext);
         contextMapper.insert(messageContext);
-        publisher.publishEvent(new MsgPool(sysMessage));
+        publisher.publishEvent(new MsgBuilder(sysMessage));
     }
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void before(MsgPool msgPool){
-        msgPool.send();
+    public void before(MsgBuilder msgBuilder){
+        msgBuilder.send();
         return;
     }
 

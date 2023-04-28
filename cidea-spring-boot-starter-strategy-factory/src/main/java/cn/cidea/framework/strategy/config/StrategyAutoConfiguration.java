@@ -1,8 +1,8 @@
 package cn.cidea.framework.strategy.config;
 
-import cn.cidea.framework.strategy.core.annotation.StrategyPort;
-import cn.cidea.framework.strategy.core.factory.support.StrategyBeanNameGenerator;
-import cn.cidea.framework.strategy.core.factory.support.StrategyScannerConfigurer;
+import cn.cidea.framework.strategy.core.annotation.StrategyAPI;
+import cn.cidea.framework.strategy.core.factory.StrategyBeanNameGenerator;
+import cn.cidea.framework.strategy.core.scanner.StrategyScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * @author Charlotte
+ * 创建默认的{@link StrategyScannerConfigurer}，扫描和Spring工程一样的路径
+ * @author CIdea
  */
 @Configuration
 @ConditionalOnMissingBean({StrategyScannerConfigurer.class})
@@ -34,7 +35,7 @@ public class StrategyAutoConfiguration implements BeanFactoryAware, ImportBeanDe
     private BeanFactory beanFactory;
 
     @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+    public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
         if (!AutoConfigurationPackages.has(this.beanFactory)) {
             log.debug("Could not determine auto-configuration package, automatic Strategy scanning disabled.");
             return;
@@ -47,7 +48,7 @@ public class StrategyAutoConfiguration implements BeanFactoryAware, ImportBeanDe
         }
 
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(StrategyScannerConfigurer.class);
-        builder.addPropertyValue("annotationClass", StrategyPort.class);
+        builder.addPropertyValue("annotationClass", StrategyAPI.class);
         builder.addPropertyValue("basePackage", StringUtils.collectionToCommaDelimitedString(packages));
         builder.addPropertyValue("nameGenerator", new StrategyBeanNameGenerator());
         BeanWrapper beanWrapper = new BeanWrapperImpl(StrategyScannerConfigurer.class);

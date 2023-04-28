@@ -28,6 +28,8 @@ public class SysUser extends Model<SysUser> {
      * 个人信息ID
      */
     private Long personId;
+    @TableField(exist = false)
+    private Person person;
 
     /**
      * 所属租户ID
@@ -57,10 +59,6 @@ public class SysUser extends Model<SysUser> {
      * 电子邮箱
      */
     private String email;
-    /**
-     * 实名认证状态：0-未认证；1-已认证；-1-已过期
-     */
-    private Integer certificated;
     /**
      * 是否内置
      */
@@ -97,6 +95,7 @@ public class SysUser extends Model<SysUser> {
      * 创建时间
      */
     private Date createTime;
+    private Date updateTime;
 
     @TableField(exist = false)
     private List<SysRole> roles;

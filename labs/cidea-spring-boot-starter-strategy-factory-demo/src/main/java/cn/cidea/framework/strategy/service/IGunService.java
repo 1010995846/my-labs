@@ -1,12 +1,12 @@
 package cn.cidea.framework.strategy.service;
 
-import cn.cidea.framework.strategy.config.PollingStrategyRoute;
-import cn.cidea.framework.strategy.core.annotation.StrategyPort;
+import cn.cidea.framework.strategy.config.PollingStrategyRouter;
+import cn.cidea.framework.strategy.core.annotation.StrategyAPI;
 
 /**
  * @author Charlotte
  */
-@StrategyPort(route = PollingStrategyRoute.class)
+@StrategyAPI(route = PollingStrategyRouter.class)
 public interface IGunService {
 
     void shoot();

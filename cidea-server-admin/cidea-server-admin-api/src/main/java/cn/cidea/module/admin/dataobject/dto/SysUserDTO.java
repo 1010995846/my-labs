@@ -6,6 +6,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class SysUserDTO {
+public class SysUserDTO implements Serializable {
     /**
      *
      */
@@ -38,7 +39,6 @@ public class SysUserDTO {
     /**
      * 账号
      */
-    @JSONField(name = "DDNAME")
     private String username;
     /**
      * 密码

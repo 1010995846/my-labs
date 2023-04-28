@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +34,8 @@ public class Person extends Model<Person> {
      */
     private String name;
 
+    private Boolean certified;
+
     /**
      * 标签，json数组
      */
@@ -45,4 +48,10 @@ public class Person extends Model<Person> {
     @TableField(typeHandler = FastjsonNullDefaultTypeHandler.class)
     private EducationalBackgroundDTO educationalBackground;
 
+    private Date createTime;
+
+    private Date updateTime;
+
+    @TableField(exist = false)
+    private List<PersonIdentification> identifications;
 }

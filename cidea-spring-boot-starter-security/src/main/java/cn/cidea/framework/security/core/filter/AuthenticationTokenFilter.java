@@ -2,16 +2,13 @@ package cn.cidea.framework.security.core.filter;
 
 import cn.cidea.framework.security.core.properties.SecurityProperties;
 import cn.cidea.framework.security.core.LoginUserDTO;
-import cn.cidea.framework.security.core.service.ISecurityLoginService;
 import cn.cidea.framework.security.core.service.ISecuritySessionService;
 import cn.cidea.framework.security.core.utils.SecurityFrameworkUtils;
 import cn.cidea.framework.web.core.api.Response;
-import cn.cidea.framework.web.core.handler.GlobalExceptionHandler;
+import cn.cidea.framework.web.core.handler.ExceptionDispatcher;
 import cn.hutool.core.util.StrUtil;
 import cn.cidea.framework.web.core.utils.ServletUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -27,23 +24,21 @@ import java.io.IOException;
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    private SecurityProperties securityProperties;
-
+    private SecurityProperties properties;
     @Autowired
-    private ISecuritySessionService authenticationProvider;
-
+    private ISecuritySessionService sessionService;
     @Autowired
-    private GlobalExceptionHandler globalExceptionHandler;
+    private ExceptionDispatcher exceptionDispatcher;
 
     @Override
     @SuppressWarnings("NullableProblems")
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        String sessionId = SecurityFrameworkUtils.obtainAuthorization(request, securityProperties.getSessionHeader());
+        String sessionId = SecurityFrameworkUtils.obtainAuthorization(request, properties.getSessionHeader());
         if (StrUtil.isNotEmpty(sessionId)) {
             try {
                 // 验证 token 有效性
-                LoginUserDTO loginUser = authenticationProvider.verifySessionAndRefresh(sessionId);
+                LoginUserDTO loginUser = sessionService.verifySessionAndRefresh(sessionId);
                 // 模拟 Login 功能，方便日常开发调试
                 if (loginUser == null) {
                     loginUser = this.mockLoginUser(request, sessionId);
@@ -53,7 +48,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
                     SecurityFrameworkUtils.setLoginUser(loginUser, request);
                 }
             } catch (Throwable ex) {
-                Response<?> result = globalExceptionHandler.defaultExceptionHandler(request, ex);
+                Response<?> result = exceptionDispatcher.defaultExceptionHandler(request, ex);
                 ServletUtils.writeJSON(response, result);
                 return;
             }
@@ -73,15 +68,15 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
      * @return 模拟的 LoginUser
      */
     private LoginUserDTO mockLoginUser(HttpServletRequest request, String sessionId) {
-        if (!securityProperties.getMockEnable()) {
+        if (!properties.getMockEnable()) {
             return null;
         }
         // 必须以 mockSecret 开头
-        if (!sessionId.startsWith(securityProperties.getMockSecret())) {
+        if (!sessionId.startsWith(properties.getMockSecret())) {
             return null;
         }
-        Long userId = Long.valueOf(sessionId.substring(securityProperties.getMockSecret().length()));
-        return authenticationProvider.mock(userId);
+        Long userId = Long.valueOf(sessionId.substring(properties.getMockSecret().length()));
+        return sessionService.mock(userId);
     }
 
 }

@@ -3,6 +3,9 @@ package cn.cidea.module.admin.dataobject.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,29 +16,29 @@ import java.util.Date;
  */
 @Data
 @NoArgsConstructor
-public class PersonIdentificationDTO {
+public class PersonIdentificationDTO implements Serializable {
     /**
      *
      */
     private Long id;
     /**
-     * 个人信息ID
-     */
-    private Long personId;
-    /**
      * 证件号
      */
+    @NotBlank
     private String number;
     /**
      * 证件类型：1-身份证
      */
+    @NotNull
     private Integer type;
     /**
      * 证件有效期，开始区间
      */
+    @NotNull
     private Date validityStart;
     /**
      * 证件有效期，结束区间
      */
+    @NotNull
     private Date validityEnd;
 }

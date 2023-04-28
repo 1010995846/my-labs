@@ -1,6 +1,7 @@
 package cn.cidea.module.pm.dataobject.entity;
 
 
+import cn.cidea.module.pm.constant.FieldAnalyzer;
 import cn.cidea.module.pm.dataobject.dto.PmProductValDTO;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -14,6 +15,10 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * 产品(PmProduct)表实体类
@@ -23,20 +28,31 @@ import lombok.Data;
  */
 @Data
 @TableName(autoResultMap = true)
+@Document(indexName = "product", // 索引名
+        shards = 1, // 默认索引分区数
+        replicas = 0, // 每个分区的备份数
+        refreshInterval = "-1" // 刷新间隔
+)
 public class PmProduct extends Model<PmProduct> implements Serializable {
 
-
+    @Id
     @TableId
     private Long id;
 
     /**
      * 编码
      */
+    @Field(analyzer = FieldAnalyzer.IK_SMART, type = FieldType.Text)
     private String code;
     /**
-     * 名称
+     * 产品名
      */
+    @Field(analyzer = FieldAnalyzer.IK_SMART, type = FieldType.Text)
     private String name;
+    /**
+     * 通用名
+     */
+    private String generalName;
     /**
      * 租户ID
      */
@@ -68,6 +84,7 @@ public class PmProduct extends Model<PmProduct> implements Serializable {
     @TableField(typeHandler = FastjsonTypeHandler.class)
     private Map<String, String> propVal;
     @TableField(exist = false)
+    @Field(analyzer = FieldAnalyzer.IK_MAX_WORD, type = FieldType.Object)
     private Map<String, PmProductValDTO> properties;
     /**
      * 排序
@@ -96,7 +113,7 @@ public class PmProduct extends Model<PmProduct> implements Serializable {
 
 
     @TableField(exist = false)
-    private List<PmProductSku> skuList;
+    private List<PmSku> skuList;
 
     @Override
     public Serializable pkVal() {

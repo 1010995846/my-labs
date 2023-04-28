@@ -42,4 +42,8 @@ public class PersonIdentification extends Model<PersonIdentification> {
      * 证件有效期，结束区间
      */
     private Date validityEnd;
+
+    private Date createTime;
+
+    private Date updateTime;
 }

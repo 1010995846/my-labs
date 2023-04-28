@@ -34,7 +34,6 @@ security:
   mock-secret: PDSA
   tenant:
     ignore-tables: sys_tenant
-    ignore-urls: /system/captcha/get
 
 cidea:
   mq:

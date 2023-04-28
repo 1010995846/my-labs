@@ -33,11 +33,4 @@ public class ByteUtils {
         return new String(bytes);
     }
 
-    public static void main(String[] args) {
-        Long i = 456L;
-        byte[] bytes = toBytes(i);
-        long l = toLong(bytes);
-        String str = toString(bytes);
-        return;
-    }
 }

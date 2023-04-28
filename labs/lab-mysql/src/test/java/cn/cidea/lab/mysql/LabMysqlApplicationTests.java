@@ -2,7 +2,7 @@ package cn.cidea.lab.mysql;
 
 import cn.cidea.module.admin.dataobject.dto.EducationalBackgroundDTO;
 import cn.cidea.module.admin.dataobject.entity.Person;
-import cn.cidea.module.admin.service.system.IPersonService;
+import cn.cidea.module.admin.service.IPersonService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

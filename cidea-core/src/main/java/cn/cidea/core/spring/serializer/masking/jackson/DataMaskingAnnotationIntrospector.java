@@ -14,10 +14,10 @@ public class DataMaskingAnnotationIntrospector extends NopAnnotationIntrospector
     @Override
     public Object findSerializer(Annotated am) {
         DataMasking annotation = am.getAnnotation(DataMasking.class);
-        if (annotation != null) {
-            return new DataMaskingSerializer(annotation.maskFunc().getOperation());
+        if (annotation == null) {
+            return null;
         }
-        return null;
+        return new DataMaskingSerializer(annotation.maskFunc().getOperation());
     }
 
 }

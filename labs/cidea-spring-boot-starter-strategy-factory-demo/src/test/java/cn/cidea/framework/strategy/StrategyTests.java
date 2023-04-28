@@ -1,6 +1,6 @@
 package cn.cidea.framework.strategy;
 
-import cn.cidea.framework.strategy.config.DefaultDynamicStrategyRoute;
+import cn.cidea.framework.strategy.config.DefaultDynamicStrategyRouter;
 import cn.cidea.framework.strategy.facade.OrgFacade;
 import cn.cidea.framework.strategy.service.IGunService;
 import cn.cidea.framework.strategy.service.IOrgService;
@@ -34,26 +34,26 @@ class StrategyTests implements BeanFactoryAware {
         System.out.println("期望：路由");
         IOrgService implBean = beanFactory.getBean(IOrgService.class);
         System.out.println("school=============");
-        DefaultDynamicStrategyRoute.routeKey.set("school");
+        DefaultDynamicStrategyRouter.routeKey.set("school");
         System.out.println(implBean.getName());// 打印school
 
         System.out.println("hosp=============");
-        DefaultDynamicStrategyRoute.routeKey.set("hosp");
+        DefaultDynamicStrategyRouter.routeKey.set("hosp");
         System.out.println(implBean.getName());// 打印hosp
         System.out.println(implBean.getName());// 打印hosp
 
         System.out.println("ext=============");
-        DefaultDynamicStrategyRoute.routeKey.set("ext");
+        DefaultDynamicStrategyRouter.routeKey.set("ext");
         System.out.println(implBean.getName());// 打印ext
 
         System.out.println("defaultOrg=============");
-        DefaultDynamicStrategyRoute.routeKey.remove();
+        DefaultDynamicStrategyRouter.routeKey.remove();
         System.out.println(implBean.getName());// 打印defaultOrg
 
         System.out.println("plural=============");
-        DefaultDynamicStrategyRoute.routeKey.set("p1");
+        DefaultDynamicStrategyRouter.routeKey.set("p1");
         System.out.println(implBean.getName());// 打印plural
-        DefaultDynamicStrategyRoute.routeKey.set("p2");
+        DefaultDynamicStrategyRouter.routeKey.set("p2");
         System.out.println(implBean.getName());// 打印plural
     }
 
@@ -63,7 +63,7 @@ class StrategyTests implements BeanFactoryAware {
         System.out.println("期望：路由");
         IOrgService implBean = beanFactory.getBean(IOrgService.class);
         System.out.println("school=============");
-        DefaultDynamicStrategyRoute.routeKey.set("school");
+        DefaultDynamicStrategyRouter.routeKey.set("school");
         System.out.println(implBean.getName());// 打印school
         System.out.println(implBean.getName());// 打印school
 
@@ -80,14 +80,14 @@ class StrategyTests implements BeanFactoryAware {
         System.out.println("期望：路由");
         OrgFacade facade = beanFactory.getBean(OrgFacade.class);
         System.out.println("default=============");
-        DefaultDynamicStrategyRoute.routeKey.remove();
+        DefaultDynamicStrategyRouter.routeKey.remove();
         facade.print();
         facade.print();
-        DefaultDynamicStrategyRoute.routeKey.set("school");
+        DefaultDynamicStrategyRouter.routeKey.set("school");
         System.out.println("school==============");
         facade.print();
         facade.print();
-        DefaultDynamicStrategyRoute.routeKey.set("hosp");
+        DefaultDynamicStrategyRouter.routeKey.set("hosp");
         System.out.println("hosp================");
         facade.print();
     }

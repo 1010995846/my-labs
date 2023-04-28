@@ -3,6 +3,8 @@ package cn.cidea.module.admin.dataobject.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * (SysTag)表实体类
  *
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class SysTagDTO {
+public class SysTagDTO implements Serializable {
     /**
      *
      */

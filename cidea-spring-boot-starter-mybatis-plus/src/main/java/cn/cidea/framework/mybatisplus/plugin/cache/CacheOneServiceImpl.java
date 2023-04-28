@@ -1,6 +1,6 @@
 package cn.cidea.framework.mybatisplus.plugin.cache;
 
-import cn.cidea.core.utils.CollectionSteamUtils;
+import cn.cidea.core.utils.CollSteamUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -43,9 +43,9 @@ public abstract class CacheOneServiceImpl<P extends Serializable, M extends Base
         }
 
         // 写入缓存
-        cache = CollectionSteamUtils.convertMap(list, CacheOneModel::pkVal);
+        cache = CollSteamUtils.toMap(list, CacheOneModel::pkVal);
         initLocalOtherCache(list);
-        maxUpdateTime = CollectionSteamUtils.getMaxValue(list, CacheModel::getUpdateTime);
+        maxUpdateTime = CollSteamUtils.getMaxValue(list, CacheModel::getUpdateTime);
         log.info("[initLocalCache][{}][初始化数量为 {}]", this.getClass().getSimpleName(), list.size());
     }
 

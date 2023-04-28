@@ -1,6 +1,7 @@
 package cn.cidea.framework.web.core.asserts;
 
 
+import cn.cidea.core.utils.asserts.IAssert;
 import cn.cidea.framework.web.core.exception.BizException;
 import cn.cidea.framework.web.core.exception.IBaseException;
 import lombok.AllArgsConstructor;

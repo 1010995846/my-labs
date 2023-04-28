@@ -15,7 +15,9 @@
         <module>cidea-server-pm-api</module>
         <module>cidea-server-pm-service</module>
     </modules>
-
+    <properties>
+        <es.version>7.3.2</es.version>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -23,6 +25,34 @@
                 <artifactId>cidea-server-pm-api</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
+
+            <!-- high client-->
+<!--            <dependency>-->
+<!--                <groupId>org.elasticsearch.client</groupId>-->
+<!--                <artifactId>elasticsearch-rest-high-level-client</artifactId>-->
+<!--                <version>${es.version}</version>-->
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>org.elasticsearch.client</groupId>-->
+<!--                        <artifactId>elasticsearch-rest-client</artifactId>-->
+<!--                    </exclusion>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>org.elasticsearch</groupId>-->
+<!--                        <artifactId>elasticsearch</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.elasticsearch</groupId>-->
+<!--                <artifactId>elasticsearch</artifactId>-->
+<!--                <version>${es.version}</version>-->
+<!--            </dependency>-->
+<!--            &lt;!&ndash;rest low client high client以来低版本client所以需要引入&ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.elasticsearch.client</groupId>-->
+<!--                <artifactId>elasticsearch-rest-client</artifactId>-->
+<!--                <version>${es.version}</version>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 

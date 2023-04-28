@@ -5,6 +5,8 @@ import cn.cidea.module.admin.dataobject.entity.PersonIdentification;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 /**
  * 个人证件(PersonIdentification)Covert
  *
@@ -17,6 +19,10 @@ public interface PersonIdentificationConvert {
     PersonIdentificationConvert INSTANCE = Mappers.getMapper(PersonIdentificationConvert.class);
 
     PersonIdentificationDTO toDTO(PersonIdentification entity);
+
+    PersonIdentification toEntity(PersonIdentificationDTO entity);
+
+    List<PersonIdentification> toEntity(List<PersonIdentificationDTO> list);
 
 }
 

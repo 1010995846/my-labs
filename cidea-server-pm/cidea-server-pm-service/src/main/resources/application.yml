@@ -9,9 +9,13 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  # Elasticsearch 配置项
+  elasticsearch:
+    cluster-name: elasticsearch # 集群名
+    cluster-nodes: 127.0.0.1:9300 # 集群节点
   datasource:
-    url: jdbc:mysql://localhost:3306/lab?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: dev
+    url: jdbc:mysql://localhost:3306/mylab?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: CIdea
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
   rabbitmq:

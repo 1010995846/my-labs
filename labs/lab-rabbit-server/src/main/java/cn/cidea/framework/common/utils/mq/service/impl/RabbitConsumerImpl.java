@@ -2,7 +2,7 @@ package cn.cidea.framework.common.utils.mq.service.impl;
 
 import cn.cidea.framework.common.utils.mq.service.IMqConsumer;
 import cn.cidea.framework.common.utils.mq.constants.RabbitConstant;
-import cn.cidea.framework.common.utils.mq.dto.SysMessageDTO;
+import cn.cidea.framework.common.utils.mq.dataobject.dto.MessageDTO;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -23,7 +23,7 @@ public class RabbitConsumerImpl implements IMqConsumer {
 //        return;
 //    }
     @RabbitListener(queues = RabbitConstant.queue_1)
-    public void recive1(SysMessageDTO dto, Message message, Channel channel) throws IOException, TimeoutException {
+    public void recive1(MessageDTO dto, Message message, Channel channel) throws IOException, TimeoutException {
         long tag = message.getMessageProperties().getDeliveryTag();
         System.out.println(dto);
         // multiple 表示是否批量处理。true表示批量ack处理小于tag的所有消息。false则处理当前消息

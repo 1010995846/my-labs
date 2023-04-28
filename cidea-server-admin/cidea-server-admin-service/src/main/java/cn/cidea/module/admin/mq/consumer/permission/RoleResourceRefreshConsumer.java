@@ -2,7 +2,7 @@ package cn.cidea.module.admin.mq.consumer.permission;
 
 import cn.cidea.framework.mq.redisson.core.message.pubsub.AbstractPubSubListener;
 import cn.cidea.module.admin.mq.message.permission.RoleResourceRefreshMessage;
-import cn.cidea.module.admin.service.system.IPermissionService;
+import cn.cidea.module.admin.service.IPermissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

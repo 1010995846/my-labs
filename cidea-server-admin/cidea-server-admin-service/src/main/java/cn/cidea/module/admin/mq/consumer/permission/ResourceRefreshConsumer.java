@@ -2,7 +2,7 @@ package cn.cidea.module.admin.mq.consumer.permission;
 
 import cn.cidea.framework.mq.redisson.core.message.pubsub.AbstractPubSubListener;
 import cn.cidea.module.admin.mq.message.permission.ResourceRefreshMessage;
-import cn.cidea.module.admin.service.system.ISysResourceService;
+import cn.cidea.module.admin.service.ISysResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

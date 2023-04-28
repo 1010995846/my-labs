@@ -1,5 +1,6 @@
 package cn.cidea.framework.security.core;
 
+import cn.cidea.core.spring.serializer.masking.DataMasking;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,14 +25,19 @@ public class LoginUserDTO implements UserDetails {
      * 密码
      */
     @JsonIgnore
+    @DataMasking
     private String password;
 
     private Integer userType;
+    /**
+     * 是否超管
+     */
+    private Boolean superAdmin;
 
     private Long tenantId;
 
     /**
-     * {@link cn.cidea.server.dataobject.enums.DataScopeEnum}
+     * {@link cn.cidea.module.admin.dataobject.enums.DataScope}
      */
     private Integer dataScope;
 

@@ -3,6 +3,7 @@ package cn.cidea.module.admin.dataobject.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class PersonDTO {
+public class PersonDTO implements Serializable {
     /**
      *
      */
@@ -30,4 +31,6 @@ public class PersonDTO {
      * 教育背景，json对象
      */
     private EducationalBackgroundDTO educationalBackground;
+
+    private List<PersonIdentificationDTO> identifications;
 }

@@ -26,3 +26,5 @@ hs_err_pid*
 .idea/
 *.hprof
 *.iml
+target/
+maven-repo/

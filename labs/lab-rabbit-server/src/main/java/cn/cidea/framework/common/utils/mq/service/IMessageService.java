@@ -1,7 +1,7 @@
 package cn.cidea.framework.common.utils.mq.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import cn.cidea.framework.common.utils.mq.entity.SysMessage;
+import cn.cidea.framework.common.utils.mq.dataobject.entity.SysMessage;
 
 /**
  * @author Charlotte

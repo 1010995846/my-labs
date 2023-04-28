@@ -2,6 +2,7 @@ package cn.cidea.framework.security.core.service;
 
 import cn.cidea.framework.security.core.LoginUserDTO;
 
+import javax.validation.constraints.NotBlank;
 import java.time.Duration;
 
 /**
@@ -9,6 +10,8 @@ import java.time.Duration;
  * session操作相关
  */
 public interface ISecuritySessionService {
+
+    LoginUserDTO login(@NotBlank String username, @NotBlank String password, String code, String uuid);
 
     /**
      * 刷新

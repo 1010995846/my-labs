@@ -5,7 +5,7 @@ import cn.cidea.framework.web.core.api.Response;
 import cn.cidea.module.admin.dataobject.convert.SysRoleConvert;
 import cn.cidea.module.admin.dataobject.dto.SysRoleDTO;
 import cn.cidea.module.admin.dataobject.entity.SysRole;
-import cn.cidea.module.admin.service.system.ISysRoleService;
+import cn.cidea.module.admin.service.ISysRoleService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

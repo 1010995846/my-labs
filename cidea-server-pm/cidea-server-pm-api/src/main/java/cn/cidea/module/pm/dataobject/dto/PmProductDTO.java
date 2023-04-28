@@ -1,12 +1,12 @@
 package cn.cidea.module.pm.dataobject.dto;
 
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import lombok.Data;
 
 /**
  * 产品(PmProduct)表实体类
@@ -16,7 +16,6 @@ import lombok.Data;
  */
 @Data
 public class PmProductDTO implements Serializable {
-
 
     private Long id;
     /**
@@ -70,7 +69,7 @@ public class PmProductDTO implements Serializable {
      */
     private Date updateTime;
 
-    private List<PmProductSkuDTO> skuList;
+    private List<PmSkuDTO> skuList;
 
 }
 
