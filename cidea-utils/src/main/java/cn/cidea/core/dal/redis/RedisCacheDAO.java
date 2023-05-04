@@ -1,5 +1,6 @@
-package cn.cidea.core.redis;
+package cn.cidea.core.dal.redis;
 
+import cn.cidea.core.dal.MemoryDAO;
 import cn.cidea.core.utils.SynchronizedUtils;
 import cn.cidea.core.utils.function.IPK;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
  * @author CIdea
  */
 @Slf4j
-public abstract class RedisCacheDAO<E extends IPK> {
+public abstract class RedisCacheDAO<E extends IPK> extends MemoryDAO<E> {
 
     @Autowired
     protected RedissonClient redissonClient;
@@ -46,8 +47,8 @@ public abstract class RedisCacheDAO<E extends IPK> {
         // 全局读写锁。写单个数据时使用读锁，互相不冲突；写全部时使用写锁，完全排它
         RLock lock = redissonClient.getReadWriteLock(getLockKey()).writeLock();
         lock.lock();
-        log.info("refresh cache, class = {}", this.getClass().getSimpleName());
         try {
+            log.info("refresh cache, class = {}", this.getClass().getSimpleName());
             // TODO redisson文档，各个对象的使用说明
             // redissonClient.getMap();
             // redissonClient.getMapCache();
@@ -61,17 +62,7 @@ public abstract class RedisCacheDAO<E extends IPK> {
         }
     }
 
-    public E selectById(Serializable id) {
-        if(id == null){
-            return null;
-        }
-        Collection<E> collection = selectBatchIds(Collections.singleton(id));
-        if(collection.size() == 0){
-            return null;
-        }
-        return collection.iterator().next();
-    }
-
+    @Override
     public Collection<E> selectBatchIds(Set<Serializable> ids) {
         // bloom性质：hash位图。若不存在，则一定不存在；若存在，可能hash重复导致误判
         RBloomFilter<Serializable> bloomFilter = getBloomFilter();
@@ -128,57 +119,33 @@ public abstract class RedisCacheDAO<E extends IPK> {
         return data.values();
     }
 
-    public final void insert(E entity) {
-        if (entity == null) {
-            return;
-        }
-        insert(Collections.singleton(entity));
-    }
+    @Override
     public final void insert(Collection<E> coll) {
         if (CollectionUtils.isEmpty(coll)) {
             return;
         }
-        // 避免事务提交失败存了脏数据
-        SynchronizedUtils.afterTrxCommit(() -> {
-            RMap<Serializable, E> cache = getCache();
-            cache.putAll(coll.stream().collect(Collectors.toMap(IPK::pkVal, u -> u)));
+        RMap<Serializable, E> cache = getCache();
+        cache.putAll(coll.stream().collect(Collectors.toMap(IPK::pkVal, u -> u)));
 
-            RBloomFilter<Serializable> bloomFilter = getBloomFilter();
-            coll.forEach(e -> bloomFilter.add(e.pkVal()));
-
-            insertExt(coll);
-        });
-        // List<Serializable> ids = coll.parallelStream()
-        //         .map(IPK::pkVal)
-        //         .collect(Collectors.toList());
-        // SynchronizedUtils.lock(getLockKey() + ":", ids, () -> {
-        // });
+        RBloomFilter<Serializable> bloomFilter = getBloomFilter();
+        coll.forEach(e -> bloomFilter.add(e.pkVal()));
     }
-    protected void insertExt(Collection<E> coll) {}
 
+    @Override
     public final void clear() {
         getCache().clear();
         getBloomFilter().delete();
-        clearExt();
     }
-    protected void clearExt() {}
 
-    public void deleteById(Serializable id) {
-        deleteBatchIds(Collections.singleton(id));
-    }
+    @Override
     public void deleteBatchIds(Collection<Serializable> ids) {
-        SynchronizedUtils.afterTrxCommit(() -> {
-            // bloom好像没有删除的概念？
-            // 可能是因为hash冲突的原因，一个数据对应一个hash，但hash可能对应复数数据，如果删除了这个数据对应的hash，就会导致hash对应的其它数据被误判不存在，无法确保bloom不存在则必定不存在的性质
-            // TODO CIdea: bloom怎么应对删除问题，如果一个数据已经被删除，但bloom仍旧存在，就会一直去加载。思考方案一：用空对象覆盖缓存取代删除
-            // RBloomFilter<Serializable> bloomFilter = redissonClient.getBloomFilter(getBloomKey());
-            RMap<Serializable, E> cache = getCache();
-            ids.forEach(cache::remove);
-            deleteExt(ids);
-        });
+        // bloom好像没有删除的概念？
+        // 可能是因为hash冲突的原因，一个数据对应一个hash，但hash可能对应复数数据，如果删除了这个数据对应的hash，就会导致hash对应的其它数据被误判不存在，无法确保bloom不存在则必定不存在的性质
+        // TODO CIdea: bloom怎么应对删除问题，如果一个数据已经被删除，但bloom仍旧存在，就会一直去加载。思考方案一：用空对象覆盖缓存取代删除
+        // RBloomFilter<Serializable> bloomFilter = redissonClient.getBloomFilter(getBloomKey());
+        RMap<Serializable, E> cache = getCache();
+        ids.forEach(cache::remove);
     }
-
-    protected void deleteExt(Collection<Serializable> ids) {}
 
     private String getLockKey() {
         return cacheKey() + ":lock";
@@ -195,14 +162,6 @@ public abstract class RedisCacheDAO<E extends IPK> {
         RBloomFilter<Serializable> bloomFilter = redissonClient.getBloomFilter(bloomKey);
         bloomFilter.tryInit(1000, 0.001);
         return bloomFilter;
-    }
-
-    protected Function<Set<Serializable>, Collection<E>> loadByIds(){
-        return null;
-    }
-
-    protected Supplier<Collection<E>> loadAll(){
-        return null;
     }
 
 }

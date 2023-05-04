@@ -63,6 +63,19 @@ public class SynchronizedUtils implements ApplicationContextAware {
             });
         }
     }
+    public static void beforeTrxCommit(Runnable runnable){
+        if(!TransactionSynchronizationManager.isActualTransactionActive()){
+            runnable.run();
+        } else {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void beforeCommit(boolean readOnly) {
+                    log.info("run before transaction commit");
+                    runnable.run();
+                }
+            });
+        }
+    }
 
     /**
      * 新线程执行

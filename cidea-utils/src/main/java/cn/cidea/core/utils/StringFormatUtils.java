@@ -2,6 +2,7 @@ package cn.cidea.core.utils;
 
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.util.PatternMatchUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -87,7 +88,7 @@ public class StringFormatUtils {
         return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, str);
     }
 
-    public static String encodeChinese(String str) throws UnsupportedEncodingException {
+    public static String encodeZh(String str) throws UnsupportedEncodingException {
         Matcher matcher = Pattern.compile("[\\u4e00-\\u9fa5]").matcher(str);
         while (matcher.find()) {
             String tmp = matcher.group();

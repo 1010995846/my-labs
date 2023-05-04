@@ -19,7 +19,7 @@ public class CollSteamUtils {
      * @param <T>
      * @param <V>
      */
-    public static <T, V extends Comparable<? super V>> V getMaxValue(Collection<T> collection, Function<T, V> get) {
+    public static <T, V extends Comparable<? super V>> V max(Collection<T> collection, Function<T, V> get) {
         if (isEmpty(collection)) {
             return null;
         }

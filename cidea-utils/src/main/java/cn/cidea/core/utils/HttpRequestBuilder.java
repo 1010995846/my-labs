@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @author CIdea
  */
 @Slf4j
-public abstract class HttpRequestBuilder<T extends HttpRequestBuilder> {
+public abstract class HttpRequestBuilder {
 
     /**
      * 请求名称
@@ -159,7 +159,7 @@ public abstract class HttpRequestBuilder<T extends HttpRequestBuilder> {
     }
 
     @Slf4j
-    public static class Post extends HttpRequestBuilder<Post> {
+    public static class Post extends HttpRequestBuilder {
 
         protected ContentType contentType = ContentType.NONE;
 

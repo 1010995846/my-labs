@@ -1,4 +1,4 @@
-package cn.cidea.core.utils.dal.handler;
+package cn.cidea.core.dal.ibatis.type;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.handlers.AbstractJsonTypeHandler;

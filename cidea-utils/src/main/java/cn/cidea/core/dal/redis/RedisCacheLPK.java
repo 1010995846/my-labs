@@ -1,4 +1,4 @@
-package cn.cidea.core.redis;
+package cn.cidea.core.dal.redis;
 
 import cn.cidea.core.utils.function.IPK;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -35,7 +35,7 @@ public abstract class RedisCacheLPK<T extends IPK> {
         List<String> lpk = new ArrayList<>();
         for (Function<T, ?> function : lpkf) {
             String str = Optional.ofNullable(function.apply(t)).map(Object::toString).orElse(NULL);
-            Assert.doesNotContain(str, SPLIT, "lpk value can't contain key '" + SPLIT + "'");
+            Assert.doesNotContain(str, SPLIT, "lpk value can't contain keyword '" + SPLIT + "'");
             lpk.add(str);
         }
         return lpk.stream().collect(Collectors.joining(SPLIT));

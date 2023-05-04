@@ -1,4 +1,4 @@
-package cn.cidea.core.utils.dal.handler;
+package cn.cidea.core.dal.ibatis.type;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.type.JdbcType;

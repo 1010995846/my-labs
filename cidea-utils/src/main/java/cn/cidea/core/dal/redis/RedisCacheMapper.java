@@ -1,9 +1,8 @@
-package cn.cidea.core.redis;
+package cn.cidea.core.dal.redis;
 
 import cn.cidea.core.utils.function.IPK;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * 集成了mybatisplus的缓存DAO
- * @author Charlotte
+ * @author CIdea
  */
 @Slf4j
 public abstract class RedisCacheMapper<M extends BaseMapper<E>, E extends IPK> extends RedisCacheDAO<E> {

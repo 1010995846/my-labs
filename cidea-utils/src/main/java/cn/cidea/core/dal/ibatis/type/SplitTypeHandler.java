@@ -1,4 +1,4 @@
-package cn.cidea.core.utils.dal.handler;
+package cn.cidea.core.dal.ibatis.type;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
