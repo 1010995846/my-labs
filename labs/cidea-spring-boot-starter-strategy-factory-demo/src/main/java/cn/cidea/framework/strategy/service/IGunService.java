@@ -6,7 +6,7 @@ import cn.cidea.framework.strategy.core.annotation.StrategyAPI;
 /**
  * @author Charlotte
  */
-@StrategyAPI(route = PollingStrategyRouter.class)
+@StrategyAPI(router = PollingStrategyRouter.class)
 public interface IGunService {
 
     void shoot();
