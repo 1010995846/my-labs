@@ -1,5 +1,7 @@
 package cn.cidea.module.admin.dataobject.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +21,7 @@ public class SysResourceDTO implements Serializable {
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 名称
@@ -59,6 +62,7 @@ public class SysResourceDTO implements Serializable {
     /**
      * 创建者
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createBy;
     /**
      * 创建时间
@@ -67,6 +71,7 @@ public class SysResourceDTO implements Serializable {
     /**
      * 更新者
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateBy;
     /**
      * 更新时间

@@ -1,6 +1,8 @@
 package cn.cidea.module.admin;
 
 import cn.cidea.core.spring.serializer.fastjson.EnableFastjsonSerializer;
+import cn.cidea.core.utils.XmlUtils;
+import cn.hutool.core.util.XmlUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;

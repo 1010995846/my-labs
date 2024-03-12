@@ -10,8 +10,8 @@ public class BusinessMessageSender {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMsg(String msg) {
-        rabbitTemplate.convertSendAndReceive(RabbitConfig.BUSINESS_EXCHANGE, "", msg);
+    public void send(String routingKey, String msg) {
+        rabbitTemplate.convertSendAndReceive(RabbitConfig.BUSINESS_EXCHANGE, routingKey, msg);
     }
 
 }

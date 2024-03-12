@@ -1,5 +1,7 @@
 package cn.cidea.module.admin.dataobject.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,6 +19,7 @@ public class SysTenantSaveDTO implements Serializable {
     /**
      * 租户编号
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 租户名
@@ -25,6 +28,7 @@ public class SysTenantSaveDTO implements Serializable {
     /**
      * 联系人的用户编号
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long contactUserId;
     /**
      * 租户状态，是否禁用

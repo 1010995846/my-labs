@@ -11,4 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2022-04-06 18:09:37
  */
 public interface IPersonIdentificationMapper extends BaseMapper<PersonIdentification> {
+
+    PersonIdentification selectOne(Integer type, String number);
 }

@@ -23,8 +23,10 @@ public enum Assert implements IBaseException, IAssert {
     NOT_FOUND(404, "请求未找到"),
     METHOD_NOT_ALLOWED(405, "请求方法不正确"),
     SERVER(500, "服务异常"),
-    BUSINESS(600, "业务异常"),
+
+    BIZ(600, ""),
     VALID(0602, "校验失败"),
+
     UNKNOWN(999, "未知错误"),
     ;
 

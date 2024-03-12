@@ -3,6 +3,8 @@ package cn.cidea.module.admin.dataobject.dto;
 import java.util.Date;
 import java.io.Serializable;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -16,6 +18,7 @@ public class SysDepartmentDTO implements Serializable {
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 名称
@@ -24,10 +27,12 @@ public class SysDepartmentDTO implements Serializable {
     /**
      * 上级部门ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long parentId;
     /**
      * 租户ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long tenantId;
     /**
      * 是否禁用
@@ -40,6 +45,7 @@ public class SysDepartmentDTO implements Serializable {
     /**
      * 创建人
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createBy;
     /**
      * 创建时间
@@ -48,6 +54,7 @@ public class SysDepartmentDTO implements Serializable {
     /**
      * 更新人
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateBy;
     /**
      * 更新时间

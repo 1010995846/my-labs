@@ -51,4 +51,10 @@ public class TestController {
         return Response.success(null);
     }
 
+    @RequestMapping(value = "/test/3")
+    @PreAuthorize("permitAll()")
+    public Response test3(@RequestBody JSONObject param){
+        roleService.delete(4895L);
+        return Response.success(null);
+    }
 }

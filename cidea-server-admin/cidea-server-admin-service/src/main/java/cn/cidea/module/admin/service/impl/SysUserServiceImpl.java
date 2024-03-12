@@ -56,7 +56,7 @@ public class SysUserServiceImpl extends ServiceImpl<ISysUserMapper, SysUser> imp
 
     @Override
     public SysUser register(SysUserRegisterDTO dto) {
-        Person person = personService.trySave(dto.getPerson());
+        Person person = personService.save(dto.getPerson());
         Assert.BAD_REQUEST.isNull(getUserByUsername(dto.getUsername()), "账号名已存在");
 
         SysUser user = SysUserConvert.INSTANCE.toEntity(dto);

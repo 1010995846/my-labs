@@ -2,6 +2,7 @@ package cn.cidea.framework.strategy.core.proxy;
 
 import cn.cidea.framework.strategy.core.IStrategyRouter;
 import cn.cidea.framework.strategy.core.annotation.StrategyAPI;
+import cn.cidea.framework.strategy.core.exception.StrategyMasterNotFoundException;
 import cn.cidea.framework.strategy.core.support.Invocation;
 import cn.cidea.framework.strategy.core.support.StrategyCache;
 import cn.cidea.framework.strategy.core.support.StrategyRegistry;
@@ -24,18 +25,19 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * 负责代理实现
+ * 路由代理实现
+ *
  * @author CIdea
  */
 @Component
 @Scope("prototype")
 public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
 
-    private Logger log = LoggerFactory.getLogger(StrategyProxy.class);
+    private final Logger log = LoggerFactory.getLogger(StrategyProxy.class);
 
-    private Class<?> api;
+    private final Class<?> api;
 
-    private Class<? extends IStrategyRouter> routerClass;
+    private final Class<? extends IStrategyRouter> routerClass;
 
     private BeanFactory beanFactory;
 
@@ -47,8 +49,12 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
         Assert.notNull(api, "api not be null");
         this.api = api;
         StrategyAPI annotation = AnnotationUtils.findAnnotation(api, StrategyAPI.class);
-        Assert.notNull(annotation, "can not find annotation @StrategyAPI");
-        this.routerClass = annotation.router();
+        // Assert.notNull(annotation, "can not find annotation @StrategyAPI");
+        if (annotation != null) {
+            this.routerClass = annotation.router();
+        } else {
+            this.routerClass = IStrategyRouter.class;
+        }
     }
 
     /**
@@ -61,8 +67,11 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
      */
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        Object masterBean = registry.getMaster(api);
-        if(!route(method)){
+        Object masterBean = registry.getMasterBean(api);
+        if (!route(method)) {
+            if (masterBean == null) {
+                return null;
+            }
             return methodProxy.invoke(masterBean, args);
         }
         log.debug("invoke: {}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
@@ -85,7 +94,7 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
                 if (routeKey == null) {
                     continue;
                 }
-                Object beanToUse = registry.getBranch(api, routeKey);
+                Object beanToUse = registry.getBranchBean(api, routeKey);
                 if (beanToUse == null) {
                     continue;
                 }
@@ -100,14 +109,14 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
         }
         if (invocationToUse == null) {
             if (masterBean == null) {
-                throw new IllegalAccessException("strategy `" + api.getName() + "` has not master.");
+                throw new StrategyMasterNotFoundException("strategy `" + api.getName() + "` has not master.");
             }
             log.debug("call master service.");
 
-            Method methodToUse = MethodUtils.getMatchingMethod(
+            Method methodToUse = MethodUtils.getAccessibleMethod(
                     masterBean.getClass(), method.getName(), method.getParameterTypes());
-            if(methodToUse == null){
-                throw new IllegalAccessException(api.getName() + " can access method `" + method.getName() + "`.");
+            if (methodToUse == null) {
+                throw new StrategyMasterNotFoundException(api.getName() + " can access method `" + method.getName() + "`.");
             }
             invocationToUse = new Invocation(methodToUse, masterBean);
         }
@@ -120,12 +129,13 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
 
     /**
      * 方法是否需要路由
+     *
      * @param method
      * @return
      */
     private boolean route(Method method) {
         for (Method m : api.getMethods()) {
-            if(m.equals(method)){
+            if (m.equals(method)) {
                 return true;
             }
         }

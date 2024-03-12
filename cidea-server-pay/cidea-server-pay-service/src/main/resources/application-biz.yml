@@ -1,0 +1,4 @@
+cidea:
+  pay:
+    callbackUrl: http://127.0.0.1
+    returnUrl: http://127.0.0.1

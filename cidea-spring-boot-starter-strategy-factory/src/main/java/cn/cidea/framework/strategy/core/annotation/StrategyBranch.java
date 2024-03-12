@@ -11,14 +11,15 @@ import java.lang.reflect.Method;
  * 策略分支
  * @author CIdea
  */
+@Service
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(StrategyBranches.class)
-@Service
 public @interface StrategyBranch {
 
     /**
+     * // TODO CIdea: 支持环境变量占位符{@link org.springframework.beans.factory.annotation.Value}
      * 路由映射值
      * 对应{@link IStrategyRouter#getRouteKeys(Object, Method, Object[], MethodProxy)}的返回值
      */

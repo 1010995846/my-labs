@@ -3,6 +3,8 @@ package cn.cidea.module.admin.dataobject.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +20,7 @@ public class SysUserLoginLogDTO implements Serializable {
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 用户ID

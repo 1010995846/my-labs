@@ -2,6 +2,8 @@ package cn.cidea.core.utils;
 
 import cn.cidea.core.utils.function.Consumer2;
 import cn.cidea.core.utils.function.IPK;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sun.org.apache.regexp.internal.RE;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -178,6 +180,50 @@ public class RelUtils {
         opeRelMap.entrySet().forEach(entry -> {
             List<REL> list = entry.getValue().stream().map(relPkMap::get).filter(Objects::nonNull).collect(Collectors.toList());
             relSetter.accept(entry.getKey(), list);
+        });
+    }
+
+    /**
+     * 含中间表的多对多
+     *
+     * @param coll
+     * @param midGet 中间表查询
+     * @param mlid   中间表获取主表的id
+     * @param mrid   中间表获取右表的id
+     * @param reGet  根据id获取右表数据
+     * @param setter 设置右表
+     * @param <E>    主表
+     * @param <MID>  中间表
+     * @param <RE>   右表
+     */
+    public static <E extends IPK, MID, RE extends IPK> void manyToMany(
+            Collection<E> coll,
+            Function<List<Serializable>, List<MID>> midGet,
+            Function<MID, Serializable> mlid,
+            Function<MID, Serializable> mrid,
+            Function<Set<Serializable>, List<RE>> reGet,
+            Consumer2<E, List<RE>> setter
+    ) {
+
+        if (CollectionUtils.isEmpty(coll)) {
+            return;
+        }
+        List<Serializable> ids = coll.stream().map(IPK::pkVal).collect(Collectors.toList());
+
+        List<MID> mids = midGet.apply(ids);
+        Map<Serializable, List<MID>> midGroup = mids.parallelStream()
+                .collect(Collectors.groupingBy(mlid));
+
+        Set<Serializable> rids = mids.stream().map(mrid).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(rids)) {
+            return;
+        }
+        Map<Serializable, RE> relMap = reGet.apply(rids).parallelStream().collect(Collectors.toMap(IPK::pkVal, r -> r));
+
+        coll.parallelStream().forEach(entity -> {
+            List<MID> em = midGroup.getOrDefault(entity.pkVal(), Collections.emptyList());
+            List<RE> rs = em.parallelStream().map(mid -> relMap.get(mrid.apply(mid))).filter(Objects::nonNull).collect(Collectors.toList());
+            setter.accept(entity, rs);
         });
     }
 }

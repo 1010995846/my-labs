@@ -4,8 +4,8 @@ import cn.cidea.framework.web.core.utils.ServletUtils;
 import cn.cidea.module.admin.dal.mysql.ISysUserLoginLogMapper;
 import cn.cidea.module.admin.dataobject.entity.SysUser;
 import cn.cidea.module.admin.dataobject.entity.SysUserLoginLog;
-import cn.cidea.module.admin.dataobject.enums.LoginResultEnum;
-import cn.cidea.module.admin.dataobject.enums.LoginTypeEnum;
+import cn.cidea.module.admin.dataobject.enums.LoginResult;
+import cn.cidea.module.admin.dataobject.enums.LoginType;
 import cn.cidea.module.admin.service.ISysUserLoginLogService;
 import cn.cidea.module.admin.service.ISysUserService;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -32,16 +32,16 @@ public class SysUserLoginLogServiceImpl extends ServiceImpl<ISysUserLoginLogMapp
     private ISysUserService userService;
 
     @Override
-    public void fail(String username, LoginTypeEnum logType, LoginResultEnum loginResult, Throwable ex) {
+    public void fail(String username, LoginType logType, LoginResult loginResult, Throwable ex) {
         create(username, logType, loginResult, ex);
     }
 
     @Override
-    public void success(String username, LoginTypeEnum logType) {
-        create(username, logType, LoginResultEnum.SUCCESS, null);
+    public void success(String username, LoginType logType) {
+        create(username, logType, LoginResult.SUCCESS, null);
     }
 
-    private void create(String username, LoginTypeEnum logTypeEnum, LoginResultEnum loginResult, Throwable ex) {
+    private void create(String username, LoginType logTypeEnum, LoginResult loginResult, Throwable ex) {
         // 查询用户
         SysUser user = userService.getUserByUsername(username);
         // 插入登录日志

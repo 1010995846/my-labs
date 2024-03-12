@@ -1,9 +1,13 @@
 package cn.cidea.module.admin.dataobject.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,7 +23,8 @@ public class PersonSaveDTO implements Serializable {
     /**
      *
      */
-    private Integer id;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
     /**
      *
      */
@@ -30,5 +35,7 @@ public class PersonSaveDTO implements Serializable {
      */
     private EducationalBackgroundDTO educationalBackground;
 
+    @NotEmpty
+    @Valid
     private List<PersonIdentificationDTO> identifications;
 }

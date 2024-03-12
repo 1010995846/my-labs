@@ -34,8 +34,6 @@ public class Person extends Model<Person> {
      */
     private String name;
 
-    private Boolean certified;
-
     /**
      * 标签，json数组
      */

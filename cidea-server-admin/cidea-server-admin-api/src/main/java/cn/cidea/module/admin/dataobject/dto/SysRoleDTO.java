@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +21,7 @@ public class SysRoleDTO implements Serializable {
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 名称
@@ -48,10 +51,12 @@ public class SysRoleDTO implements Serializable {
      */
     private String remark;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long tenantId;
     /**
      * 创建者
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createBy;
     /**
      * 创建时间
@@ -60,6 +65,7 @@ public class SysRoleDTO implements Serializable {
     /**
      * 更新者
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateBy;
     /**
      * 更新时间

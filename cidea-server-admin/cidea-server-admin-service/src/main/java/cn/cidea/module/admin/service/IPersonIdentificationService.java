@@ -18,5 +18,13 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface IPersonIdentificationService extends IService<PersonIdentification> {
 
-    boolean certified(Person person, List<PersonIdentificationDTO> identifications);
+    /**
+     * 个人绑定证件
+     * @param person
+     * @param identifications
+     * @return
+     */
+    List<PersonIdentification> certified(Person person, List<PersonIdentificationDTO> identifications);
+
+    void bind(Person person, List<PersonIdentification> certified);
 }

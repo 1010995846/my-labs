@@ -1,7 +1,8 @@
 package cn.cidea.lab.utils.mapstruct;
 
-import cn.cidea.lab.utils.entity.User;
-import cn.cidea.lab.utils.dto.UserDTO;
+import cn.cidea.lab.utils.common.dataobject.entity.User;
+import cn.cidea.lab.utils.common.dataobject.dto.UserDTO;
+import cn.cidea.lab.utils.modules.mapstruct.UserStruct;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

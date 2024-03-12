@@ -1,6 +1,6 @@
 package cn.cidea.core.dal.elasticsearch;
 
-import cn.cidea.core.dal.MemoryDAO;
+import cn.cidea.core.dal.DbDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,9 +9,10 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
+ * Elasticsearch
  * @author: CIdea
  */
-public abstract class ElasticsearchRep<E, R extends ElasticsearchRepository<E, ?>> extends MemoryDAO<E> {
+public abstract class ElasticsearchRep<E, R extends ElasticsearchRepository<E, ?>> extends DbDAO<E> {
 
     @Autowired
     private R rep;

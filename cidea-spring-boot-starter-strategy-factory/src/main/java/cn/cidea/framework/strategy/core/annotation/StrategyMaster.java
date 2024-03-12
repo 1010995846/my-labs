@@ -1,7 +1,5 @@
 package cn.cidea.framework.strategy.core.annotation;
 
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.lang.annotation.*;

@@ -1,5 +1,7 @@
 package cn.cidea.module.admin.dataobject.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +22,7 @@ public class PersonIdentificationDTO implements Serializable {
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 证件号
@@ -34,11 +37,9 @@ public class PersonIdentificationDTO implements Serializable {
     /**
      * 证件有效期，开始区间
      */
-    @NotNull
     private Date validityStart;
     /**
      * 证件有效期，结束区间
      */
-    @NotNull
     private Date validityEnd;
 }

@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.cidea</groupId>
-    <artifactId>cidea-spring-boot-starter-strategy</artifactId>
-    <version>0.2.2-FACTORY-SNAPSHOT</version>
+    <artifactId>cidea-spring-boot-starter-strategy-factory</artifactId>
+    <version>0.2.4-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

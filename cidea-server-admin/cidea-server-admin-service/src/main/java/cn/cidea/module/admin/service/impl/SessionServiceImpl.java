@@ -5,9 +5,8 @@ import cn.cidea.framework.security.core.service.ISecuritySessionService;
 import cn.cidea.framework.web.core.asserts.Assert;
 import cn.cidea.module.admin.dal.redis.LoginUserRedisDAO;
 import cn.cidea.module.admin.dataobject.convert.SysUserConvert;
-import cn.cidea.module.admin.dataobject.entity.pool.SysUserPool;
-import cn.cidea.module.admin.dataobject.enums.LoginResultEnum;
-import cn.cidea.module.admin.dataobject.enums.LoginTypeEnum;
+import cn.cidea.module.admin.dataobject.enums.LoginResult;
+import cn.cidea.module.admin.dataobject.enums.LoginType;
 import cn.cidea.module.admin.service.ICaptchaService;
 import cn.cidea.module.admin.service.ISysUserLoginLogService;
 import cn.cidea.module.admin.service.ISysUserService;
@@ -55,7 +54,7 @@ public class SessionServiceImpl implements ISecuritySessionService {
     public LoginUserDTO login(String username, String password, String code, String uuid) {
         captchaService.verify(uuid, code);
 
-        final LoginTypeEnum logTypeEnum = LoginTypeEnum.LOGIN_USERNAME;
+        final LoginType logTypeEnum = LoginType.LOGIN_USERNAME;
         // 用户验证
         Authentication authentication;
         try {
@@ -63,10 +62,10 @@ public class SessionServiceImpl implements ISecuritySessionService {
             // 在其内部，会调用到 loadUserByUsername 方法，获取 User 信息
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (BadCredentialsException badCredentialsException) {
-            loginLogService.fail(username, logTypeEnum, LoginResultEnum.BAD_CREDENTIALS, badCredentialsException);
+            loginLogService.fail(username, logTypeEnum, LoginResult.BAD_CREDENTIALS, badCredentialsException);
             throw Assert.BAD_CREDENTIALS.build("账号密码不正确");
         } catch (DisabledException disabledException) {
-            loginLogService.fail(username, logTypeEnum, LoginResultEnum.USER_DISABLED, disabledException);
+            loginLogService.fail(username, logTypeEnum, LoginResult.USER_DISABLED, disabledException);
             throw Assert.BAD_CREDENTIALS.build("账号被禁用");
         } catch (AuthenticationException authenticationException) {
             Throwable cause = authenticationException.getCause();
@@ -74,7 +73,7 @@ public class SessionServiceImpl implements ISecuritySessionService {
                 cause = authenticationException;
             }
             log.error("[登录异常]", cause);
-            loginLogService.fail(username, logTypeEnum, LoginResultEnum.UNKNOWN_ERROR, cause);
+            loginLogService.fail(username, logTypeEnum, LoginResult.UNKNOWN_ERROR, cause);
             throw Assert.BAD_CREDENTIALS.build(cause.getMessage());
         }
         // 登录成功的日志

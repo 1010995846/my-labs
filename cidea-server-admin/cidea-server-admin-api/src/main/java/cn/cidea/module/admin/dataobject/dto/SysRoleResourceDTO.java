@@ -1,5 +1,7 @@
 package cn.cidea.module.admin.dataobject.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,9 +19,11 @@ public class SysRoleResourceDTO implements Serializable {
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long roleId;
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long resourceId;
 }

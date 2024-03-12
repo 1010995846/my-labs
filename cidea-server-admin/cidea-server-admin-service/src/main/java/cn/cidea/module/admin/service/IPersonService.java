@@ -20,5 +20,6 @@ import javax.validation.Valid;
 public interface IPersonService extends IService<Person> {
 
     @Transactional
-    Person trySave(@Valid PersonSaveDTO person);
+    Person save(@Valid PersonSaveDTO person);
+
 }

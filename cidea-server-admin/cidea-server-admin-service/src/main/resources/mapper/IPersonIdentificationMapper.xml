@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.cidea.server.dal.mysql.IPersonIdentificationMapper">
+<mapper namespace="cn.cidea.module.admin.dal.mysql.IPersonIdentificationMapper">
 
+    <select id="selectOne" resultType="cn.cidea.module.admin.dataobject.entity.PersonIdentification">
+        select
+            *
+        from
+            person_identification
+        where type = #{type} and number = #{number}
+    </select>
 </mapper>

@@ -1,5 +1,6 @@
 package cn.cidea.framework.strategy.core.scanner;
 
+import cn.cidea.framework.strategy.core.filter.StrategyAPITypeFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -37,7 +37,8 @@ public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner imp
 
     @Override
     protected void registerDefaultFilters() {
-        addIncludeFilter(new AnnotationTypeFilter(configurer.getAnnotationClass()));
+        // addIncludeFilter(new AnnotationTypeFilter(configurer.getAnnotationClass()));
+        addIncludeFilter(new StrategyAPITypeFilter(configurer.getAnnotationClass()));
         addExcludeFilter((metadataReader, metadataReaderFactory) -> {
             String className = metadataReader.getClassMetadata().getClassName();
             return className.endsWith("package-info");
@@ -76,6 +77,7 @@ public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner imp
 
             // 保证API多实现的同时，默认调API代理
             definition.setPrimary(true);
+            // definition.setLazyInit(true);
             // definition.setInitMethodName();
             definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
         }

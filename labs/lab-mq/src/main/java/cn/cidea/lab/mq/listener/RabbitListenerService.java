@@ -40,6 +40,10 @@ public class RabbitListenerService {
     public void receiveB(Message message, Channel channel) throws IOException {
         System.out.println("收到业务消息B：" + new String(message.getBody()));
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        if(1 == 1){
+            throw new RuntimeException("dasdafdasfmnoashjf");
+        }
+        return;
     }
 
     @RabbitListener(queues = RabbitConfig.DEAD_LETTER_QUEUE_A)

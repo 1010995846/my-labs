@@ -3,6 +3,8 @@ package cn.cidea.module.admin.dataobject.dto;
 import java.util.Date;
 import java.io.Serializable;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -17,6 +19,7 @@ public class SysTenantDTO implements Serializable {
     /**
      * 租户编号
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 租户名
@@ -25,6 +28,7 @@ public class SysTenantDTO implements Serializable {
     /**
      * 联系人的用户编号
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long contactUserId;
     /**
      * 租户状态，是否禁用
@@ -33,6 +37,7 @@ public class SysTenantDTO implements Serializable {
     /**
      * 创建者
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createBy;
     /**
      * 创建时间
@@ -41,6 +46,7 @@ public class SysTenantDTO implements Serializable {
     /**
      * 更新者
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateBy;
     /**
      * 更新时间

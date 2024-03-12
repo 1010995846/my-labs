@@ -1,17 +1,18 @@
 package cn.cidea.lab.spring;
 
-import cn.cidea.module.admin.AdminApplication;
+import cn.cidea.lab.spring.spi.TestApplicationContextInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackageClasses = {AdminApplication.class})
 public class LabSpringApplication {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(LabSpringApplication.class, args);
+        SpringApplication application = new SpringApplication(LabSpringApplication.class);
+        // application.addInitializers(new TestApplicationContextInitializer());
+        ConfigurableApplicationContext context = application.run(args);
         return;
     }
 

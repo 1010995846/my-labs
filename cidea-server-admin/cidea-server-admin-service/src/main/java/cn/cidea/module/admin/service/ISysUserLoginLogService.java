@@ -1,9 +1,8 @@
 package cn.cidea.module.admin.service;
 
 
-import cn.cidea.module.admin.dataobject.enums.LoginResultEnum;
-import cn.cidea.module.admin.dataobject.enums.LoginTypeEnum;
-import com.baomidou.mybatisplus.extension.service.IService;
+import cn.cidea.module.admin.dataobject.enums.LoginResult;
+import cn.cidea.module.admin.dataobject.enums.LoginType;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ISysUserLoginLogService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void fail(String username, LoginTypeEnum logType, LoginResultEnum loginResult, Throwable throwable);
+    void fail(String username, LoginType logType, LoginResult loginResult, Throwable throwable);
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void success(String username, LoginTypeEnum logType);
+    void success(String username, LoginType logType);
 }

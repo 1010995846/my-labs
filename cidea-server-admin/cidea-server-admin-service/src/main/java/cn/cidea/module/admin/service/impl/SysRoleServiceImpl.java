@@ -136,6 +136,11 @@ public class SysRoleServiceImpl extends CacheOneServiceImpl<Long, ISysRoleMapper
             }
 
         });
+        try {
+            permissionService.exception();
+        } catch (Exception e){
+            log.error("dddd", e);
+        }
     }
 
     @Override

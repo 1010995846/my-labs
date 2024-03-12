@@ -1,6 +1,8 @@
 package cn.cidea.core.utils;
 
+import cn.hutool.core.util.XmlUtil;
 import com.alibaba.fastjson.JSONObject;
+import org.w3c.dom.Document;
 
 import javax.xml.bind.*;
 import java.io.StringReader;

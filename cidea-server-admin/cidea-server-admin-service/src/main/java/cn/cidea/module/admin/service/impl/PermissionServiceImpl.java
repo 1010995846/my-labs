@@ -209,4 +209,11 @@ public class PermissionServiceImpl extends CacheServiceImpl<ISysRoleResourceMapp
 
         });
     }
+
+    @Override
+    public void exception() {
+        if(1 == 1){
+            throw new RuntimeException("FFFFFFFFFFFFF");
+        }
+    }
 }

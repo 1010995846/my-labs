@@ -33,6 +33,13 @@
         <module>cidea-spring-boot-starter-strategy-factory</module>
         <module>cidea-gateway</module>
         <module>cidea-utils</module>
+        <module>cidea-server-trade</module>
+        <module>cidea-server-trade/cidea-server-trade-api</module>
+        <module>cidea-server-trade/cidea-server-trade-service</module>
+        <module>cidea-server-pay</module>
+        <module>cidea-server-pay/cidea-server-pay-api</module>
+        <module>cidea-server-pay/cidea-server-pay-service</module>
+        <module>cidea-spring-boot-starter-skywalking</module>
     </modules>
 
     <profiles>
@@ -61,6 +68,7 @@
 
         <apache.pdfbox.version>3.0.0-RC1</apache.pdfbox.version>
         <commons.httpclient.version>3.1</commons.httpclient.version>
+        <opentelemetry.version>1.1.0</opentelemetry.version>
     </properties>
 
     <dependencies>
@@ -116,6 +124,14 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>8.0.32</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>${opentelemetry.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- 基础工具 -->
@@ -257,18 +273,12 @@
         </plugins>
     </build>
 
-
-    <distributionManagement>
+    <repositories>
         <repository>
-            <id>local-repo-release</id>
-            <name>GitHub Release</name>
-            <url>file://${project.basedir}/maven-repo</url>
+            <id>skywalking</id>
+            <name>SkyWalking Repository</name>
+            <url>https://maven.skywalking.io/nexus/content/repositories/releases/</url>
         </repository>
-        <snapshotRepository>
-            <id>yhkj-nexus-snapshots</id>
-            <name>Nexus Snapshot Repository</name>
-            <url>https://nexus.ylzpay.com/repository/maven-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+    </repositories>
 
 </project>

@@ -32,6 +32,7 @@ public class PersonIdentification extends Model<PersonIdentification> {
     private String number;
     /**
      * 证件类型：1-身份证
+     * {@link cn.cidea.module.admin.dataobject.enums.IdentificationType}
      */
     private Integer type;
     /**

@@ -32,7 +32,7 @@ public class SysResource extends CacheOneModel<Long, SysResource> {
      */
     private String name;
     /**
-     * 权限标识
+     * 【json】权限，字符串数组
      */
     @TableField(typeHandler = FastjsonNullDefaultTypeHandler.class)
     private List<String> permissions;
@@ -41,7 +41,7 @@ public class SysResource extends CacheOneModel<Long, SysResource> {
      */
     private String path;
     /**
-     * 类型：C-目录；M-菜单；B-按钮
+     * 类型：M-菜单；B-按钮；
      */
     private String type;
     /**

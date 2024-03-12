@@ -1,6 +1,6 @@
 package cn.cidea.core.dal.redis;
 
-import cn.cidea.core.dal.MemoryDAO;
+import cn.cidea.core.dal.DbDAO;
 import cn.cidea.core.utils.SynchronizedUtils;
 import cn.cidea.core.utils.function.IPK;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +20,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * 缓存DAO
+ * Redis缓存DAO
  * 可实现{@link #loadById(Serializable)}、{@link #loadByIds(Set)}、{@link #loadAll()}从数据源（如数据库）加载数据
  * // TODO CIdea: 缓存时间配置，过期时间配置
  * // TODO CIdea: 可自定义序列化方案
  * @author CIdea
  */
 @Slf4j
-public abstract class RedisCacheDAO<E extends IPK> extends MemoryDAO<E> {
+public abstract class RedisCacheDAO<E extends IPK> extends DbDAO<E> {
 
     @Autowired
     protected RedissonClient redissonClient;
@@ -90,13 +90,13 @@ public abstract class RedisCacheDAO<E extends IPK> extends MemoryDAO<E> {
         Set<Serializable> loadIds = ids.stream()
                 .filter(id -> !data.containsKey(id))
                 .collect(Collectors.toSet());
-        // 全局读锁，刷新全局写锁时阻塞，先让刷新写数据
+        // 全局读锁，与全局写锁互斥，先让刷新写数据
         RLock lockAll = redissonClient.getReadWriteLock(getLockKey()).readLock();
         lockAll.lock(1, TimeUnit.SECONDS);
         try {
             // 所有id的锁，避免重复加载
             SynchronizedUtils.lock(getLockKey() + ":", loadIds, () -> {
-                // 获取到锁后重新读一次，避免加载队列执行重复加载
+                // 获取到锁后重新从缓存读一次，避免加载队列从DB重复加载
                 Map<Serializable, E> loadData = cache.getAll(loadIds);
                 if (!loadData.isEmpty()) {
                     data.putAll(loadData);
@@ -153,6 +153,7 @@ public abstract class RedisCacheDAO<E extends IPK> extends MemoryDAO<E> {
 
     private RMap<Serializable, E> getCache() {
         // TODO 若redis挂掉则改用本地缓存，避免雪崩
+        // TODO CIdea: 本地缓存技术比较多，SPI结合预设方案
         String cacheKey = cacheKey() + ":cache";
         return redissonClient.getMap(cacheKey);
     }

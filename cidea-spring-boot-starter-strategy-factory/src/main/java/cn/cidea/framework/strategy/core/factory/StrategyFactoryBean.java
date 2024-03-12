@@ -13,6 +13,9 @@ import static org.springframework.util.Assert.notNull;
  */
 public class StrategyFactoryBean<T> implements InitializingBean, FactoryBean<T>, BeanFactoryAware {
 
+    /**
+     * BeanDefinition的class
+     */
     private Class<T> api;
 
     private BeanFactory beanFactory;
@@ -23,6 +26,7 @@ public class StrategyFactoryBean<T> implements InitializingBean, FactoryBean<T>,
 
     @Override
     public T getObject() throws Exception {
+        // 创建代理类
         StrategyProxy proxy = beanFactory.getBeanProvider(StrategyProxy.class).getObject(api);
 
         Enhancer enhancer = new Enhancer();

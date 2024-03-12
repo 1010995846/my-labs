@@ -1,5 +1,6 @@
 package cn.cidea.framework.strategy.config;
 
+import cn.cidea.framework.strategy.core.StrategyScannerRegistrar;
 import cn.cidea.framework.strategy.core.annotation.StrategyAPI;
 import cn.cidea.framework.strategy.core.factory.StrategyBeanNameGenerator;
 import cn.cidea.framework.strategy.core.scanner.StrategyScannerConfigurer;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -23,11 +25,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
+ * // TODO CIdea: 多个Application时会有问题，暂时注释，顺序问题，要等Application和ComponentScan扫完才能加载其它路径的StrategyScan，而这时该自启动类已经加载了
  * 创建默认的{@link StrategyScannerConfigurer}，扫描和Spring工程一样的路径
  * @author CIdea
  */
 @Configuration
-@ConditionalOnMissingBean({StrategyScannerConfigurer.class})
+@AutoConfigureAfter(StrategyScannerRegistrar.class)
+@ConditionalOnMissingBean({StrategyScannerRegistrar.class})
 public class StrategyAutoConfiguration implements BeanFactoryAware, ImportBeanDefinitionRegistrar {
 
     protected Logger log = LoggerFactory.getLogger(StrategyAutoConfiguration.class);

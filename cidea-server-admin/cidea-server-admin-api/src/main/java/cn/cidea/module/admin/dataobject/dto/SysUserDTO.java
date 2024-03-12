@@ -1,8 +1,8 @@
 package cn.cidea.module.admin.dataobject.dto;
 
-import cn.cidea.core.spring.serializer.masking.DataMasking;
-import cn.cidea.core.spring.serializer.masking.DataMaskingFunc;
-import com.alibaba.fastjson.annotation.JSONField;
+import cn.cidea.core.spring.serializer.masking.Masked;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,15 +22,18 @@ public class SysUserDTO implements Serializable {
     /**
      *
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 个人信息ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long personId;
 
     /**
      * 所属租户ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long tenantId;
     /**
      * 昵称
@@ -43,7 +46,7 @@ public class SysUserDTO implements Serializable {
     /**
      * 密码
      */
-    @DataMasking(maskFunc = DataMaskingFunc.ALL_MASK)
+    @Masked
     private String password;
     /**
      * 手机号
@@ -92,6 +95,7 @@ public class SysUserDTO implements Serializable {
     /**
      * 创建者，可为自身注册
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createBy;
     /**
      * 创建时间

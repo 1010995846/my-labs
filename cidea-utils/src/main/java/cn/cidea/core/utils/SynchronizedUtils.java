@@ -6,11 +6,9 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,8 +18,10 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -49,9 +49,12 @@ public class SynchronizedUtils implements ApplicationContextAware {
 
     /**
      * 事务提交后执行
+     * 注册的{@link TransactionSynchronization}会被添加到{@link TransactionSynchronizationManager#synchronizations}集合中，然后在合适的时机执行
+     * WARN: 同一个事务中不可嵌套注册，简单的集合遍历问题，遍历过程中不可添加集合元素，{@link org.springframework.transaction.support.TransactionSynchronizationUtils#invokeAfterCommit}
      */
     public static void afterTrxCommit(Runnable runnable){
         if(!TransactionSynchronizationManager.isActualTransactionActive()){
+            // 没有事务，直接执行
             runnable.run();
         } else {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -65,6 +68,7 @@ public class SynchronizedUtils implements ApplicationContextAware {
     }
     public static void beforeTrxCommit(Runnable runnable){
         if(!TransactionSynchronizationManager.isActualTransactionActive()){
+            // 没有事务，直接执行
             runnable.run();
         } else {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -79,9 +83,11 @@ public class SynchronizedUtils implements ApplicationContextAware {
 
     /**
      * 新线程执行
+     *
+     * @return
      */
-    public static void newThr(Runnable runnable){
-        self.threadPoolExecutor.execute(() -> {
+    public static ListenableFuture<?> newThr(Runnable runnable){
+        return self.threadPoolExecutor.submitListenable(() -> {
             log.info("new thread start");
             runnable.run();
             log.info("new thread end");
@@ -122,36 +128,46 @@ public class SynchronizedUtils implements ApplicationContextAware {
     }
 
     /**
-     * 锁
+     * 单例锁
+     * Supplier带返回值，Runnable不带
      */
+    public static <T> T lock(String name, Supplier<T> supplier){
+        return lock(Collections.singleton(name), supplier);
+    }
     public static void lock(String name, Runnable runnable){
         lock(Collections.singleton(name), () -> {
             runnable.run();
             return null;
         });
     }
-    public static <T> T lock(String name, Supplier<T> supplier){
-        return lock(Collections.singleton(name), supplier);
-    }
-    public static void lock(Collection<String> names, Runnable runnable){
-        lock(names, () -> {
-            runnable.run();
-            return null;
-        });
-    }
+
+    /**
+     * 联合锁
+     * 拼接preffix和names里的元素生成锁的key
+     * @param preffix
+     * @param names
+     * @param supplier
+     */
     public static void lock(String preffix, Collection<?> names, Runnable supplier){
         Set<String> keys = names.parallelStream()
                 .map(name -> preffix + name)
                 .collect(Collectors.toSet());
         lock(keys, supplier);
     }
-
     public static <T> T lock(String preffix, Collection<?> names, Supplier<T> supplier){
         Set<String> keys = names.stream()
                 .map(name -> preffix + name)
                 .collect(Collectors.toSet());
         return lock(keys, supplier);
     }
+
+    public static void lock(Collection<String> names, Runnable runnable){
+        lock(names, () -> {
+            runnable.run();
+            return null;
+        });
+    }
+
     public static <T> T lock(Collection<String> names, Supplier<T> supplier){
         if(!(names instanceof Set)){
             names = names.stream().collect(Collectors.toSet());
@@ -183,11 +199,21 @@ public class SynchronizedUtils implements ApplicationContextAware {
         try {
             return supplier.get();
         } finally {
-            try {
-                lock.unlock();
-                log.info("unlock for {}", JSONObject.toJSONString(names));
-            } catch (Exception e){
-                log.error("unlock error! key = " + JSONObject.toJSONString(names), e);
+            if(lock.isLocked()) {
+                log.info("manual unlock for {}", JSONObject.toJSONString(names));
+                try {
+                    lock.unlock();
+                } catch (RuntimeException e){
+                    log.error("unlock error! key = " + JSONObject.toJSONString(names), e);
+                    if(lock.isLocked()){
+                        // 解锁失败
+                        throw e;
+                    }
+                }
+            } else {
+                // 锁已经自动释放
+                // 场景一，超出持有时间
+                log.info("lock already release for {}", JSONObject.toJSONString(names));
             }
         }
     }

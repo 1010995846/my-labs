@@ -1,0 +1,2 @@
+# Auto Configure
+org.springframework.context.ApplicationContextInitializer=cn.cidea.lab.spring.spi.TestApplicationContextInitializer

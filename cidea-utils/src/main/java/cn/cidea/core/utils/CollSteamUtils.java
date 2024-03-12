@@ -1,6 +1,8 @@
 package cn.cidea.core.utils;
 
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,7 +44,14 @@ public class CollSteamUtils {
         return collection.stream().collect(Collectors.toMap(pkVal, o -> o));
     }
 
-    private static <T> boolean isEmpty(Collection<T> collection) {
+    public static <T> boolean isEmpty(Collection<T> collection) {
         return collection == null || collection.isEmpty();
+    }
+
+    public static <R, T> List<R> flatMap(Collection<T> collection, Function<T, Collection<R>> function){
+        if(isEmpty(collection)){
+            return Collections.emptyList();
+        }
+        return collection.parallelStream().filter(Objects::nonNull).map(function).filter(Objects::nonNull).flatMap(Collection::parallelStream).collect(Collectors.toList());
     }
 }

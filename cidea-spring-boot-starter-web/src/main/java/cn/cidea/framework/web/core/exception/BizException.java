@@ -1,5 +1,6 @@
 package cn.cidea.framework.web.core.exception;
 
+import cn.cidea.framework.web.core.asserts.Assert;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,9 +16,13 @@ public class BizException extends RuntimeException implements IBaseException, Se
     @Getter
     private Integer code;
 
-    private BizException(Integer code, String msg) {
+    public BizException(Integer code, String msg) {
         super(msg);
         this.code = code;
+    }
+    public BizException(String msg) {
+        super(msg);
+        code = Assert.BIZ.getCode();
     }
 
     public static BizException error(IBaseException exception){

@@ -1,7 +1,5 @@
 package cn.cidea.module.admin.dataobject.dto;
 
-import cn.cidea.core.spring.serializer.masking.DataMasking;
-import cn.cidea.core.spring.serializer.masking.DataMaskingFunc;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
