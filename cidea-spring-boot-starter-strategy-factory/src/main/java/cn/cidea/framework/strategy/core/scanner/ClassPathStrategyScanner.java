@@ -15,18 +15,24 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 扫描Strategy的API{@link #registerDefaultFilters()}
+ * 并在spring中注册路由代理实例{@link #doScan(String...)}
  * @author CIdea
  */
 public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner implements BeanFactoryAware {
 
-    protected Logger log = LoggerFactory.getLogger(ClassPathStrategyScanner.class);
+    private Logger log = LoggerFactory.getLogger(ClassPathStrategyScanner.class);
 
     private BeanFactory beanFactory;
 
     private StrategyScannerConfigurer configurer;
+
+    private static final Set<Object> registry = Collections.synchronizedSet(new HashSet<>());
 
     public ClassPathStrategyScanner(BeanDefinitionRegistry registry, StrategyScannerConfigurer configurer) {
         super(registry, false);
@@ -52,7 +58,7 @@ public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner imp
 
         if (!beanDefinitions.isEmpty()) {
             // 这里对beanDefinition进一步加工
-            processBeanDefinitions(beanDefinitions);
+            beanDefinitions = processBeanDefinitions(beanDefinitions);
         } else {
             log.warn("No Strategy service was found in '" + Arrays.toString(basePackages)
                     + "' package. Please check your configuration.");
@@ -61,8 +67,14 @@ public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner imp
         return beanDefinitions;
     }
 
-    private void processBeanDefinitions(Set<BeanDefinitionHolder> beanDefinitions) {
+    private Set<BeanDefinitionHolder> processBeanDefinitions(Set<BeanDefinitionHolder> beanDefinitions) {
+        Set<BeanDefinitionHolder> beans = new HashSet<>();
         for (BeanDefinitionHolder holder : beanDefinitions) {
+            if (!registry.add(holder)) {
+                // 已经注册过了
+                continue;
+            }
+            beans.add(holder);
             GenericBeanDefinition definition = (GenericBeanDefinition) holder.getBeanDefinition();
             String beanClassName = definition.getBeanClassName();
             log.debug("Creating StrategyFactoryBean with name '" + holder.getBeanName() + "' and '" + beanClassName
@@ -81,6 +93,7 @@ public class ClassPathStrategyScanner extends ClassPathBeanDefinitionScanner imp
             // definition.setInitMethodName();
             definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
         }
+        return beans;
     }
 
 

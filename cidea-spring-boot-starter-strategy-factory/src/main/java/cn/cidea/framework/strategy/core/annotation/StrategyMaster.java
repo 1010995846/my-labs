@@ -1,5 +1,7 @@
 package cn.cidea.framework.strategy.core.annotation;
 
+import cn.cidea.framework.strategy.core.StrategyAPIRegistrar;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 import java.lang.annotation.*;
@@ -13,6 +15,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Service
+@Import(StrategyAPIRegistrar.class)
 public @interface StrategyMaster {
 
 }

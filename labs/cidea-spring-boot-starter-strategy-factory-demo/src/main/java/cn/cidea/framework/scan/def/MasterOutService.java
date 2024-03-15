@@ -1,7 +1,7 @@
-package cn.cidea.framework.strategy2.def;
+package cn.cidea.framework.scan.def;
 
 import cn.cidea.framework.strategy.core.annotation.StrategyMaster;
-import cn.cidea.framework.strategy2.IOutService;
+import cn.cidea.framework.scan.IScanService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @StrategyMaster
-public class MasterOutService implements IOutService {
+public class MasterOutService implements IScanService {
     @Override
     public void print() {
         log.info("MasterOutService");

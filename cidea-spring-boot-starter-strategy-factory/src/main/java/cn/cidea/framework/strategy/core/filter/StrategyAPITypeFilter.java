@@ -55,7 +55,7 @@ public class StrategyAPITypeFilter implements TypeFilter {
         return metadata.hasAnnotation(annotationType.getName()) || metadata.hasMetaAnnotation(annotationType.getName());
     }
 
-    protected boolean hasAnnotation(String typeName, Class<? extends Annotation> annotationType) {
+    private boolean hasAnnotation(String typeName, Class<? extends Annotation> annotationType) {
         if (Object.class.getName().equals(typeName)) {
             return false;
         }

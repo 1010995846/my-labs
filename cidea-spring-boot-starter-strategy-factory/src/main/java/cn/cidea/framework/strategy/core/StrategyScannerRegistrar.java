@@ -17,26 +17,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * {@link StrategyScan}扫描
  * @author CIdea
  */
-public class StrategyScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+public class StrategyScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
     @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-
-    }
-
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+    public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
         AnnotationAttributes annoAttrs = AnnotationAttributes
-                .fromMap(importingClassMetadata.getAnnotationAttributes(StrategyScan.class.getName()));
+                .fromMap(annotationMetadata.getAnnotationAttributes(StrategyScan.class.getName()));
         if (annoAttrs == null) {
             return;
         }
-        registerBeanDefinitions(importingClassMetadata, annoAttrs, registry, generateBaseBeanName(importingClassMetadata, 0));
+        registerBeanDefinitions(annotationMetadata, annoAttrs, registry, generateBaseBeanName(annotationMetadata, 0));
     }
 
-    void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, AnnotationAttributes annoAttrs, BeanDefinitionRegistry registry, String beanName) {
+    void registerBeanDefinitions(AnnotationMetadata annotationMetadata, AnnotationAttributes annoAttrs, BeanDefinitionRegistry registry, String beanName) {
 
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(StrategyScannerConfigurer.class);
 
@@ -60,7 +56,7 @@ public class StrategyScannerRegistrar implements ImportBeanDefinitionRegistrar, 
         basePackages.addAll(Arrays.stream(annoAttrs.getClassArray("basePackageClasses")).map(ClassUtils::getPackageName)
                 .collect(Collectors.toList()));
         if (basePackages.size() == 0){
-            Class<?> introspectedClass = ((StandardAnnotationMetadata) importingClassMetadata).getIntrospectedClass();
+            Class<?> introspectedClass = ((StandardAnnotationMetadata) annotationMetadata).getIntrospectedClass();
             String defaultPackageName = introspectedClass.getPackage().getName();
             basePackages.add(defaultPackageName);
         }

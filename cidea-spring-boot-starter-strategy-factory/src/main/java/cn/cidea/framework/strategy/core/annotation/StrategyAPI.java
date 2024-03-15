@@ -1,7 +1,9 @@
 package cn.cidea.framework.strategy.core.annotation;
 
 import cn.cidea.framework.strategy.core.IStrategyRouter;
+import cn.cidea.framework.strategy.core.StrategyAPIRegistrar;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
 import java.lang.reflect.Method;
@@ -19,6 +21,7 @@ import java.lang.reflect.Method;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Import(StrategyAPIRegistrar.class)
 public @interface StrategyAPI {
 
     /**

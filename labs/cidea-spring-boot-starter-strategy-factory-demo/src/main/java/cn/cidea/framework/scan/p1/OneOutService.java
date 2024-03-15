@@ -1,8 +1,7 @@
-package cn.cidea.framework.strategy2.p1;
+package cn.cidea.framework.scan.p1;
 
 import cn.cidea.framework.strategy.core.annotation.StrategyBranch;
-import cn.cidea.framework.strategy.core.annotation.StrategyMaster;
-import cn.cidea.framework.strategy2.IOutService;
+import cn.cidea.framework.scan.IScanService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -10,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @StrategyBranch("p1")
-public class OneOutService implements IOutService {
+public class OneOutService implements IScanService {
     @Override
     public void print() {
         log.info("OneOutService");

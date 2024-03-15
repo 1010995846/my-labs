@@ -29,7 +29,6 @@ import java.util.*;
  *
  * @author CIdea
  */
-@Component
 @Scope("prototype")
 public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
 

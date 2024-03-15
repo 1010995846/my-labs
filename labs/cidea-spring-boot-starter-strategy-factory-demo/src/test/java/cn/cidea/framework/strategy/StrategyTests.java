@@ -4,7 +4,7 @@ import cn.cidea.framework.strategy.config.DefaultDynamicStrategyRouter;
 import cn.cidea.framework.strategy.facade.OrgFacade;
 import cn.cidea.framework.strategy.service.IGunService;
 import cn.cidea.framework.strategy.service.IOrgService;
-import cn.cidea.framework.strategy2.IOutService;
+import cn.cidea.framework.scan.IScanService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +57,7 @@ class StrategyTests implements BeanFactoryAware {
         DefaultDynamicStrategyRouter.routeKey.set("p1");
         System.out.println(implBean.getName());// 打印plural
 
-        IOutService bean = beanFactory.getBean(IOutService.class);
+        IScanService bean = beanFactory.getBean(IScanService.class);
         DefaultDynamicStrategyRouter.routeKey.remove();
         bean.print();
         DefaultDynamicStrategyRouter.routeKey.set("p1");

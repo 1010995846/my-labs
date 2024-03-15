@@ -20,10 +20,9 @@ import java.lang.annotation.Annotation;
 import static org.springframework.util.Assert.notNull;
 
 /**
- * 核心配置类
- * 调起{@link ClassPathStrategyScanner}
+ * 核心配置类{@link #postProcessBeanDefinitionRegistry}
+ * 创建{@link ClassPathStrategyScanner}
  * 扫描{@link #annotationClass}注解的策略端口
- * {@link #postProcessBeanDefinitionRegistry}
  * @author CIdea
  */
 public class StrategyScannerConfigurer
