@@ -11,4 +11,8 @@ public interface IGunService {
 
     void shoot();
 
+    default void print(){
+        System.out.println("interface");
+    }
+
 }

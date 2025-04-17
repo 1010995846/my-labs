@@ -14,7 +14,7 @@
         <dependency>
             <groupId>cn.cidea</groupId>
             <artifactId>cidea-spring-boot-starter-strategy-factory</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>

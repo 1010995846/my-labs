@@ -10,4 +10,9 @@ public class GunMasterService implements IGunService {
     public void shoot() {
         System.out.println("shoot.");
     }
+
+    @Override
+    public void print() {
+        System.out.println("master");
+    }
 }

@@ -28,6 +28,9 @@ class StrategyTests implements BeanFactoryAware {
         for (int i = 0; i < 7; i++) {
             implBean.shoot();
         }
+        for (int i = 0; i < 7; i++) {
+            implBean.print();
+        }
     }
 
     @Test
