@@ -55,7 +55,7 @@ public class NettyServer {
                 .channel(NioServerSocketChannel.class)
                 // 设置 Netty Server 的端口
                 .localAddress(new InetSocketAddress(port))
-                // 服务端 accept 队列的大小
+                // 服务端 accept 队列的大小，如果队列已满，客户端连接将被拒绝。
                 .option(ChannelOption.SO_BACKLOG, 1024)
                 // TCP Keepalive 机制，实现 TCP 层级的心跳保活功能
                 .childOption(ChannelOption.SO_KEEPALIVE, true)

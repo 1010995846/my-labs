@@ -1,7 +1,7 @@
 package cn.cidea.lab.netty.client;
 
-import cn.cidea.lab.netty.message.heartbeat.HeartbeatRequest;
 import cn.cidea.lab.netty.codec.Invocation;
+import cn.cidea.lab.netty.message.heartbeat.HeartbeatRequest;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

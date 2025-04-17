@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * 实际的消息ChannelHandler，接收消息中包含的Invocation信息，根据type获取对应消息处理类并传递消息
+ */
 @Component
 @ChannelHandler.Sharable
 public class MessageDispatcher extends SimpleChannelInboundHandler<Invocation> {

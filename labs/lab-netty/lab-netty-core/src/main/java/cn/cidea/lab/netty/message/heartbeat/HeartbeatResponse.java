@@ -1,7 +1,6 @@
 package cn.cidea.lab.netty.message.heartbeat;
 
 
-import cn.cidea.lab.netty.core.Message;
 import cn.cidea.lab.netty.message.Response;
 
 /**

@@ -2,9 +2,11 @@ package cn.cidea.lab.netty.client;
 
 import cn.cidea.lab.netty.codec.Invocation;
 import cn.cidea.lab.netty.core.Message;
-import cn.cidea.lab.netty.message.Request;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
@@ -33,7 +35,7 @@ public class NettyClient {
     private Integer serverPort;
 
     @Autowired
-    private NettyClientHandlerInitializer nettyClientHandlerInitializer;
+    private NettyChannelInitializer channelInitializer;
 
     /**
      * 线程组，用于客户端对服务端的链接、数据读写
@@ -54,7 +56,7 @@ public class NettyClient {
         // 设置 Bootstrap 的各种属性。
         // 设置一个 EventLoopGroup 对象
         bootstrap.group(eventGroup)
-                // 指定 Channel 为客户端 NioSocketChannel
+                // 指定 Channel 类型为客户端 NioSocketChannel
                 .channel(NioSocketChannel.class)
                 // 指定链接服务器的地址
                 .remoteAddress(serverHost, serverPort)
@@ -62,8 +64,9 @@ public class NettyClient {
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 // 允许较小的数据包的发送，降低延迟
                 .option(ChannelOption.TCP_NODELAY, true)
-                .handler(nettyClientHandlerInitializer);
-        // 链接服务器，并异步等待成功，即启动客户端
+                // channel初始化，类型为上方指定的 NioSocketChannel
+                .handler(channelInitializer);
+        // 链接服务器，并异步监听 future 状态
         bootstrap.connect().addListener((ChannelFutureListener) future -> {
             // 连接失败
             if (!future.isSuccess()) {

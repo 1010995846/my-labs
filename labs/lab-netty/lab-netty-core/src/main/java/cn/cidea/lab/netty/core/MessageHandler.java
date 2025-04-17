@@ -1,6 +1,5 @@
 package cn.cidea.lab.netty.core;
 
-import cn.cidea.lab.netty.core.Message;
 import io.netty.channel.Channel;
 
 public interface MessageHandler<T extends Message> {

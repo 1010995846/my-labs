@@ -1,7 +1,6 @@
 package cn.cidea.lab.netty.message.auth;
 
 
-import cn.cidea.lab.netty.core.Message;
 import cn.cidea.lab.netty.message.Response;
 
 

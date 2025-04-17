@@ -2,7 +2,6 @@ package cn.cidea.lab.netty.handler;
 
 import cn.cidea.lab.netty.core.MessageHandler;
 import cn.cidea.lab.netty.message.chat.ChatRedirectRequest;
-import cn.cidea.lab.netty.message.chat.ChatResponse;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

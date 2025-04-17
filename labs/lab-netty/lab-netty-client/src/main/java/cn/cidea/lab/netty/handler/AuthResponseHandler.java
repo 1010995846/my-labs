@@ -1,9 +1,7 @@
 package cn.cidea.lab.netty.handler;
 
 import cn.cidea.lab.netty.AuthContext;
-import cn.cidea.lab.netty.codec.Invocation;
 import cn.cidea.lab.netty.core.MessageHandler;
-import cn.cidea.lab.netty.message.auth.AuthRequest;
 import cn.cidea.lab.netty.message.auth.AuthResponse;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;

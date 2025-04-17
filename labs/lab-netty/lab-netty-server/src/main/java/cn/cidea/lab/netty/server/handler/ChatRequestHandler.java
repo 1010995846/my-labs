@@ -2,8 +2,6 @@ package cn.cidea.lab.netty.server.handler;
 
 import cn.cidea.lab.netty.codec.Invocation;
 import cn.cidea.lab.netty.core.MessageHandler;
-import cn.cidea.lab.netty.message.auth.AuthRequest;
-import cn.cidea.lab.netty.message.auth.AuthResponse;
 import cn.cidea.lab.netty.message.chat.ChatRedirectRequest;
 import cn.cidea.lab.netty.message.chat.ChatRequest;
 import cn.cidea.lab.netty.message.chat.ChatResponse;

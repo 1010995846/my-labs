@@ -1,7 +1,5 @@
 package cn.cidea.lab.netty.message.chat;
 
-import cn.cidea.lab.netty.core.Message;
-import cn.cidea.lab.netty.message.Request;
 import cn.cidea.lab.netty.message.auth.AuthRequest;
 
 /**

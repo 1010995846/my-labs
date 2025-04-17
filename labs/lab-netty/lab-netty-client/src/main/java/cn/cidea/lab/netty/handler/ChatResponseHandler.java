@@ -4,7 +4,6 @@ import cn.cidea.lab.netty.core.MessageHandler;
 import cn.cidea.lab.netty.message.chat.ChatResponse;
 import cn.cidea.lab.netty.service.ChatMockService;
 import io.netty.channel.Channel;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

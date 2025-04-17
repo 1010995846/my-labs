@@ -42,6 +42,8 @@
         <module>cidea-spring-boot-starter-chain-demo</module>
         <module>cidea-spring-boot-starter-strategy-demo</module>
         <module>cidea-spring-boot-starter-strategy-factory-demo</module>
+        <module>lab-hadoop</module>
+        <module>lab-netty-simple</module>
     </modules>
 
     <build>

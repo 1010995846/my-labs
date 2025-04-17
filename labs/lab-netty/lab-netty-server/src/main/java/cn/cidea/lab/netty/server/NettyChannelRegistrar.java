@@ -3,15 +3,12 @@ package cn.cidea.lab.netty.server;
 import cn.cidea.lab.netty.codec.Invocation;
 import cn.cidea.lab.netty.core.Message;
 import cn.cidea.lab.netty.message.chat.ChatRedirectRequest;
-import cn.cidea.lab.netty.message.chat.ChatRequest;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.HashSet;
 import java.util.List;

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NettyClientHandlerInitializer extends ChannelInitializer<Channel> {
+public class NettyChannelInitializer extends ChannelInitializer<Channel> {
 
     /**
      * 心跳超时时间
@@ -25,8 +25,8 @@ public class NettyClientHandlerInitializer extends ChannelInitializer<Channel> {
     private NettyClientHandler nettyClientHandler;
 
     @Override
-    protected void initChannel(Channel ch) {
-        ch.pipeline()
+    protected void initChannel(Channel channel) {
+        channel.pipeline()
                 // 空闲检测
                 .addLast(new IdleStateHandler(READ_TIMEOUT_SECONDS, 0, 0))
                 .addLast(new ReadTimeoutHandler(3 * READ_TIMEOUT_SECONDS))
