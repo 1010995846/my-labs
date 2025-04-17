@@ -18,11 +18,11 @@ import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
 
 /**
  * 路由代理实现
@@ -34,8 +34,14 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
 
     private final Logger log = LoggerFactory.getLogger(StrategyProxy.class);
 
+    /**
+     * 路由API{@link StrategyAPI}
+     */
     private final Class<?> api;
 
+    /**
+     * 指定路由
+     */
     private final Class<? extends IStrategyRouter> routerClass;
 
     private BeanFactory beanFactory;
@@ -66,13 +72,10 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
      */
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        Object masterBean = registry.getMasterBean(api);
-        if (!route(method)) {
-            if (masterBean == null) {
-                return null;
-            }
-            return methodProxy.invoke(masterBean, args);
+        if (ReflectionUtils.isObjectMethod(method)) {
+            return method.invoke(obj, args);
         }
+        Object masterBean = registry.getMasterBean(api);
         log.debug("invoke: {}#{}({})", obj.getClass(), method.getName(), Arrays.toString(method.getParameterTypes()));
         // 获取routeKey。getRouteKeys()是抽象方法，用于重写，提供自定义的获取方案
         IStrategyRouter router = beanFactory.getBean(routerClass);
@@ -83,11 +86,11 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
             // 默认，避免NPE
             routeKeys = new String[]{};
         }
-        log.debug("routeKeys = {}", Arrays.toString(routeKeys));
+        log.debug("api = {}, routeKeys = {}", api, Arrays.toString(routeKeys));
         // 待执行bean和method的封装对象
-        Invocation invocationToUse;
+        Invocation invocationToUse = StrategyCache.getCache(routeKeys, api, method);
         // 尝试获取缓存
-        if ((invocationToUse = StrategyCache.getCache(routeKeys, method)) == null) {
+        if (invocationToUse == null) {
             // 无缓存，尝试匹配branch
             for (String routeKey : routeKeys) {
                 if (routeKey == null) {
@@ -97,9 +100,10 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
                 if (beanToUse == null) {
                     continue;
                 }
-                Method methodToUse = MethodUtils.getMatchingMethod(
+                Method methodToUse = MethodUtils.getMatchingAccessibleMethod(
                         beanToUse.getClass(), method.getName(), method.getParameterTypes());
                 if (methodToUse == null) {
+                    log.info("not found methodToUse.");
                     continue;
                 }
                 invocationToUse = new Invocation(methodToUse, beanToUse);
@@ -112,33 +116,18 @@ public class StrategyProxy implements MethodInterceptor, BeanFactoryAware {
             }
             log.debug("call master service.");
 
-            Method methodToUse = MethodUtils.getAccessibleMethod(
+            Method methodToUse = MethodUtils.getMatchingAccessibleMethod(
                     masterBean.getClass(), method.getName(), method.getParameterTypes());
             if (methodToUse == null) {
                 throw new StrategyMasterNotFoundException(api.getName() + " can access method `" + method.getName() + "`.");
             }
             invocationToUse = new Invocation(methodToUse, masterBean);
         }
-        StrategyCache.cacheBean(routeKeys, method, invocationToUse);
+        StrategyCache.cacheBean(routeKeys, api, method, invocationToUse);
 
         Object result = invocationToUse.invoke(args);
         log.debug("invoke finished.");
         return result;
-    }
-
-    /**
-     * 方法是否需要路由
-     *
-     * @param method
-     * @return
-     */
-    private boolean route(Method method) {
-        for (Method m : api.getMethods()) {
-            if (m.equals(method)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
