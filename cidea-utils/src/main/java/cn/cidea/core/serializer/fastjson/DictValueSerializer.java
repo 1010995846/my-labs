@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 /**
- * {@link IDict}序列化时输出{@link IDict#value()}
- * // TODO CIdea: 反序列化的
+ * 对实现了{@link IDict}的对象内部属性类型，序列化时输出{@link IDict#value()}
+ * // TODO CIdea: 反序列化的，暂时别用
  * @author: CIdea
  */
 public class DictValueSerializer implements ObjectSerializer {

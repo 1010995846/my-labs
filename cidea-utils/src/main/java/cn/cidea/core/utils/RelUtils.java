@@ -86,6 +86,7 @@ public class RelUtils {
                 .collect(Collectors.toSet());
         Map<RID, List<SUB>> map = getSub.apply(idList)
                 .stream()
+                .filter(s -> subFkGetter.apply(s) != null)
                 .collect(Collectors.groupingBy(subFkGetter));
         for (E entity : coll) {
             List<SUB> subList = map.getOrDefault(entity.pkVal(), Collections.EMPTY_LIST);

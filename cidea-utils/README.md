@@ -17,4 +17,8 @@
 - 修复`PackingConvert`内部缓存问题，混淆相同规格串、但单位不同的转换图
 - 工具`PackingConvert`同义词新增"枚"，与"粒"、"片"、"丸"等同义
 
+## 0.1.6
+- 工具`PackingConvert`，新增一些默认的单位的自动转换，[ml,l]、[mg,g,kg]
+- 工具`HttpRequestBuilder`增加proxy支持
+
 # feature 

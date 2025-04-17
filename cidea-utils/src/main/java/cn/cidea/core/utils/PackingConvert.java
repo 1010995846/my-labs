@@ -42,6 +42,18 @@ public class PackingConvert {
      * K1-规格值；K2-单位；V-规格节点
      */
     private static Map<String, Map<String, Node>> cache = new HashMap<>();
+    /**
+     * 通用单位
+     */
+    private static final List<Node> GENERAL_UNIT_TREE = new ArrayList<>();
+
+    static {
+        Node kg = buildTree("1000000mg:1000000毫克:1000g:1000克:1kg:1千克", "kg");
+        GENERAL_UNIT_TREE.add(kg);
+
+        Node l = new Node("1000ml:1000毫升:1l:1升", "l");
+        GENERAL_UNIT_TREE.add(l);
+    }
 
     /**
      * 返回当前计量转为目标单位时对应的数量
@@ -56,7 +68,15 @@ public class PackingConvert {
      * @param unit       单位，对应规格
      */
     public static BigDecimal convert(BigDecimal cnt, String cntUnit, String targetUnit, String spec, String unit) {
+        cntUnit = StringUtils.lowerCase(cntUnit);
+        targetUnit = StringUtils.lowerCase(targetUnit);
+        spec = StringUtils.lowerCase(spec);
+        unit = StringUtils.lowerCase(unit);
         log.info("cnt = {}, cntUnit = {}, targetUnit = {}, spec = {}, unit = {}", cnt, cntUnit, targetUnit, spec, unit);
+        if (cnt == null || StringUtils.isAnyBlank(cntUnit, targetUnit, spec)) {
+            log.warn("primary param can't be null");
+            return null;
+        }
         if (StringUtils.isBlank(unit)) {
             unit = DEF_UNIT;
         }
@@ -66,7 +86,11 @@ public class PackingConvert {
             return cnt;
         }
         Node root = buildTree(spec, unit);
+        if (root == null) {
+            return null;
+        }
         Node cur = null;
+        // 当前单位或同义词查找
         for (String term : Synonyms.get(cntUnit)) {
             cur = Optional.ofNullable(root.getEdges().get(term)).map(Edge::getAccess).orElse(null);
             if (cur != null) {
@@ -74,35 +98,80 @@ public class PackingConvert {
                 break;
             }
         }
+        // 通用单位查找
+        Fraction curWeight = Fraction.ONE;
+        if (cur == null) {
+            for (Node generalUnit : GENERAL_UNIT_TREE) {
+                Edge edge = generalUnit.getEdges().get(cntUnit);
+                if (edge == null) {
+                    continue;
+                }
+                // 含通用单位
+                for (Map.Entry<String, Edge> entry : generalUnit.getEdges().entrySet()) {
+                    Edge convertUnitEdge = root.getEdges().get(entry.getKey());
+                    if (convertUnitEdge != null) {
+                        // 转化单位命中，用转化后单位做cur，并加上权重
+                        cur = convertUnitEdge.getAccess();
+                        // curWeight = entry.getValue().getAccess().getEdges().get(entry.getKey()).getWeight();
+                        curWeight = generalUnit.getEdges().get(cntUnit).getAccess().getEdges().get(entry.getKey()).getWeight();
+                        break;
+                    }
+                    // cur = Optional.ofNullable(value).map(Edge::getAccess).orElse(null);
+                    // if (cur != null) {
+                    //     // 命中通用单位
+                    //     log.info("cntUnit = {}", entry.getKey());
+                    //     break;
+                    // }
+                }
+                if (cur != null) {
+                    break;
+                }
+            }
+        }
         if (cur == null) {
             log.error("spec {} can't find cntUnit {}", spec, cntUnit);
             log.info("root edges = {}", JSONObject.toJSONString(root.getEdges().keySet()));
             return null;
         }
-        Edge targetEdge = null;
+        Fraction targetWeight = null;
         for (String term : Synonyms.get(targetUnit)) {
-            targetEdge = cur.getEdges().get(term);
+            Edge targetEdge = cur.getEdges().get(term);
             if (targetEdge != null) {
                 log.info("targetUnit = {}", term);
+                targetWeight = targetEdge.getWeight();
                 break;
             }
         }
-        if (targetEdge == null) {
+        if (targetWeight == null) {
+            for (Node generalUnit : GENERAL_UNIT_TREE) {
+                Edge edge = generalUnit.getEdges().get(targetUnit);
+                if (edge != null) {
+                    // 通用组中含有目标单位
+                    targetWeight = edge.getAccess().getEdges().get(cntUnit).getWeight().reverse();
+                    break;
+                }
+            }
+        }
+        if (targetWeight == null) {
             log.error("spec {} can't find targetUnit {}", spec, targetUnit);
             log.info("cur edges = {}", JSONObject.toJSONString(cur.getEdges().keySet()));
             return null;
         }
-        cnt = new Fraction(cnt).multiply(targetEdge.getWeight()).val(ROUNDING_SCALE, ROUNDING_MODE);
+        BigDecimal targetCnt = new Fraction(cnt)
+                .multiply(curWeight)
+                .multiply(targetWeight)
+                .val(ROUNDING_SCALE, ROUNDING_MODE);
 
-        if (cnt.scale() > 0) {
+        if (targetCnt.scale() > 0) {
             // 小数移除尾0
-            cnt = cnt.stripTrailingZeros();
-        } else if (cnt.scale() < 0) {
-            // 取消科学计数法，避免一些参数传递toString时出问题
-            cnt = cnt.setScale(0);
+            targetCnt = targetCnt.stripTrailingZeros();
         }
-        log.info("cnt = {}{}", cnt, targetUnit);
-        return cnt;
+        if (targetCnt.scale() < 0) {
+            // 取消科学计数法，避免一些参数传递toString时出问题
+            targetCnt = targetCnt.setScale(0);
+        }
+        log.info("target = {}{}", targetCnt, targetUnit);
+        return targetCnt;
     }
 
     public static Node buildTree(String spec, String unit) {
@@ -322,6 +391,8 @@ public class PackingConvert {
         Node node;
         String spec;
         // 完成
+        // 通用单位
+        // node = buildTree("散", "散");
         // 单例
         // node = buildTree("散", "散");
         // node = buildTree("1管", "管");
@@ -390,6 +461,8 @@ public class PackingConvert {
         // node = buildTree("1.6:250ml", null);
         // node = buildTree("1%:15g/支", null);
         // node = buildTree("50:850mg*28片/盒", null);
+        node = buildTree("1000g/(10g)t", null);
+        node = buildTree("50g+60gl/支", null);
         // 测试
         System.out.println();
         // //
@@ -400,6 +473,25 @@ public class PackingConvert {
         // 20ml/支
         // 1500IU:500IU*20粒
         // 支持示例
+        cnt = convert(new BigDecimal("1"), "kg", "g", "1kg", "盒");
+        Assert.isTrue(new BigDecimal("1000").compareTo(cnt) == 0, String.valueOf(cnt));
+        cnt = convert(new BigDecimal("1"), "kg", "g", "1000g", "盒");
+        Assert.isTrue(new BigDecimal("1000").compareTo(cnt) == 0, String.valueOf(cnt));
+
+        cnt = convert(new BigDecimal("1"), "g", "kg", "1kg", "盒");
+        Assert.isTrue(new BigDecimal("0.001").compareTo(cnt) == 0, String.valueOf(cnt));
+        cnt = convert(new BigDecimal("1"), "g", "kg", "1000g", "盒");
+        Assert.isTrue(new BigDecimal("0.001").compareTo(cnt) == 0, String.valueOf(cnt));
+
+        cnt = convert(new BigDecimal("1"), "克", "千克", "1000g", "盒");
+        Assert.isTrue(new BigDecimal("0.001").compareTo(cnt) == 0, String.valueOf(cnt));
+        cnt = convert(new BigDecimal("1"), "克", "kg", "1000g", "盒");
+        Assert.isTrue(new BigDecimal("0.001").compareTo(cnt) == 0, String.valueOf(cnt));
+        // 1盒:5g:5000mg
+        cnt = convert(new BigDecimal("1"), "毫克", "盒", "2ml：0.5g*10支/盒", "盒");
+        Assert.isTrue(new BigDecimal("0.0002").compareTo(cnt) == 0, String.valueOf(cnt));
+
+
         cnt = convert(new BigDecimal("100"), "片", "盒", "5mg*100片", "盒");
         // 0.02瓶
         cnt = convert(new BigDecimal("2"), "片", "瓶", "100片", "瓶");
@@ -480,6 +572,7 @@ public class PackingConvert {
         cnt = convert(new BigDecimal("5"), "袋", "盒", spec, "盒");
         Assert.isTrue(new BigDecimal("1").compareTo(cnt) == 0, String.valueOf(cnt));
 
+
         // 规格不合法
         // node = buildNode("85g（气雾剂）+60g（保险液）", null);
         // // 自己扩展的，实际是否有未知，是否为设想的规则未知。并行时/的含义不同，外面的'/支'代表总共几只，并行括号里的'480mg/2ml'代表每2ml有480mg，也就是240mg/ml
@@ -509,7 +602,7 @@ public class PackingConvert {
     private static void parse(StringBuilder seq) {
         StringSeqUtils.removeAll(seq, "\n");
         StringSeqUtils.deleteTails(seq, true, ' ');
-        StringSeqUtils.lowerCase(seq);
+        // StringSeqUtils.lowerCase(seq);
         // TODO CIdea: 从科学计数法转成常规计数
         StringSeqUtils.replaceAll(seq, "10^8", "100000000");
         // TODO CIdea: 从中文转成常规计数
@@ -522,6 +615,7 @@ public class PackingConvert {
             StringSeqUtils.reset(seq, "1000ml*1l");
         }
     }
+
 
     /**
      * 有向图节点

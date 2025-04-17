@@ -111,7 +111,7 @@ public abstract class RedisCacheDAO<E extends IPK> extends DbDAO<E> {
             if (lockAll.isLocked()) {
                 try {
                     lockAll.unlock();
-                } catch (Exception e){
+                } catch (Throwable e){
                     log.error("unlock error", e);
                 }
             }

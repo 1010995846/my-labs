@@ -50,11 +50,14 @@ public class SynchronizedUtils implements ApplicationContextAware {
     /**
      * 事务提交后执行
      * 注册的{@link TransactionSynchronization}会被添加到{@link TransactionSynchronizationManager#synchronizations}集合中，然后在合适的时机执行
-     * WARN: 同一个事务中不可嵌套注册，简单的集合遍历问题，遍历过程中不可添加集合元素，{@link org.springframework.transaction.support.TransactionSynchronizationUtils#invokeAfterCommit}
+     * WARN: 同一个事务中不可嵌套，只有最外层会生效。简单的集合遍历问题，遍历过程中不可再往集合中添加元素，{@link org.springframework.transaction.support.TransactionSynchronizationUtils#invokeAfterCommit}
+     * 场景一：异常导致事务回滚，执行一些无法回滚的代码，比如消息推送
+     *
      */
     public static void afterTrxCommit(Runnable runnable){
         if(!TransactionSynchronizationManager.isActualTransactionActive()){
             // 没有事务，直接执行
+            log.warn("run none transaction");
             runnable.run();
         } else {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -69,6 +72,7 @@ public class SynchronizedUtils implements ApplicationContextAware {
     public static void beforeTrxCommit(Runnable runnable){
         if(!TransactionSynchronizationManager.isActualTransactionActive()){
             // 没有事务，直接执行
+            log.warn("run none transaction");
             runnable.run();
         } else {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -117,9 +121,9 @@ public class SynchronizedUtils implements ApplicationContextAware {
         TransactionStatus ts = self.transactionManager.getTransaction(def);
         try {
             return supplier.get();
-        } catch (RuntimeException e) {
+        } catch (Throwable e) {
             ts.setRollbackOnly();
-            log.warn("new transaction rollback");
+            log.error("new transaction rollback", e);
             throw e;
         } finally {
             self.transactionManager.commit(ts);
@@ -203,7 +207,7 @@ public class SynchronizedUtils implements ApplicationContextAware {
                 log.info("manual unlock for {}", JSONObject.toJSONString(names));
                 try {
                     lock.unlock();
-                } catch (RuntimeException e){
+                } catch (Throwable e){
                     log.error("unlock error! key = " + JSONObject.toJSONString(names), e);
                     if(lock.isLocked()){
                         // 解锁失败
@@ -219,7 +223,8 @@ public class SynchronizedUtils implements ApplicationContextAware {
     }
 
     /**
-     * 全局锁并发起新事务（刷新状态，保证事务中状态是最新的）
+     * 全局锁并发起新事务
+     * 用途：保证只有一个事务在操作状态，同时是最新状态，注意事务隔离和行锁
      */
     public static <T> T lockNewTrx(Collection<String> names, Supplier<T> supplier){
         return lock(names, () -> newTrx(supplier));

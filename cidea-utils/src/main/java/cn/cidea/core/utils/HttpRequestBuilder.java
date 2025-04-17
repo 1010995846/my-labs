@@ -15,9 +15,9 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.config.RequestConfig;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -145,11 +145,24 @@ public abstract class HttpRequestBuilder {
         return this;
     }
 
-    public HttpRequestBuilder cookie(String cookie){
-        if(cookies == null){
+    public HttpRequestBuilder cookie(String cookie) {
+        if (cookies == null) {
             cookies = new HashSet<>();
         }
         cookies.add(cookie);
+        return this;
+    }
+
+    public HttpRequestBuilder systemProxyHost() {
+        String proxyHostKey = "http.proxyHost";
+        String proxyHost = System.getProperty(proxyHostKey, System.getenv(proxyHostKey));
+        if (StringUtils.isBlank(proxyHost)) {
+            return this;
+        }
+        String proxyPortKey = "http.proxyPort";
+        Integer proxyPort = Integer.valueOf(System.getProperty(proxyPortKey, System.getenv(proxyPortKey)));
+        log.info("proxy host={}, port={}", proxyHost, proxyPort);
+        proxyHost(new ProxyHost(proxyHost, proxyPort));
         return this;
     }
 
@@ -224,25 +237,25 @@ public abstract class HttpRequestBuilder {
 
         public Post formUrlencoded(String key, Object value) {
             this.contentType = ContentType.FORM_URLENCODED;
-            if(param == null){
+            if (param == null) {
                 param = new HashMap<>();
             }
-            if(!(param instanceof Map)){
+            if (!(param instanceof Map)) {
                 param = JSONObject.parseObject(JSONObject.toJSONString(param));
             }
-            ((Map)param).put(key, value);
+            ((Map) param).put(key, value);
             return this;
         }
 
         public Post formUrlencoded(Object param) {
             this.contentType = ContentType.FORM_URLENCODED;
-            if(this.param == null){
+            if (this.param == null) {
                 this.param = param;
             } else {
-                if(!(param instanceof Map)){
+                if (!(param instanceof Map)) {
                     param = JSONObject.toJSONString(param);
                 }
-                ((Map)param).putAll(JSONObject.parseObject(JSONObject.toJSONString(param)));
+                ((Map) param).putAll(JSONObject.parseObject(JSONObject.toJSONString(param)));
             }
             return this;
         }
